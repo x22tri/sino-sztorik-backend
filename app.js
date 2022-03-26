@@ -42,9 +42,6 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'Ismeretlen hiba történt.' })
 })
 
-console.log(process.env.PORT)
-console.log(process.env.FRONTEND_URL)
-
 sequelize
   .sync()
   .then((result) => {
