@@ -11,12 +11,12 @@ const app = express()
 const sequelize = require('./util/database')
 
 // Add headers before the routes are defined
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL)
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization')
-  next()
-})
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL)
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization')
+//   next()
+// })
 
 app.use(express.json())
 
@@ -41,6 +41,9 @@ app.use((error, req, res, next) => {
   res.status(error.code || 500)
   res.json({ message: error.message || 'Ismeretlen hiba történt.' })
 })
+
+console.log(process.env.PORT)
+console.log(process.env.FRONTEND_URL)
 
 sequelize
   .sync()
