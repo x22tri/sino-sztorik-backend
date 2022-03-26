@@ -9,6 +9,7 @@ const HttpError = require('./models/http-error')
 const app = express()
 
 const sequelize = require('./util/database')
+require('dotenv').config();
 
 // Add headers before the routes are defined
 // app.use((req, res, next) => {
