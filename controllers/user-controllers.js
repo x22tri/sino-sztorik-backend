@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
 
 const User = require('../models/users')
-// const LessonOrder = require('../models/lesson-orders')
+const CharacterOrder = require('../models/character-orders')
 const HttpError = require('../models/http-error')
 
 const saltRounds = 12
@@ -102,10 +102,12 @@ const advanceUser = async (req, res, next) => {
         return next(new HttpError('Nem sikerült lekérni a felhasználót.', 500))
     }
 
+    const currentTierColumn = `prefaceTier`
+
     let foundLessonToAdvanceTo
     try {
         // Go to the next lessonNumber in the same tier if applicable.
-        let remainingLessonsInTier = await LessonOrder.findAll({ 
+        let remainingLessonsInTier = await CharacterOrder.findAll({ 
             where: {tier: currentTier, lessonNumber: {[Op.gt]: currentLesson} },
             order: ['lessonNumber']
         })
@@ -115,7 +117,7 @@ const advanceUser = async (req, res, next) => {
             await user.update({currentLesson: foundLessonToAdvanceTo.lessonNumber})
             res.json(`Sikeres frissítés! Az új állapot: ${currentTier}. kör, ${remainingLessonsInTier[0].lessonNumber}. lecke.`)
         } else {
-            let lessonsInNextTier = await LessonOrder.findAll({ 
+            let lessonsInNextTier = await CharacterOrder.findAll({ 
                 where: {tier: currentTier + 1},
                 order: ['lessonNumber']
             })
@@ -137,7 +139,7 @@ const advanceUser = async (req, res, next) => {
             res.json(`A soron következő lecke nem található.`)
         }
     } catch (err) {
-        return next(new HttpError('Nem sikerült frissíteni az előrehaladásod.', 500))
+        return next(new HttpError(`Nem sikerült frissíteni az előrehaladásod. Hibaüzenet: ${err}`, 500))
     }    
 }
 
