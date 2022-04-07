@@ -1,4 +1,4 @@
-# Sino-sztorik (frontend)
+# Sino-sztorik (backend)
 
 Sino-sztorik is a **language course for Hungarian learners of Chinese**. It teaches the 3000 most common Chinese characters through visual associations and stories.
 
@@ -6,7 +6,7 @@ This backend primarily uses Node.js, Express and Sequelize.js, and is connected 
 
 ## Structural Overview
 
-This backend is mainly responsible for assembling the *"Chinese character object"* that the user is eligible to see. 
+The backend is mainly responsible for assembling the *"Chinese character object"* that the user is eligible to see. 
 
 As the course is linear, the currently logged-in user has a "progress status" that *determines which characters they can and cannot see*. In addition, the user can *"unlock" more and more information* about already learned characters as they progress through the course. 
 
