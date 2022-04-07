@@ -102,8 +102,6 @@ const advanceUser = async (req, res, next) => {
         return next(new HttpError('Nem sikerült lekérni a felhasználót.', 500))
     }
 
-    const currentTierColumn = `prefaceTier`
-
     let foundLessonToAdvanceTo
     try {
         // Go to the next lessonNumber in the same tier if applicable.

@@ -55,6 +55,7 @@ const getLesson = async (req, res, next) => {
                 charChineseArray.push(foundCharChinese)
                 foundChar = await findCharacter(currentTier, currentLesson, foundCharChinese, true)
                 if (foundChar && !foundChar.code) charIDsInLessonArray.push(foundChar)
+                else if (foundChar && foundChar.code === 401) continue; // Don't include characters the user is not eligible to see.
                 else return next(foundChar) // If there was an error, throw it.
             }
         }
@@ -84,9 +85,7 @@ const findLessonHelper = async (tier, currentTier, lessonNumber, currentLesson, 
     if (!lessonDatabase) return new HttpError('Nem sikerült lekérni a leckéket.', 500)
 
     let charIdsInGivenLesson = await CharacterOrder.findAll({
-      where: {tier: {[tierOperator]: tier}, lessonNumber: {[Op.eq]: lessonNumber}},
-      include: [Character]}) 
-    //   // include: [Character]
+      where: {tier: {[tierOperator]: tier}, lessonNumber: {[Op.eq]: lessonNumber}}, include: [Character]}) 
 
     let status = undefined
     if (requestType === 'lesson-select') {
