@@ -89,9 +89,7 @@ const findLessonHelper = async (tier, currentTier, lessonNumber, currentLesson, 
 
     let status = undefined
     if (requestType === 'lesson-select') {
-      console.log('lesson select request arrived')
       if (charIdsInGivenLesson && charIdsInGivenLesson.length) {
-        console.log('charIdsInGivenLesson has length')
           // Adding the tiers (all four) with a status, comparing it with user's progress.
           if (!checkEligibilityHelper(tier, currentTier, lessonNumber, currentLesson)) {
             status = 'Még nincs feloldva'
@@ -104,7 +102,6 @@ const findLessonHelper = async (tier, currentTier, lessonNumber, currentLesson, 
         status = 'Ebben a körben nincs ilyen lecke'
       }
     }
-    console.log(status)
     return {tier: tier, lessonNumber: lessonNumber, name: lessonDatabase[lessonNumber - 1].name, 
       preface: lessonDatabase[lessonNumber - 1]['prefaceTier' + tier], characters: charIdsInGivenLesson, status: status}
   } catch (err) {

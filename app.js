@@ -48,7 +48,7 @@ app.use((error, req, res, next) => {
 })
 
 sequelize
-  .sync()
+  .sync({alter: true})
   .then((result) => {
     app.listen(process.env.PORT || 5000)
   })
