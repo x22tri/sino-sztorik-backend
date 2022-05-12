@@ -14,7 +14,6 @@ require('dotenv').config();
 // Add headers before the routes are defined
 app.use((req, res, next) => {
   // res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL)
-  // res.setHeader('Access-Control-Allow-Origin', '*')
   const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:3000'];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin);

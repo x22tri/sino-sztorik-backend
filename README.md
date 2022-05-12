@@ -16,6 +16,6 @@ As such, the backend utilizes extensive SQL queries to filter information about 
 
 - **Assembling Chinese character objects** from different rows of the "characters" database based on the user's current progress
 - **Grouping characters into lessons** with prefaces
-- **Looking up additional information** about a Chinese character, such as phrases, additional meanings and easily confusable characters--and only showing the ones that the user hasn't unlocked yet
+- **Looking up additional information** about a Chinese character, such as phrases, additional meanings and easily confusable characters—and only showing the ones that the user hasn't unlocked yet
 - For admins: **creating, editing and removing** characters, lessons and additional information
 - Tracking user progress
