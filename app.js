@@ -9,16 +9,20 @@ const HttpError = require('./models/http-error')
 const app = express()
 
 const sequelize = require('./util/database')
-require('dotenv').config();
+require('dotenv').config()
 
 // Add headers before the routes are defined
 app.use((req, res, next) => {
   // res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL)
-  const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:3000'];
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin);
+  const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:3000']
+  const origin = req.headers.origin
+  if (allowedOrigins.includes(origin))
+    res.setHeader('Access-Control-Allow-Origin', origin)
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With, Content-Type, Authorization'
+  )
   next()
 })
 
@@ -47,10 +51,10 @@ app.use((error, req, res, next) => {
 })
 
 sequelize
-  .sync({alter: true})
-  .then((result) => {
+  .sync({ alter: true })
+  .then(result => {
     app.listen(process.env.PORT || 5000)
   })
-  .catch((err) => {
+  .catch(err => {
     console.log(err)
   })

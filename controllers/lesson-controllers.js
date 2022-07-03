@@ -6,7 +6,7 @@ const CharacterOrder = require('../models/character-orders')
 const HttpError = require('../models/http-error')
 
 const { findCharacter } = require('./character-controllers')
-const { getUserData } = require('./user-controllers')
+const getUserData = require('../util/getUserData')
 const { checkEligibilityHelper } = require('../util/helper-functions')
 
 // An exported function that gets the lesson corresponding to the requested tier and lessonNumber.

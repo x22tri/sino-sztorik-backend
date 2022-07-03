@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --detectOpenHandles",
     "start": "node app.js",
     "start-dev": "nodemon app.js"
   },
@@ -20,6 +20,9 @@
     "sequelize": "^6.12.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "jest": "^28.1.2",
+    "nodemon": "^2.0.15",
+    "sequelize-mock": "^0.10.2",
+    "supertest": "^6.2.4"
   }
 }
