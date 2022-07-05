@@ -12,10 +12,11 @@ let mockUser = {}
 jest.mock('../util/getUserData', () => async () => Promise.resolve(mockUser))
 
 let mockQueryResult = {}
+let mockQueryFunction = async () => Promise.resolve({})
 jest.mock('../models/character-orders', () => {
   class MockCharacterOrder {
     static async findAll() {
-      return Promise.resolve(mockQueryResult)
+      return mockQueryFunction()
     }
   }
   return MockCharacterOrder
@@ -26,8 +27,7 @@ describe('Tests for the function "advanceUser" (route /api/users/advance)', () =
   it("finds the next lesson (via CharacterOrders DB) in the same tier (if it exists) and updates user's currentLesson", async () => {
     currentTier = 1
     currentLesson = 8
-    gap = 3 // Even when the next lesson isn't 1 above the current lesson, the code has to find it.
-    nextLesson = currentLesson + gap
+    nextLesson = currentLesson + 3 // Even when the next lesson isn't 1 above the current lesson, the code has to find it.
 
     const res = mockRes()
 
@@ -38,12 +38,13 @@ describe('Tests for the function "advanceUser" (route /api/users/advance)', () =
       update() {},
     }
 
-    mockQueryResult = [
-      {
-        tier: currentTier,
-        lessonNumber: nextLesson,
-      },
-    ]
+    mockQueryFunction = async () =>
+      Promise.resolve([
+        {
+          tier: currentTier,
+          lessonNumber: nextLesson,
+        },
+      ])
 
     await advanceUser(
       () => {},
@@ -54,5 +55,46 @@ describe('Tests for the function "advanceUser" (route /api/users/advance)', () =
     expect(res.json).toHaveBeenCalledWith(
       `Sikeres frissítés! Az új állapot: ${currentTier}. kör, ${nextLesson}. lecke.`
     )
-  })
+  }),
+    it('finds the first lesson in the next tier if no more lessons in the current tier exist', async () => {
+      currentTier = 1
+      currentLesson = 8
+      nextTier = 2
+      nextTierFirstLessonNumber = 2
+
+      const res = mockRes()
+
+      // The User and CharacterOrder models have other fields as well. They've been omitted for the sake of brevity.
+      mockUser = {
+        currentTier,
+        currentLesson,
+        update() {},
+      }
+
+      let remainingLessonsInTierChecked = false // This check needs to fail before the currently tested check is run.
+
+      mockQueryFunction = async () => {
+        if (!remainingLessonsInTierChecked) {
+          remainingLessonsInTierChecked = true
+          return Promise.resolve(null)
+        } else {
+          return Promise.resolve([
+            {
+              tier: nextTier,
+              lessonNumber: nextTierFirstLessonNumber,
+            },
+          ])
+        }
+      }
+
+      await advanceUser(
+        () => {},
+        res,
+        () => {}
+      )
+
+      expect(res.json).toHaveBeenCalledWith(
+        `Sikeres frissítés! Az új állapot: ${nextTier}. kör, ${nextTierFirstLessonNumber}. lecke.`
+      )
+    })
 })

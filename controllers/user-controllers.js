@@ -101,9 +101,7 @@ const advanceUser = async (req, res, next) => {
     return next(new HttpError('Nem sikerült lekérni a felhasználót.', 500))
   }
 
-  console.log(await CharacterOrder.findAll())
-
-  let foundLessonToAdvanceTo
+  let foundLessonToAdvanceTo = false
   try {
     // Go to the next lessonNumber in the same tier if applicable.
     let remainingLessonsInTier = await CharacterOrder.findAll({
@@ -114,12 +112,11 @@ const advanceUser = async (req, res, next) => {
     console.log(remainingLessonsInTier)
 
     if (remainingLessonsInTier && remainingLessonsInTier.length) {
-      foundLessonToAdvanceTo = {
-        tier: currentTier,
-        lessonNumber: remainingLessonsInTier[0].lessonNumber,
-      }
+      foundLessonToAdvanceTo = true
 
-      await user.update({ currentLesson: foundLessonToAdvanceTo.lessonNumber })
+      await user.update({
+        currentLesson: remainingLessonsInTier[0].lessonNumber,
+      })
 
       res.json(
         `Sikeres frissítés! Az új állapot: ${currentTier}. kör, ${remainingLessonsInTier[0].lessonNumber}. lecke.`
@@ -131,25 +128,28 @@ const advanceUser = async (req, res, next) => {
       })
 
       if (lessonsInNextTier && lessonsInNextTier.length) {
-        foundLessonToAdvanceTo = {
-          tier: lessonsInNextTier[0].tier,
-          lessonNumber: lessonsInNextTier[0].lessonNumber,
-        }
+        foundLessonToAdvanceTo = true
+
         await user.update({
-          currentTier: foundLessonToAdvanceTo.tier,
-          currentLesson: foundLessonToAdvanceTo.lessonNumber,
+          currentTier: lessonsInNextTier[0].tier,
+          currentLesson: lessonsInNextTier[0].lessonNumber,
         })
+
         res.json(
           `Sikeres frissítés! Az új állapot: ${lessonsInNextTier[0].tier}. kör, ${lessonsInNextTier[0].lessonNumber}. lecke.`
         )
       } else if (currentTier === 4) {
         // There are 4 tiers in the course.
         // If the user completes all tiers and all lessons, they advance to tier 5, lesson 100 so they can view all characters.
-        foundLessonToAdvanceTo = { tier: 5, lessonNumber: 100 }
+        const finalTier = 5
+        const finalLessonNumber = 100
+        foundLessonToAdvanceTo = true
+
         await user.update({
-          currentTier: foundLessonToAdvanceTo.tier,
-          currentLesson: foundLessonToAdvanceTo.lessonNumber,
+          currentTier: finalTier,
+          currentLesson: finalLessonNumber,
         })
+
         res.json(`Befejezted a kurzust. Minden karakter feloldva.`)
       }
     }
