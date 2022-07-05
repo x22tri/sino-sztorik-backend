@@ -1,26 +1,7 @@
 const { advanceUser } = require('../controllers/user-controllers')
 
-// Mocking variables. Note: this should be done on a test-by-test basis but I'm having trouble getting sequelize-mock
-// to work inside doMock calls (which are the only ones that can run inside a test, but for some reason they yield the live DB).
-
-let mockCurrentTier = 1
-let mockCurrentLesson = 8
-
-jest.mock(
-  '../util/getUserData',
-  () => async () =>
-    Promise.resolve({
-      userId: 900,
-      displayName: 'Test User',
-      email: 'test@test.com',
-      password: 'hashedpw',
-      currentTier: mockCurrentTier,
-      currentLesson: mockCurrentLesson,
-      update() {
-        // console.log('updated')
-      },
-    })
-)
+let mockUser = {}
+jest.mock('../util/getUserData', () => async () => Promise.resolve(mockUser))
 
 // Mocking middleware arguments.
 const mockRes = (res = {}) => {
@@ -51,10 +32,18 @@ jest.mock('../models/character-orders', () => {
 // Tests start here.
 describe('Tests for the function "advanceUser" (route /api/users/advance)', () => {
   it("adds to user's currentLesson if characters exist in current tier in a lesson number higher than currentLesson", async () => {
-    // mockCurrentTier = 1
-    // mockCurrentLesson = 8 // To-Do: make these vars govern the current user state instead of "global" vars.
+    mockCurrentTier = 1
+    mockCurrentLesson = 8
 
     const res = mockRes()
+
+    mockUser = {
+      currentTier: mockCurrentTier,
+      currentLesson: mockCurrentLesson,
+      update() {
+        console.log('updated')
+      },
+    }
 
     await advanceUser(
       () => {},
