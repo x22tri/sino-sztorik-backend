@@ -101,7 +101,7 @@ const advanceUser = async (req, res, next) => {
     return next(new HttpError('Nem sikerült lekérni a felhasználót.', 500))
   }
 
-  console.log(user)
+  console.log(await CharacterOrder.findAll())
 
   let foundLessonToAdvanceTo
   try {
@@ -110,6 +110,8 @@ const advanceUser = async (req, res, next) => {
       where: { tier: currentTier, lessonNumber: { [Op.gt]: currentLesson } },
       order: ['lessonNumber'],
     })
+
+    console.log(remainingLessonsInTier)
 
     if (remainingLessonsInTier && remainingLessonsInTier.length) {
       foundLessonToAdvanceTo = {
