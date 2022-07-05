@@ -109,7 +109,7 @@ const advanceUser = async (req, res, next) => {
       order: ['lessonNumber'],
     })
 
-    console.log(remainingLessonsInTier)
+    // console.log(remainingLessonsInTier)
 
     if (remainingLessonsInTier && remainingLessonsInTier.length) {
       foundLessonToAdvanceTo = true
@@ -140,7 +140,7 @@ const advanceUser = async (req, res, next) => {
         )
       } else if (currentTier === 4) {
         // There are 4 tiers in the course.
-        // If the user completes all tiers and all lessons, they advance to tier 5, lesson 100 so they can view all characters.
+        // If the user completes all tiers and all lessons, they get to an out-of-bounds special tier so they can view all characters.
         const finalTier = 5
         const finalLessonNumber = 100
         foundLessonToAdvanceTo = true

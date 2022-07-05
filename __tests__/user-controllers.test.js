@@ -64,7 +64,6 @@ describe('Tests for the function "advanceUser" (route /api/users/advance)', () =
 
       const res = mockRes()
 
-      // The User and CharacterOrder models have other fields as well. They've been omitted for the sake of brevity.
       mockUser = {
         currentTier,
         currentLesson,
@@ -95,6 +94,30 @@ describe('Tests for the function "advanceUser" (route /api/users/advance)', () =
 
       expect(res.json).toHaveBeenCalledWith(
         `Sikeres frissítés! Az új állapot: ${nextTier}. kör, ${nextTierFirstLessonNumber}. lecke.`
+      )
+    }),
+    it('unlocks all characters if there are no lessons in the same nor the next tier and tier is 4', async () => {
+      currentTier = 4
+      currentLesson = 97
+
+      const res = mockRes()
+
+      mockUser = {
+        currentTier,
+        currentLesson,
+        update() {},
+      }
+
+      mockQueryFunction = async () => Promise.resolve(null)
+
+      await advanceUser(
+        () => {},
+        res,
+        () => {}
+      )
+
+      expect(res.json).toHaveBeenCalledWith(
+        `Befejezted a kurzust. Minden karakter feloldva.`
       )
     })
 })
