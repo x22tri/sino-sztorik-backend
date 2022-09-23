@@ -1,8 +1,8 @@
-const express = require('express')
-const characterControllers = require('../controllers/character-controllers')
+const express = require('express');
+const { checkIfSearch } = require('../controllers/character-controllers');
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/:charChinese', characterControllers.checkIfSearch)
+router.get('/:charChinese', checkIfSearch);
 
-module.exports = router
+module.exports = router;

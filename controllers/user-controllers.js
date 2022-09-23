@@ -1,35 +1,47 @@
-const { Op } = require('sequelize')
-const bcrypt = require('bcryptjs')
-const { validationResult } = require('express-validator')
-const jwt = require('jsonwebtoken')
-const getUserData = require('../util/getUserData')
+const { Op } = require('sequelize');
+const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
+const getUserData = require('../util/getUserData');
 
-const User = require('../models/users')
-const CharacterOrder = require('../models/character-orders')
-const HttpError = require('../models/http-error')
+const User = require('../models/users');
+const CharacterOrder = require('../models/character-orders');
+const HttpError = require('../models/http-error');
 
-const saltRounds = 12
+const {
+  LAST_TIER,
+  COURSE_FINISHED_TIER,
+  COURSE_FINISHED_LESSON_NUMBER,
+  PW_SALT_ROUNDS,
+} = require('../util/config');
+
+const {
+  NO_LESSON_FOUND_IN_SAME_TIER_ERROR,
+  NO_LESSON_FOUND_IN_NEXT_TIER_ERROR,
+  NEXT_LESSON_NOT_FOUND_ERROR,
+  ADVANCE_USER_FAILED_ERROR,
+  WRONG_CREDENTIALS_ERROR,
+  VALIDATION_FAILED_ERROR,
+  EMAIL_TAKEN_ERROR,
+  SIGNUP_FAILED_ERROR,
+  LOGIN_FAILED_ERROR,
+} = require('../util/string-literals');
 
 const signup = async (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
-    return next(new HttpError('A megadott adatok érvénytelenek.', 422))
+    return next(new HttpError(VALIDATION_FAILED_ERROR, 422));
   }
 
-  const { displayName, email, password } = req.body
+  const { displayName, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ where: { email: email } })
-    if (existingUser)
-      return next(
-        new HttpError(
-          'Ez az e-mail-cím már foglalt. Kérjük, regisztrálj másikkal.',
-          422
-        )
-      )
+    const existingUser = await User.findOne({ where: { email: email } });
 
-    let hashedPassword, createdUser
+    if (existingUser) return next(new HttpError(EMAIL_TAKEN_ERROR, 422));
+
+    let createdUser;
     try {
-      hashedPassword = await bcrypt.hash(password, saltRounds)
+      const hashedPassword = await bcrypt.hash(password, PW_SALT_ROUNDS);
       createdUser = await User.create({
         //userId is autoIncrementing, created automatically by Sequelize
         displayName,
@@ -37,136 +49,165 @@ const signup = async (req, res, next) => {
         password: hashedPassword,
         currentTier: 1,
         currentLesson: 1,
-      })
+      });
     } catch (err) {
-      return next(
-        new HttpError(
-          'Nem sikerült létrehozni a felhasználói fiókod. Kérjük, próbálkozz később.',
-          500
-        )
-      )
+      return next(new HttpError(SIGNUP_FAILED_ERROR, 500));
     }
 
-    let token
-    token = jwt.sign({ userId: createdUser.userId }, process.env.JWT_KEY)
+    const token = jwt.sign({ userId: createdUser.userId }, process.env.JWT_KEY);
 
-    res.status(201).json({ userId: createdUser.userId, token: token })
+    res.status(201).json({ userId: createdUser.userId, token: token });
   } catch (err) {
-    return next(new HttpError(err, 500))
+    return next(new HttpError(err, 500));
   }
-}
+};
 
 const login = async (req, res, next) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
 
   try {
-    const identifiedUser = await User.findOne({ where: { email: email } })
+    const identifiedUser = await User.findOne({ where: { email: email } });
+
     if (!identifiedUser) {
-      return next(new HttpError('Téves e-mail-cím vagy jelszó.', 401))
+      return next(new HttpError(WRONG_CREDENTIALS_ERROR, 401));
     }
 
-    let isValidPassword = false
     try {
-      isValidPassword = await bcrypt.compare(password, identifiedUser.password)
+      const isValidPassword = await bcrypt.compare(
+        password,
+        identifiedUser.password
+      );
+
+      if (isValidPassword === false) {
+        return next(new HttpError(WRONG_CREDENTIALS_ERROR, 401));
+      }
     } catch (err) {
-      return next(
-        new HttpError(
-          'Nem sikerült a bejelentkezés. Kérjük, próbálkozz később.',
-          500
-        )
-      )
+      return next(new HttpError(LOGIN_FAILED_ERROR, 500));
     }
 
-    if (!isValidPassword) {
-      return next(new HttpError('Téves e-mail-cím vagy jelszó.', 401))
-    }
+    const token = jwt.sign(
+      { userId: identifiedUser.userId },
+      process.env.JWT_KEY
+    );
 
-    let token
-    token = jwt.sign({ userId: identifiedUser.userId }, process.env.JWT_KEY)
-
-    res.status(200).json({ userId: identifiedUser.userId, token: token })
+    res.status(200).json({ userId: identifiedUser.userId, token: token });
   } catch (err) {
-    return next(new HttpError(err, 500))
+    return next(new HttpError(err, 500));
   }
-}
+};
 
 const advanceUser = async (req, res, next) => {
-  let user, currentTier, currentLesson
+  const authenticationQuery = await authenticate(req, res, next);
 
-  try {
-    user = await getUserData(req, res, next)
-    currentTier = user.currentTier
-    currentLesson = user.currentLesson
-  } catch (err) {
-    return next(new HttpError('Nem sikerült lekérni a felhasználót.', 500))
+  if (authenticationQuery.success === false) {
+    return next(new HttpError(authenticationQuery.message, 500));
   }
 
-  let foundLessonToAdvanceTo = false
   try {
-    // Go to the next lessonNumber in the same tier if applicable.
-    let remainingLessonsInTier = await CharacterOrder.findAll({
-      where: { tier: currentTier, lessonNumber: { [Op.gt]: currentLesson } },
-      order: ['lessonNumber'],
-    })
+    const user = authenticationQuery.result;
 
-    // console.log(remainingLessonsInTier)
+    const { currentTier, currentLesson } = user;
 
-    if (remainingLessonsInTier && remainingLessonsInTier.length) {
-      foundLessonToAdvanceTo = true
+    const lessonQuery = await findNextLesson(currentTier, currentLesson);
 
+    const { success, result } = lessonQuery;
+
+    if (success) {
       await user.update({
-        currentLesson: remainingLessonsInTier[0].lessonNumber,
-      })
-
-      res.json(
-        `Sikeres frissítés! Az új állapot: ${currentTier}. kör, ${remainingLessonsInTier[0].lessonNumber}. lecke.`
-      )
-    } else {
-      let lessonsInNextTier = await CharacterOrder.findAll({
-        where: { tier: currentTier + 1 },
-        order: ['lessonNumber'],
-      })
-
-      if (lessonsInNextTier && lessonsInNextTier.length) {
-        foundLessonToAdvanceTo = true
-
-        await user.update({
-          currentTier: lessonsInNextTier[0].tier,
-          currentLesson: lessonsInNextTier[0].lessonNumber,
-        })
-
-        res.json(
-          `Sikeres frissítés! Az új állapot: ${lessonsInNextTier[0].tier}. kör, ${lessonsInNextTier[0].lessonNumber}. lecke.`
-        )
-      } else if (currentTier === 4) {
-        // There are 4 tiers in the course.
-        // If the user completes all tiers and all lessons, they get to an out-of-bounds special tier so they can view all characters.
-        const finalTier = 5
-        const finalLessonNumber = 100
-        foundLessonToAdvanceTo = true
-
-        await user.update({
-          currentTier: finalTier,
-          currentLesson: finalLessonNumber,
-        })
-
-        res.json(`Befejezted a kurzust. Minden karakter feloldva.`)
-      }
+        currentTier: result.tier,
+        currentLesson: result.lessonNumber,
+      });
     }
 
-    if (!foundLessonToAdvanceTo) {
-      res.json(`A soron következő lecke nem található.`)
-    }
+    res.json(lessonQuery);
   } catch (err) {
-    return next(
-      new HttpError(
-        `Nem sikerült frissíteni az előrehaladásod. Hibaüzenet: ${err}`,
-        500
-      )
-    )
+    return next(new HttpError(ADVANCE_USER_FAILED_ERROR, 500));
   }
-}
+};
 
-exports.signup = signup
-exports.login = login
-exports.advanceUser = advanceUser
+const authenticate = async (req, res, next) => {
+  try {
+    const userQuery = await getUserData(req, res, next);
+
+    if (userQuery.message) {
+      return { success: false, message: userQuery };
+    }
+
+    return { success: true, result: userQuery };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+};
+
+const findNextLesson = async (currentTier, currentLesson) => {
+  let lessonQuery = {};
+
+  lessonQuery = await tryFindLessonInSameTier(currentTier, currentLesson);
+
+  if (lessonQuery.success) {
+    return lessonQuery;
+  }
+
+  lessonQuery = await tryFindLessonInNextTier(currentTier);
+
+  if (lessonQuery.success) {
+    return lessonQuery;
+  }
+
+  if (currentTier === LAST_TIER) {
+    return {
+      success: true,
+      result: {
+        tier: COURSE_FINISHED_TIER,
+        lessonNumber: COURSE_FINISHED_LESSON_NUMBER,
+      },
+    };
+  }
+
+  return {
+    success: false,
+    message: NEXT_LESSON_NOT_FOUND_ERROR,
+  };
+};
+
+const tryFindLessonInSameTier = async (currentTier, currentLesson) => {
+  const remainingLessonsInTier = await CharacterOrder.findAll({
+    where: { tier: currentTier, lessonNumber: { [Op.gt]: currentLesson } },
+    order: ['lessonNumber'],
+  });
+
+  const nextLessonInSameTier = remainingLessonsInTier?.[0];
+
+  return nextLessonInSameTier
+    ? {
+        success: true,
+        result: {
+          tier: nextLessonInSameTier.tier,
+          lessonNumber: nextLessonInSameTier.lessonNumber,
+        },
+      }
+    : { success: false, message: NO_LESSON_FOUND_IN_SAME_TIER_ERROR };
+};
+
+const tryFindLessonInNextTier = async currentTier => {
+  const lessonsInNextTier = await CharacterOrder.findAll({
+    where: { tier: currentTier + 1 },
+    order: ['lessonNumber'],
+  });
+
+  const firstLessonInNextTier = lessonsInNextTier?.[0];
+
+  return firstLessonInNextTier
+    ? {
+        success: true,
+        result: {
+          tier: firstLessonInNextTier.tier,
+          lessonNumber: firstLessonInNextTier.lessonNumber,
+        },
+      }
+    : { success: false, message: NO_LESSON_FOUND_IN_NEXT_TIER_ERROR };
+};
+
+exports.signup = signup;
+exports.login = login;
+exports.advanceUser = advanceUser;

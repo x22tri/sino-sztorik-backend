@@ -1,9 +1,13 @@
-const express = require('express')
-const { check } = require('express-validator')
-const userControllers = require('../controllers/user-controllers')
-const getUserData = require('../util/getUserData')
+const express = require('express');
+const { check } = require('express-validator');
+const {
+  signup,
+  login,
+  advanceUser,
+} = require('../controllers/user-controllers');
+const getUserData = require('../util/getUserData');
 
-const router = express.Router()
+const router = express.Router();
 
 router.post(
   '/signup',
@@ -12,13 +16,13 @@ router.post(
     check('email').not().isEmpty(),
     check('password').isLength({ min: 6 }),
   ],
-  userControllers.signup
-)
+  signup
+);
 
-router.post('/login', userControllers.login)
+router.post('/login', login);
 
-router.post('/advance', userControllers.advanceUser)
+router.post('/advance', advanceUser);
 
-router.get('/:userID', getUserData)
+router.get('/:userID', getUserData);
 
-module.exports = router
+module.exports = router;

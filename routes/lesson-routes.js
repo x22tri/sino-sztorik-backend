@@ -1,9 +1,12 @@
-const express = require('express')
-const lessonControllers = require('../controllers/lesson-controllers')
+const express = require('express');
+const {
+  getLesson,
+  getLessonSelect,
+} = require('../controllers/lesson-controllers');
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', lessonControllers.getLesson)
-router.get('/select', lessonControllers.getLessonSelect)
+router.get('/', getLesson);
+router.get('/select', getLessonSelect);
 
-module.exports = router
+module.exports = router;

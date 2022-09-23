@@ -1,18 +1,26 @@
-const express = require('express')
-const adminControllers = require('../controllers/admin-controllers')
+const express = require('express');
+const {
+  getAllLessons,
+  getAdditionalInfoAdmin,
+  updateLesson,
+  getAllPhrases,
+  updateAllPhrasesOrOtherUses,
+  getAllOtherUses,
+  getAllSimilars,
+  updateCharacter,
+} = require('../controllers/admin-controllers');
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/all-lessons', adminControllers.getAllLessons)
-router.get('/additional-info/:charId', adminControllers.getAdditionalInfoAdmin)
-router.put('/lesson/update/:lessonId', adminControllers.updateLesson)
+router.get('/all-lessons', getAllLessons);
+router.get('/additional-info/:charId', getAdditionalInfoAdmin);
+router.put('/lesson/update/:lessonId', updateLesson);
 
-router.get('/all-phrases', adminControllers.getAllPhrases)
-router.put('/all-phrases/update', adminControllers.updateAllPhrasesOrOtherUses)
-router.get('/all-other-uses', adminControllers.getAllOtherUses)
-router.put('/all-other-uses/update', adminControllers.updateAllPhrasesOrOtherUses)
-router.get('/all-similars/:similarType', adminControllers.getAllSimilars)
-router.put('/character/:charId/update', adminControllers.updateCharacter)
+router.get('/all-phrases', getAllPhrases);
+router.put('/all-phrases/update', updateAllPhrasesOrOtherUses);
+router.get('/all-other-uses', getAllOtherUses);
+router.put('/all-other-uses/update', updateAllPhrasesOrOtherUses);
+router.get('/all-similars/:similarType', getAllSimilars);
+router.put('/character/:charId/update', updateCharacter);
 
-
-module.exports = router
+module.exports = router;
