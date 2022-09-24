@@ -1,17 +1,75 @@
 // A helper function that checks if the user is eligible to see a given lesson or character.
-// Every odd variable (currentTier, currentLesson, currentIndexInLesson) defines the user's "current" position,
-// while every even variable defines the character or lesson we're checking.
+// The variables "tier," "lessonNumber" and "indexInLesson" define the character or lesson we're checking,
+// while "currentTier," "currentLesson" and "currentIndexInLesson" defines the user's "current" position.
 // The first four variables are obligatory while the last two aren't and are only used for "phrases" and "similars"
 // to deal with characters in the same lesson.
-const checkEligibilityHelper = (tier, currentTier, lessonNumber, currentLesson, indexInLesson = undefined, currentIndexInLesson = undefined) => {
-    // if (isNaN(tier) || isNaN(currentTier) || isNan(lessonNumber) || isNaN(currentLesson)) {
-    //   return new Error('Érvénytelen számértékek megadva.')
-    // }
-    if (tier > currentTier || (tier === currentTier && lessonNumber > currentLesson)) {
-      return false 
-    } else if (indexInLesson && currentIndexInLesson && indexInLesson > currentIndexInLesson) {
-        return false
-      } else return true
-    } 
+const checkEligibilityHelper = (
+  tier,
+  currentTier,
+  lessonNumber,
+  currentLesson,
+  indexInLesson = undefined,
+  currentIndexInLesson = undefined
+) => {
+  if (
+    tier > currentTier ||
+    (tier === currentTier && lessonNumber > currentLesson)
+  ) {
+    return false;
+  } else if (
+    indexInLesson &&
+    currentIndexInLesson &&
+    indexInLesson > currentIndexInLesson
+  ) {
+    return false;
+  } else return true;
+};
 
-  exports.checkEligibilityHelper = checkEligibilityHelper
+// Syntactic sugar that compares two states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
+// These can be entries from the CharacterOrders table, or objects with the user's current tier and lessonNumber.
+Object.defineProperty(Object.prototype, 'comesLaterThan', {
+  value: function (secondState) {
+    const firstState = Object(this).valueOf();
+
+    if (
+      !(
+        Number.isInteger(firstState.tier) &&
+        Number.isInteger(secondState.tier) &&
+        Number.isInteger(firstState.lessonNumber) &&
+        Number.isInteger(secondState.lessonNumber)
+      )
+    ) {
+      // throw new Error('Érvénytelen számértékek megadva.');
+      throw new Error(err);
+    }
+
+    if (
+      (firstState.indexInLesson &&
+        !Number.isInteger(firstState.indexInLesson)) ||
+      (secondState.indexInLesson &&
+        !Number.isInteger(secondState.indexInLesson))
+    ) {
+      // throw new Error('Érvénytelen számértékek megadva.');
+      throw new Error(err);
+    }
+
+    if (firstState.tier > secondState.tier) {
+      return true;
+    }
+
+    if (
+      firstState.tier === secondState.tier &&
+      firstState.lessonNumber > secondState.lessonNumber
+    ) {
+      return true;
+    }
+
+    if (firstState.indexInLesson > secondState.indexInLesson) {
+      return true;
+    }
+
+    return false;
+  },
+});
+
+exports.checkEligibilityHelper = checkEligibilityHelper;
