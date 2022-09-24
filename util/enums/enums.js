@@ -1,11 +1,11 @@
 const SimilarType = Object.freeze({
-  Appearance: 'appearance',
-  Meaning: 'meaning',
+  APPEARANCE: 'appearance',
+  MEANING: 'meaning',
 });
 
 const StoryBraceType = Object.freeze({
-  Primitive: 'p',
-  Keyword: 'k',
+  PRIMITIVE: 'p',
+  KEYWORD: 'k',
 });
 
 module.exports = {

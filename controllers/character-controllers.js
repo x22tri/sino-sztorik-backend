@@ -2,7 +2,6 @@ const { Op } = require('sequelize');
 
 const Character = require('../models/characters');
 const CharacterOrder = require('../models/character-orders');
-const Similar = require('../models/similars');
 const Phrase = require('../models/phrases');
 const OtherUse = require('../models/other-uses');
 const HttpError = require('../models/http-error');
@@ -10,24 +9,29 @@ const HttpError = require('../models/http-error');
 const getUserData = require('../util/getUserData');
 const { checkEligibilityHelper } = require('../util/helper-functions');
 
-// require('../util/helper-functions');
+const {
+  findAllCharIdsByChar,
+  findAllCharVersionsByCharIds,
+  replaceNewProperties,
+} = require('./character-controllers-utils/findCharacter-utils');
+
+const {
+  findSimilars,
+} = require('./character-controllers-utils/findAdditionalInfo-utils');
 
 const {
   USER_QUERY_FAILED_ERROR,
   TIER_OR_LESSON_NOT_NUMBER_ERROR,
-  CHARACTER_NOT_FOUND_ERROR,
-  CHARACTER_QUERY_FAILED_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
   NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR,
-  SIMILARS_DATABASE_QUERY_FAILED_ERROR,
   PHRASES_DATABASE_QUERY_FAILED_ERROR,
   OTHER_USES_DATABASE_QUERY_FAILED_ERROR,
   CONSTITUENTS_QUERY_FAILED_ERROR,
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
   SEARCH_NO_ELIGIBLE_MATCH,
 } = require('../util/string-literals');
-const { SimilarType, StoryBraceType } = require('../util/enums/enums');
+const { StoryBraceType } = require('../util/enums/enums');
 const {
   COURSE_FINISHED_TIER,
   COURSE_FINISHED_LESSON_NUMBER,
@@ -89,64 +93,6 @@ async function findCharacter(
     : charToMutate;
 }
 
-async function findAllCharIdsByChar(requestedChar) {
-  let currentCharEntries;
-
-  try {
-    currentCharEntries = await Character.findAll({
-      where: { charChinese: requestedChar },
-      attributes: ['charId'],
-    });
-  } catch (err) {
-    throw new HttpError(CHARACTER_QUERY_FAILED_ERROR, 500);
-  }
-
-  if (!currentCharEntries?.length) {
-    throw new HttpError(CHARACTER_NOT_FOUND_ERROR, 404);
-  }
-
-  return currentCharEntries.map(entry => entry.charId);
-}
-
-async function findAllCharVersionsByCharIds(charIds) {
-  let characterVersionsInOrder;
-
-  try {
-    characterVersionsInOrder = await CharacterOrder.findAll({
-      where: { charId: charIds },
-      include: [Character],
-      order: [['tier'], ['lessonNumber'], ['indexInLesson']],
-      raw: true,
-      nest: true,
-    });
-  } catch (err) {
-    throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
-  }
-
-  if (!characterVersionsInOrder?.length) {
-    throw new HttpError(SEARCH_NO_MATCH, 404);
-  }
-
-  const characterVersionsInOrderFlattened = characterVersionsInOrder.map(
-    char => {
-      char = { ...char, ...char.character };
-      delete char.character;
-
-      return char;
-    }
-  );
-
-  return characterVersionsInOrderFlattened;
-}
-
-function replaceNewProperties(currentCharVersion, charToMutate) {
-  for (const prop in currentCharVersion) {
-    if (currentCharVersion[prop]) {
-      charToMutate[prop] = currentCharVersion[prop];
-    }
-  }
-}
-
 const findAdditionalInfo = async (
   currentTier,
   currentLesson,
@@ -156,7 +102,13 @@ const findAdditionalInfo = async (
   let objectToAddInfoTo = admin ? {} : requestedChar;
 
   [objectToAddInfoTo.similarAppearance, objectToAddInfoTo.similarMeaning] =
-    await findSimilars(currentTier, currentLesson, requestedChar, admin);
+    await findSimilars(
+      currentTier,
+      currentLesson,
+      requestedChar,
+      admin,
+      findCharacter
+    );
 
   // Find phrases with the character.
   let foundCharInPhrases;
@@ -262,8 +214,8 @@ const findAdditionalInfo = async (
         .filter(substring => substring.includes('|'))
         .filter(
           bracesElement =>
-            bracesElement.split('|')[0] !== StoryBraceType.Primitive &&
-            bracesElement.split('|')[0] !== StoryBraceType.Keyword
+            bracesElement.split('|')[0] !== StoryBraceType.PRIMITIVE &&
+            bracesElement.split('|')[0] !== StoryBraceType.KEYWORD
         )
         .map(substring => substring.split('|')[0])
         .filter((item, pos, self) => self.indexOf(item) === pos);
@@ -312,94 +264,6 @@ const findAdditionalInfo = async (
 
   return objectToAddInfoTo;
 };
-
-async function findCharInSimilarDB(requestedChar) {
-  const foundRequestedCharInDB = await Similar.findOne({
-    where: { charChinese: requestedChar.charChinese },
-    raw: true,
-  });
-
-  return foundRequestedCharInDB;
-}
-
-async function findCharsInSameSimilarGroup(similarEntry) {
-  const similarChars = await Similar.findAll({
-    where: {
-      [Op.and]: [
-        { similarGroup: similarEntry.similarGroup },
-        {
-          [Op.not]: [{ charChinese: similarEntry.charChinese }],
-        },
-      ],
-    },
-    raw: true,
-  });
-
-  return similarChars;
-}
-
-async function findSimilars(currentTier, currentLesson, requestedChar, admin) {
-  let similarAppearanceArray = [];
-  let similarMeaningArray = [];
-  const emptyResponse = [[], []];
-
-  try {
-    const foundRequestedCharInDB = await findCharInSimilarDB(requestedChar);
-
-    if (!foundRequestedCharInDB) {
-      return emptyResponse;
-    }
-
-    const similarChars = await findCharsInSameSimilarGroup(
-      foundRequestedCharInDB
-    );
-
-    if (!similarChars?.length) {
-      return emptyResponse;
-    }
-
-    for (const similarChar of similarChars) {
-      try {
-        const latestEligibleVersion = admin
-          ? similarChar
-          : await findCharacter(
-              currentTier,
-              currentLesson,
-              similarChar.charChinese,
-              false
-            );
-
-        if (!latestEligibleVersion) {
-          continue;
-        }
-
-        // The findCharacter call earlier already filters out the characters in higher tiers or lessons,
-        // but not those that are in the same lesson but come later.
-        if (latestEligibleVersion.comesLaterThan(requestedChar)) {
-          continue;
-        }
-
-        if (similarChar.similarType === SimilarType.Appearance) {
-          similarAppearanceArray.push(latestEligibleVersion);
-        }
-
-        if (similarChar.similarType === SimilarType.Meaning) {
-          latestEligibleVersion.similarToPrimitiveMeaning =
-            similarChar.similarToPrimitiveMeaning || undefined;
-
-          similarMeaningArray.push(latestEligibleVersion);
-        }
-        // An error returned from findCharacter should only skip the character in question, not crash the application.
-      } catch (err) {
-        continue;
-      }
-    }
-  } catch (err) {
-    throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
-  }
-
-  return [similarAppearanceArray, similarMeaningArray];
-}
 
 // A function that checks if the request arrived here from the search function in LessonSelect
 // (in which case the :charChinese parameter may be a Chinese character, a keyword or a primitiveMeaning),
