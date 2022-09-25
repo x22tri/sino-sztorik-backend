@@ -14,21 +14,12 @@ const {
  * @typedef {Object} Character
  */
 
-async function findBareCharacter(currentTier, currentLesson, requestedChar) {
-  if (isNaN(currentTier) || isNaN(currentLesson)) {
-    throw new HttpError(TIER_OR_LESSON_NOT_NUMBER_ERROR, 404);
-  }
-
-  const currentProgress = {
-    tier: currentTier,
-    lessonNumber: currentLesson,
-  };
-
+async function findBareCharacter(progress, requestedChar) {
   const ids = await findAllCharIdsByChar(requestedChar);
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
 
-  if (firstCharVersion.comesLaterThan(currentProgress)) {
+  if (firstCharVersion.comesLaterThan(progress)) {
     throw new HttpError(NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR, 401);
   }
 
@@ -38,7 +29,7 @@ async function findBareCharacter(currentTier, currentLesson, requestedChar) {
     for (let i = 1; i < characterVersionsInOrder.length; i++) {
       const currentCharVersion = characterVersionsInOrder[i];
 
-      if (currentCharVersion.comesLaterThan(currentProgress)) {
+      if (currentCharVersion.comesLaterThan(progress)) {
         break; // If a user is ineligible for one version, they'll be ineligible for all versions after that.
         // (This presupposes that the versions have been sorted beforehand during the function.)
       }

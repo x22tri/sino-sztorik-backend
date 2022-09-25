@@ -15,6 +15,7 @@ const { findSimilars } = require('./character-controllers-utils/findSimilars');
 const { findPhrases } = require('./character-controllers-utils/findPhrases');
 
 const {
+  TIER_OR_LESSON_NOT_NUMBER_ERROR,
   USER_QUERY_FAILED_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
@@ -38,44 +39,34 @@ async function findCharacter(
   requestedChar,
   supplementsNeeded = false
 ) {
+  if (isNaN(currentTier) || isNaN(currentLesson)) {
+    throw new HttpError(TIER_OR_LESSON_NOT_NUMBER_ERROR, 404);
+  }
+
   const progress = { tier: currentTier, lessonNumber: currentLesson };
 
-  const bareCharacter = await findBareCharacter(
-    currentTier,
-    currentLesson,
-    requestedChar
-  );
+  const bareCharacter = await findBareCharacter(progress, requestedChar);
 
   if (supplementsNeeded === false) {
     return bareCharacter;
   }
 
-  const fullCharacter = await findSupplements(
-    currentTier,
-    currentLesson,
-    bareCharacter
-  );
+  const fullCharacter = await findSupplements(progress, bareCharacter);
 
   return fullCharacter;
 }
 
-const findSupplements = async (
-  currentTier,
-  currentLesson,
-  requestedChar,
-  admin = false
-) => {
+const findSupplements = async (progress, requestedChar, admin = false) => {
   let objectToAddInfoTo = admin ? {} : requestedChar;
 
-  [objectToAddInfoTo.similarAppearance, objectToAddInfoTo.similarMeaning] =
-    await findSimilars(currentTier, currentLesson, requestedChar, admin);
+  // To-Do: Remove after findConstituents function has been extracted.
+  const currentTier = progress.tier;
+  const currentLesson = progress.lessonNumber;
 
-  objectToAddInfoTo.phrases = await findPhrases(
-    currentTier,
-    currentLesson,
-    requestedChar,
-    admin
-  );
+  [objectToAddInfoTo.similarAppearance, objectToAddInfoTo.similarMeaning] =
+    await findSimilars(progress, requestedChar, admin);
+
+  objectToAddInfoTo.phrases = await findPhrases(progress, requestedChar, admin);
 
   // Finds the other uses of the character.
   let foundCharInOtherUses;

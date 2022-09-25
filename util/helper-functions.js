@@ -1,3 +1,5 @@
+const { INVALID_NUMBERS_PROVIDED } = require('./string-literals');
+
 // A helper function that checks if the user is eligible to see a given lesson or character.
 // The variables "tier," "lessonNumber" and "indexInLesson" define the character or lesson we're checking,
 // while "currentTier," "currentLesson" and "currentIndexInLesson" defines the user's "current" position.
@@ -25,7 +27,7 @@ const checkEligibilityHelper = (
   } else return true;
 };
 
-// Syntactic sugar that compares two states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
+// A method that compares two states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
 // These can be entries from the CharacterOrders table, or objects with the user's current tier and lessonNumber.
 Object.defineProperty(Object.prototype, 'comesLaterThan', {
   value: function (secondState) {
@@ -39,8 +41,7 @@ Object.defineProperty(Object.prototype, 'comesLaterThan', {
         Number.isInteger(secondState.lessonNumber)
       )
     ) {
-      // throw new Error('Érvénytelen számértékek megadva.');
-      throw new Error(err);
+      throw new Error(INVALID_NUMBERS_PROVIDED);
     }
 
     if (
@@ -49,8 +50,7 @@ Object.defineProperty(Object.prototype, 'comesLaterThan', {
       (secondState.indexInLesson &&
         !Number.isInteger(secondState.indexInLesson))
     ) {
-      // throw new Error('Érvénytelen számértékek megadva.');
-      throw new Error(err);
+      throw new Error(INVALID_NUMBERS_PROVIDED);
     }
 
     if (firstState.tier > secondState.tier) {
@@ -64,7 +64,11 @@ Object.defineProperty(Object.prototype, 'comesLaterThan', {
       return true;
     }
 
-    if (firstState.indexInLesson > secondState.indexInLesson) {
+    if (
+      firstState.tier === secondState.tier &&
+      firstState.lessonNumber === secondState.lessonNumber &&
+      firstState.indexInLesson > secondState.indexInLesson
+    ) {
       return true;
     }
 

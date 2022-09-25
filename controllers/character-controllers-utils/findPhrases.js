@@ -25,13 +25,7 @@ require('../../util/helper-functions');
  
  * @returns {Promise<Phrase[]>} The character objects of all characters that make up the phrase.
  */
-async function findPhrases(
-  currentTier,
-  currentLesson,
-  requestedChar,
-  admin,
-  findCharacter
-) {
+async function findPhrases(progress, requestedChar, admin) {
   let phrasesWithAllCharObjects = [];
 
   try {
@@ -49,11 +43,9 @@ async function findPhrases(
     for (const phraseObject of phrasesWithRequestedChar) {
       const allCharObjectsInPhrase =
         await findLastEligibleVersionOfCharsInPhrase(
-          currentTier,
-          currentLesson,
+          progress,
           requestedChar,
-          phraseObject.phraseChinese,
-          findCharacter
+          phraseObject.phraseChinese
         );
 
       if (!allCharObjectsInPhrase) {
@@ -69,6 +61,7 @@ async function findPhrases(
     throw new HttpError(PHRASES_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
+  console.log(phrasesWithAllCharObjects);
   return phrasesWithAllCharObjects;
 }
 
@@ -94,27 +87,22 @@ async function findAllPhrasesWithChar(requestedChar) {
 /**
  * Takes a phrase string and returns the last version of all its characters that the user is eligible to see.
  *
- * @param {number} currentTier - The tier that the user is currently at.
- * @param {number} currentLesson - The lesson that the user is currently at.
+ * @param {{tier: number, lessonNumber: number}} progress - The tier and lesson that the user is currently at.
  * @param {string} requestedChar - The character whose phrases we're querying.
  * @param {string} phrase - The phrase (the actual string, not the database entry) to analyze.
- * @param {Function} findCharacter - The querying function to find the latest eligible version.
  * @returns {Promise<Character[]> | null} The character objects of all characters that make up the phrase.
  */
 async function findLastEligibleVersionOfCharsInPhrase(
-  currentTier,
-  currentLesson,
+  progress,
   requestedChar,
-  phrase,
-  findCharacter
+  phrase
 ) {
   let charObjectsInPhrase = [];
 
   for (const phraseChar of phrase) {
     try {
       const latestEligibleVersion = await findBareCharacter(
-        currentTier,
-        currentLesson,
+        progress,
         phraseChar
       );
 
