@@ -2,12 +2,10 @@ const { Op } = require('sequelize');
 
 const Character = require('../models/characters');
 const CharacterOrder = require('../models/character-orders');
-const Phrase = require('../models/phrases');
 const OtherUse = require('../models/other-uses');
 const HttpError = require('../models/http-error');
 
 const getUserData = require('../util/getUserData');
-const { checkEligibilityHelper } = require('../util/helper-functions');
 
 const {
   findAllCharIdsByChar,
@@ -15,9 +13,8 @@ const {
   replaceNewProperties,
 } = require('./character-controllers-utils/findCharacter-utils');
 
-const {
-  findSimilars,
-} = require('./character-controllers-utils/findAdditionalInfo-utils');
+const { findSimilars } = require('./character-controllers-utils/findSimilars');
+const { findPhrases } = require('./character-controllers-utils/findPhrases');
 
 const {
   USER_QUERY_FAILED_ERROR,
@@ -25,7 +22,6 @@ const {
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
   NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR,
-  PHRASES_DATABASE_QUERY_FAILED_ERROR,
   OTHER_USES_DATABASE_QUERY_FAILED_ERROR,
   CONSTITUENTS_QUERY_FAILED_ERROR,
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
@@ -110,70 +106,13 @@ const findAdditionalInfo = async (
       findCharacter
     );
 
-  // Find phrases with the character.
-  let foundCharInPhrases;
-  let foundPhraseCharArray = [];
-  try {
-    foundCharInPhrases = await Phrase.findAll({
-      where: {
-        phraseChinese: {
-          [Op.like]: `%${requestedChar.charChinese}%`,
-        },
-      },
-    });
-    // Go through each character in each phrase.
-    // If user is not eligible for at least one of the characters, don't show the phrase altogether.
-    if (foundCharInPhrases) {
-      if (admin) {
-        // No eligibility checks or character breakdown needed if the function is called with "admin".
-        foundPhraseCharArray = foundCharInPhrases;
-      } else {
-        for (let i = 0; i < foundCharInPhrases.length; i++) {
-          let allCharsInGivenPhrase = [];
-          for (let j = 0; j < foundCharInPhrases[i].phraseChinese.length; j++) {
-            try {
-              let charInGivenPhrase;
-              charInGivenPhrase = await findCharacter(
-                currentTier,
-                currentLesson,
-                foundCharInPhrases[i].phraseChinese.charAt(j),
-                false
-              );
-              if (
-                !charInGivenPhrase ||
-                charInGivenPhrase.code ||
-                !checkEligibilityHelper(
-                  charInGivenPhrase.tier,
-                  requestedChar.tier,
-                  charInGivenPhrase.lessonNumber,
-                  requestedChar.lessonNumber,
-                  charInGivenPhrase.indexInLesson,
-                  requestedChar.indexInLesson
-                )
-              ) {
-                continue;
-              }
-              allCharsInGivenPhrase.push(charInGivenPhrase);
-
-              if (
-                allCharsInGivenPhrase.length ===
-                foundCharInPhrases[i].phraseChinese.length
-              ) {
-                foundCharInPhrases[i].dataValues.characters =
-                  allCharsInGivenPhrase;
-                foundPhraseCharArray.push(foundCharInPhrases[i]);
-              }
-            } catch (err) {
-              continue;
-            }
-          }
-        }
-      }
-    }
-  } catch (err) {
-    return new HttpError(PHRASES_DATABASE_QUERY_FAILED_ERROR, 500);
-  }
-  objectToAddInfoTo.phrases = foundPhraseCharArray;
+  objectToAddInfoTo.phrases = await findPhrases(
+    currentTier,
+    currentLesson,
+    requestedChar,
+    admin,
+    findCharacter
+  );
 
   // Finds the other uses of the character.
   let foundCharInOtherUses;

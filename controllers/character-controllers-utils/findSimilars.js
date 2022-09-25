@@ -20,7 +20,7 @@ require('../../util/helper-functions');
  *
  * @param {number} currentTier - The tier that the user is currently at.
  * @param {number} currentLesson - The lesson that the user is currently at.
- * @param {string} requestedChar - A Chinese character.
+ * @param {Character} requestedChar - The character object whose similars we're querying.
  * @param {boolean} admin - `true` when the function is called from the admin dashboard, `false` otherwise.
  * @param {Function} findCharacter - The querying function to find the latest eligible version.
  * @returns {Promise<[Character[], Character[]]>} The character's entry in the "Similars" table.
@@ -81,7 +81,8 @@ async function findSimilars(
           similarMeaningArray.push(latestEligibleVersion);
         }
         // An error returned from findCharacter should only skip the character in question, not crash the application.
-        // To-Do: Change this behavior (remove try-catch) in the final version as it points to gaps in the CharacterOrder database.
+        // To-Do: Change this behavior (remove the inner try-catch) testing with a finished database
+        // as it points to gaps in the CharacterOrder database.
       } catch (err) {
         continue;
       }
@@ -94,9 +95,9 @@ async function findSimilars(
 }
 
 /**
- * Takes a Chinese character and finds its entry in the "Similars" table.
+ * Takes a character object and finds its entry in the "Similars" table.
  *
- * @param {string} requestedChar - A Chinese character.
+ * @param {Character} requestedChar - A character object.
  * @returns {Promise<Similar>} The character's entry in the "Similars" table.
  */
 async function findCharInSimilarDB(requestedChar) {
@@ -116,8 +117,6 @@ async function findCharInSimilarDB(requestedChar) {
  * that share the passed-in argument's `similarGroup` property.
  */
 async function findCharsInSameSimilarGroup(similarEntry) {
-  console.log(similarEntry);
-
   const similarChars = await Similar.findAll({
     where: {
       [Op.and]: [
