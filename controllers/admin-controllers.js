@@ -9,7 +9,7 @@ const OtherUse = require('../models/other-uses');
 const HttpError = require('../models/http-error');
 
 const { findLessonHelper } = require('./lesson-controllers');
-const { findAdditionalInfo } = require('./character-controllers');
+const { findSupplements } = require('./character-controllers');
 
 const {
   LESSON_DATABASE_QUERY_FAILED,
@@ -73,7 +73,7 @@ const getAdditionalInfoAdmin = async (req, res, next) => {
     console.log(err);
   }
 
-  const additionalCharInfo = await findAdditionalInfo(
+  const additionalCharInfo = await findSupplements(
     5,
     100,
     requestedCharById,

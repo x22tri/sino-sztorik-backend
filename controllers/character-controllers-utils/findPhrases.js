@@ -6,6 +6,7 @@ const {
   PHRASES_DATABASE_QUERY_FAILED_ERROR,
 } = require('../../util/string-literals');
 
+const { findBareCharacter } = require('./findCharacter');
 require('../../util/helper-functions');
 
 /**
@@ -21,7 +22,7 @@ require('../../util/helper-functions');
  * @param {number} currentLesson - The lesson that the user is currently at.
  * @param {Character} requestedChar - The character object whose phrases we're querying.
  * @param {boolean} admin - `true` when the function is called from the admin dashboard, `false` otherwise.
- * @param {Function} findCharacter - The querying function to find the latest eligible version.
+ 
  * @returns {Promise<Phrase[]>} The character objects of all characters that make up the phrase.
  */
 async function findPhrases(
@@ -111,11 +112,10 @@ async function findLastEligibleVersionOfCharsInPhrase(
 
   for (const phraseChar of phrase) {
     try {
-      const latestEligibleVersion = await findCharacter(
+      const latestEligibleVersion = await findBareCharacter(
         currentTier,
         currentLesson,
-        phraseChar,
-        false
+        phraseChar
       );
 
       if (!latestEligibleVersion) {

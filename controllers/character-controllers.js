@@ -8,20 +8,16 @@ const HttpError = require('../models/http-error');
 const getUserData = require('../util/getUserData');
 
 const {
-  findAllCharIdsByChar,
-  findAllCharVersionsByCharIds,
-  replaceNewProperties,
-} = require('./character-controllers-utils/findCharacter-utils');
+  findBareCharacter,
+} = require('./character-controllers-utils/findCharacter');
 
 const { findSimilars } = require('./character-controllers-utils/findSimilars');
 const { findPhrases } = require('./character-controllers-utils/findPhrases');
 
 const {
   USER_QUERY_FAILED_ERROR,
-  TIER_OR_LESSON_NOT_NUMBER_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
-  NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR,
   OTHER_USES_DATABASE_QUERY_FAILED_ERROR,
   CONSTITUENTS_QUERY_FAILED_ERROR,
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
@@ -40,56 +36,30 @@ async function findCharacter(
   currentTier,
   currentLesson,
   requestedChar,
-  additionalInfo = false
+  supplementsNeeded = false
 ) {
-  if (isNaN(currentTier) || isNaN(currentLesson)) {
-    throw new HttpError(TIER_OR_LESSON_NOT_NUMBER_ERROR, 404);
+  const progress = { tier: currentTier, lessonNumber: currentLesson };
+
+  const bareCharacter = await findBareCharacter(
+    currentTier,
+    currentLesson,
+    requestedChar
+  );
+
+  if (supplementsNeeded === false) {
+    return bareCharacter;
   }
 
-  const currentProgress = {
-    tier: currentTier,
-    lessonNumber: currentLesson,
-  };
+  const fullCharacter = await findSupplements(
+    currentTier,
+    currentLesson,
+    bareCharacter
+  );
 
-  const ids = await findAllCharIdsByChar(requestedChar);
-  const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
-  const firstCharVersion = characterVersionsInOrder[0];
-
-  if (firstCharVersion.comesLaterThan(currentProgress)) {
-    throw new HttpError(NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR, 401);
-  }
-
-  let charToMutate = await JSON.parse(JSON.stringify(firstCharVersion));
-
-  try {
-    for (let i = 1; i < characterVersionsInOrder.length; i++) {
-      const currentCharVersion = characterVersionsInOrder[i];
-
-      if (currentCharVersion.comesLaterThan(currentProgress)) {
-        break; // If a user is ineligible for one version, they'll be ineligible for all versions after that.
-        // (This presupposes that the versions have been sorted beforehand during the function.)
-      }
-
-      if (currentCharVersion.charId === firstCharVersion.charId) {
-        charToMutate.reminder = true;
-      }
-
-      if (currentCharVersion.primitiveMeaning !== null) {
-        charToMutate.newPrimitive = true;
-      }
-
-      replaceNewProperties(currentCharVersion, charToMutate);
-    }
-  } catch (err) {
-    throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
-  }
-
-  return additionalInfo
-    ? await findAdditionalInfo(currentTier, currentLesson, charToMutate)
-    : charToMutate;
+  return fullCharacter;
 }
 
-const findAdditionalInfo = async (
+const findSupplements = async (
   currentTier,
   currentLesson,
   requestedChar,
@@ -98,20 +68,13 @@ const findAdditionalInfo = async (
   let objectToAddInfoTo = admin ? {} : requestedChar;
 
   [objectToAddInfoTo.similarAppearance, objectToAddInfoTo.similarMeaning] =
-    await findSimilars(
-      currentTier,
-      currentLesson,
-      requestedChar,
-      admin,
-      findCharacter
-    );
+    await findSimilars(currentTier, currentLesson, requestedChar, admin);
 
   objectToAddInfoTo.phrases = await findPhrases(
     currentTier,
     currentLesson,
     requestedChar,
-    admin,
-    findCharacter
+    admin
   );
 
   // Finds the other uses of the character.
@@ -290,5 +253,5 @@ const checkIfSearch = async (req, res, next) => {
 };
 
 exports.findCharacter = findCharacter;
-exports.findAdditionalInfo = findAdditionalInfo;
+exports.findSupplements = findSupplements;
 exports.checkIfSearch = checkIfSearch;

@@ -7,6 +7,8 @@ const {
 } = require('../../util/string-literals');
 const { SimilarType } = require('../../util/enums/enums');
 
+const { findBareCharacter } = require('./findCharacter');
+
 require('../../util/helper-functions');
 
 /**
@@ -22,7 +24,6 @@ require('../../util/helper-functions');
  * @param {number} currentLesson - The lesson that the user is currently at.
  * @param {Character} requestedChar - The character object whose similars we're querying.
  * @param {boolean} admin - `true` when the function is called from the admin dashboard, `false` otherwise.
- * @param {Function} findCharacter - The querying function to find the latest eligible version.
  * @returns {Promise<[Character[], Character[]]>} The character's entry in the "Similars" table.
  */
 async function findSimilars(
@@ -53,11 +54,10 @@ async function findSimilars(
       try {
         const latestEligibleVersion = admin
           ? similarChar
-          : await findCharacter(
+          : await findBareCharacter(
               currentTier,
               currentLesson,
-              similarChar.charChinese,
-              false
+              similarChar.charChinese
             );
 
         if (!latestEligibleVersion) {
