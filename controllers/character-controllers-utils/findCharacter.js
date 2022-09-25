@@ -3,7 +3,6 @@ const CharacterOrder = require('../../models/character-orders');
 const HttpError = require('../../models/http-error');
 
 const {
-  TIER_OR_LESSON_NOT_NUMBER_ERROR,
   CHARACTER_NOT_FOUND_ERROR,
   CHARACTER_QUERY_FAILED_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
@@ -12,8 +11,22 @@ const {
 
 /**
  * @typedef {Object} Character
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
  */
 
+/**
+ * Finds the character object for the requested character, without finding supplements.
+ *
+ * @param {Progress} progress - The tier and lesson that the user is currently at.
+ * Alternatively, when called by a supplement-gathering function like findSimilars,
+ * the tier, lesson and index of a character that serves as a comparison point.
+ * @param {Character} requestedChar - The character object whose similars we're querying.
+ * @returns {Promise<Character>} The character's entry in the "Similars" table.
+ */
 async function findBareCharacter(progress, requestedChar) {
   const ids = await findAllCharIdsByChar(requestedChar);
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);

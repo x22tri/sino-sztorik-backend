@@ -76,4 +76,12 @@ Object.defineProperty(Object.prototype, 'comesLaterThan', {
   },
 });
 
-exports.checkEligibilityHelper = checkEligibilityHelper;
+function getProgress(characterObject) {
+  return {
+    tier: characterObject.tier,
+    lessonNumber: characterObject.lessonNumber,
+    indexInLesson: characterObject.indexInLesson,
+  };
+}
+
+module.exports = { checkEligibilityHelper, getProgress };

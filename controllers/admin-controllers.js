@@ -19,6 +19,11 @@ const {
   LESSON_NOT_FOUND_ERROR,
 } = require('../util/string-literals');
 
+const {
+  COURSE_FINISHED_TIER,
+  COURSE_FINISHED_LESSON_NUMBER,
+} = require('../util/config');
+
 const getAllLessons = async (req, res, next) => {
   // The "true" flag gets the preface and the full info about the Chinese characters.
   // const tieredLessonArray = await findAllLessonsHelper(true)
@@ -42,9 +47,9 @@ const getAllLessons = async (req, res, next) => {
       for (let tier = 1; tier < 5; tier++) {
         let foundLesson = await findLessonHelper(
           tier,
-          5,
+          COURSE_FINISHED_TIER,
           lessonNumber,
-          100,
+          COURSE_FINISHED_LESSON_NUMBER,
           'admin'
         );
         if (foundLesson) lessonObject.tiers.push(foundLesson);

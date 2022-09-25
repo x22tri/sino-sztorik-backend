@@ -7,7 +7,9 @@ const {
 } = require('../../util/string-literals');
 
 const { findBareCharacter } = require('./findCharacter');
+
 require('../../util/helper-functions');
+const { getProgress } = require('../../util/helper-functions');
 
 /**
  * @typedef {Object} Character
@@ -25,7 +27,7 @@ require('../../util/helper-functions');
  
  * @returns {Promise<Phrase[]>} The character objects of all characters that make up the phrase.
  */
-async function findPhrases(progress, requestedChar, admin) {
+async function findPhrases(requestedChar, admin) {
   let phrasesWithAllCharObjects = [];
 
   try {
@@ -43,8 +45,7 @@ async function findPhrases(progress, requestedChar, admin) {
     for (const phraseObject of phrasesWithRequestedChar) {
       const allCharObjectsInPhrase =
         await findLastEligibleVersionOfCharsInPhrase(
-          progress,
-          requestedChar,
+          getProgress(requestedChar),
           phraseObject.phraseChinese
         );
 
@@ -61,7 +62,6 @@ async function findPhrases(progress, requestedChar, admin) {
     throw new HttpError(PHRASES_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
-  console.log(phrasesWithAllCharObjects);
   return phrasesWithAllCharObjects;
 }
 
@@ -87,16 +87,11 @@ async function findAllPhrasesWithChar(requestedChar) {
 /**
  * Takes a phrase string and returns the last version of all its characters that the user is eligible to see.
  *
- * @param {{tier: number, lessonNumber: number}} progress - The tier and lesson that the user is currently at.
- * @param {string} requestedChar - The character whose phrases we're querying.
+ * @param {Progress} progress - The tier, lesson and index that the user is currently at.
  * @param {string} phrase - The phrase (the actual string, not the database entry) to analyze.
  * @returns {Promise<Character[]> | null} The character objects of all characters that make up the phrase.
  */
-async function findLastEligibleVersionOfCharsInPhrase(
-  progress,
-  requestedChar,
-  phrase
-) {
+async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
   let charObjectsInPhrase = [];
 
   for (const phraseChar of phrase) {
@@ -107,12 +102,6 @@ async function findLastEligibleVersionOfCharsInPhrase(
       );
 
       if (!latestEligibleVersion) {
-        break;
-      }
-
-      // The findCharacter call earlier already filters out the characters in higher tiers or lessons,
-      // but not those that are in the same lesson but come later.
-      if (latestEligibleVersion.comesLaterThan(requestedChar)) {
         break;
       }
 

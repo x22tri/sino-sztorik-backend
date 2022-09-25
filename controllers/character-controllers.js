@@ -43,30 +43,26 @@ async function findCharacter(
     throw new HttpError(TIER_OR_LESSON_NOT_NUMBER_ERROR, 404);
   }
 
-  const progress = { tier: currentTier, lessonNumber: currentLesson };
+  const userProgress = { tier: currentTier, lessonNumber: currentLesson };
 
-  const bareCharacter = await findBareCharacter(progress, requestedChar);
+  const bareCharacter = await findBareCharacter(userProgress, requestedChar);
 
   if (supplementsNeeded === false) {
     return bareCharacter;
   }
 
-  const fullCharacter = await findSupplements(progress, bareCharacter);
+  const fullCharacter = await findSupplements(bareCharacter);
 
   return fullCharacter;
 }
 
-const findSupplements = async (progress, requestedChar, admin = false) => {
+const findSupplements = async (requestedChar, admin = false) => {
   let objectToAddInfoTo = admin ? {} : requestedChar;
 
-  // To-Do: Remove after findConstituents function has been extracted.
-  const currentTier = progress.tier;
-  const currentLesson = progress.lessonNumber;
-
   [objectToAddInfoTo.similarAppearance, objectToAddInfoTo.similarMeaning] =
-    await findSimilars(progress, requestedChar, admin);
+    await findSimilars(requestedChar, admin);
 
-  objectToAddInfoTo.phrases = await findPhrases(progress, requestedChar, admin);
+  objectToAddInfoTo.phrases = await findPhrases(requestedChar, admin);
 
   // Finds the other uses of the character.
   let foundCharInOtherUses;
@@ -127,18 +123,14 @@ const findSupplements = async (progress, requestedChar, admin = false) => {
   }
 
   // Finds the character entries for the given charChineses.
-  if (
-    requestedChar.constituents &&
-    requestedChar.constituents.length &&
-    !admin
-  ) {
+  if (requestedChar.constituents?.length && !admin) {
     try {
       let foundConstituentsInCharacterArray = [];
       for (let i = 0; i < requestedChar.constituents.length; i++) {
         let currentConstituent;
         currentConstituent = await findCharacter(
-          currentTier,
-          currentLesson,
+          requestedChar.tier,
+          requestedChar.lessonNumber,
           requestedChar.constituents[i],
           false
         );
@@ -189,6 +181,7 @@ const checkIfSearch = async (req, res, next) => {
     // All characters in the string must be in the Unicode CJK Unified Ideographs block.
     const chineseCharUnicodeRegex = /^[一-鿕]+$/u;
 
+    // If we've recognized the search term as a Chinese character
     if (chineseCharUnicodeRegex.test(requestedChar)) {
       let foundSearchChar = await findCharacter(
         currentTier,
@@ -202,6 +195,7 @@ const checkIfSearch = async (req, res, next) => {
         else res.json(foundSearchChar);
       }
     } else {
+      // If we've recognized the search term as non-Chinese characters, it must be Latin (and thus a keyword/primitive).
       let keywordOrPrimitive;
       try {
         keywordOrPrimitive = await Character.findAll({

@@ -10,6 +10,7 @@ const { SimilarType } = require('../../util/enums/enums');
 const { findBareCharacter } = require('./findCharacter');
 
 require('../../util/helper-functions');
+const { getProgress } = require('../../util/helper-functions');
 
 /**
  * @typedef {Object} Character
@@ -20,12 +21,11 @@ require('../../util/helper-functions');
  * Finds all characters similar to the requested character and returns their latest character object version
  * that the user is eligible to see.
  *
- * @param {{tier: number, lessonNumber: number}} progress - The tier and lesson that the user is currently at.
  * @param {Character} requestedChar - The character object whose similars we're querying.
  * @param {boolean} admin - `true` when the function is called from the admin dashboard, `false` otherwise.
  * @returns {Promise<[Character[], Character[]]>} The character's entry in the "Similars" table.
  */
-async function findSimilars(progress, requestedChar, admin) {
+async function findSimilars(requestedChar, admin) {
   let similarAppearanceArray = [];
   let similarMeaningArray = [];
   const emptyResponse = [[], []];
@@ -47,7 +47,10 @@ async function findSimilars(progress, requestedChar, admin) {
       try {
         const latestEligibleVersion = admin
           ? similarChar
-          : await findBareCharacter(progress, similarChar.charChinese);
+          : await findBareCharacter(
+              getProgress(requestedChar),
+              similarChar.charChinese
+            );
 
         if (!latestEligibleVersion) {
           continue;
@@ -55,9 +58,10 @@ async function findSimilars(progress, requestedChar, admin) {
 
         // The findCharacter call earlier already filters out the characters in higher tiers or lessons,
         // but not those that are in the same lesson but come later.
-        if (latestEligibleVersion.comesLaterThan(requestedChar)) {
-          continue;
-        }
+        // if (latestEligibleVersion.comesLaterThan(requestedChar)) {
+        //   console.log('triggered in findSimilars');
+        //   continue;
+        // }
 
         if (similarChar.similarType === SimilarType.APPEARANCE) {
           similarAppearanceArray.push(latestEligibleVersion);
