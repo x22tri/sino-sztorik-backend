@@ -3,12 +3,12 @@ const SimilarType = Object.freeze({
   MEANING: 'meaning',
 });
 
-const StoryBraceType = Object.freeze({
+const InteractiveWordType = Object.freeze({
   PRIMITIVE: 'p',
   KEYWORD: 'k',
 });
 
 module.exports = {
   SimilarType,
-  StoryBraceType,
+  InteractiveWordType,
 };

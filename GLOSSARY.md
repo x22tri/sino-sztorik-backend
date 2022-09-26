@@ -19,6 +19,11 @@ To ensure this codebase - and the application created by it - can be understood 
 - **Full character**
   An entry from the Characters table to which _supplements_ have been added; i.e. a character object with its "native" fields (frequency, pinyin, etc.) and with additional info from other tables (phrases, similars, otherUses, etc.).
 
+- **Interactive word**
+  A word or phrase in a story that has extra markup to invite user interaction and/or signify its importance. For example, the character's keyword, primitive meaning, and constituents are often interactive words. They are wrapped in special characters in the raw text, which then gets processed by the code and apply special styles to the word they wrap. The user can hover or click these words to, for example, view more information about one of the character's constituents.
+
+  Because of the agglutinative nature of Hungarian and for better user experience, interactive words are set manually.
+
 - **Progress (state)**
   A conjunction of a user's "currentTier" and "currentLesson" properties from their entry in the database. These together describe how far the user has gotten into the course. In an extended meaning, _progress_ can mean any state that specifies a tier, a lesson number, and optionally a character's index in a lesson.
 

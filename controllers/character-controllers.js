@@ -2,41 +2,57 @@ const { Op } = require('sequelize');
 
 const Character = require('../models/characters');
 const CharacterOrder = require('../models/character-orders');
-const OtherUse = require('../models/other-uses');
 const HttpError = require('../models/http-error');
 
 const getUserData = require('../util/getUserData');
 
 const {
   findBareCharacter,
-} = require('./character-controllers-utils/findCharacter');
+} = require('./character-controllers-utils/findBareCharacter');
 
 const { findSimilars } = require('./character-controllers-utils/findSimilars');
 const { findPhrases } = require('./character-controllers-utils/findPhrases');
+const {
+  findOtherUses,
+} = require('./character-controllers-utils/findOtherUses');
+const {
+  findConstituents,
+} = require('./character-controllers-utils/findConstituents');
 
 const {
   TIER_OR_LESSON_NOT_NUMBER_ERROR,
   USER_QUERY_FAILED_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
-  OTHER_USES_DATABASE_QUERY_FAILED_ERROR,
-  CONSTITUENTS_QUERY_FAILED_ERROR,
-  CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
   SEARCH_NO_ELIGIBLE_MATCH,
 } = require('../util/string-literals');
-const { StoryBraceType } = require('../util/enums/enums');
 const {
   COURSE_FINISHED_TIER,
   COURSE_FINISHED_LESSON_NUMBER,
 } = require('../util/config');
 
+/**
+ * @typedef {Object} Character
+ */
+
 CharacterOrder.belongsTo(Character, { foreignKey: 'charId' });
 Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
 
+/**
+ * Takes the user's current progress and character string and finds the character object for the character
+ * based on what the user is eligible to see.
+ * The supplementsNeeded flag determines if supplemental information such as phrases with the requested character should be queried.
+ *
+ * @param {number} currentTier - The user's current tier.
+ * @param {number} currentLesson - The user's current lesson.
+ * @param {string} char - The character string we're querying.
+ * @param {boolean} supplementsNeeded - `true` if supplemental information should be provided in the result, `false` otherwise.
+ * @returns {Promise<Character>} The character object.
+ */
 async function findCharacter(
   currentTier,
   currentLesson,
-  requestedChar,
+  char,
   supplementsNeeded = false
 ) {
   if (isNaN(currentTier) || isNaN(currentLesson)) {
@@ -45,7 +61,7 @@ async function findCharacter(
 
   const userProgress = { tier: currentTier, lessonNumber: currentLesson };
 
-  const bareCharacter = await findBareCharacter(userProgress, requestedChar);
+  const bareCharacter = await findBareCharacter(userProgress, char);
 
   if (supplementsNeeded === false) {
     return bareCharacter;
@@ -56,99 +72,29 @@ async function findCharacter(
   return fullCharacter;
 }
 
-const findSupplements = async (requestedChar, admin = false) => {
-  let objectToAddInfoTo = admin ? {} : requestedChar;
+/**
+ * Takes a character object and finds all supplemental information about it:
+ * other characters that are similar (either in appearance or meaning),
+ * phrases with the character, the character's other uses,
+ * and the character objects of all its constituents.
+ *
+ * @param {Character} char - The character object whose supplements we're querying.
+ * @returns {Promise<Character>} The character object, complete with supplemental information.
+ */
+async function findSupplements(char) {
+  const similars = await findSimilars(char);
+  const phrases = await findPhrases(char);
+  const otherUses = await findOtherUses(char);
+  const constituents = await findConstituents(char);
 
-  [objectToAddInfoTo.similarAppearance, objectToAddInfoTo.similarMeaning] =
-    await findSimilars(requestedChar, admin);
-
-  objectToAddInfoTo.phrases = await findPhrases(requestedChar, admin);
-
-  // Finds the other uses of the character.
-  let foundCharInOtherUses;
-  try {
-    foundCharInOtherUses = await OtherUse.findAll({
-      where: { charChinese: requestedChar.charChinese },
-      order: ['pinyin'],
-      // Sort by pinyin (accent-sensitive).
-      attributes: ['pinyin', 'otherUseHungarian'],
-    });
-    // Removes duplicate pinyins.
-    if (foundCharInOtherUses && foundCharInOtherUses.length > 1) {
-      let previousDifferentPinyin = foundCharInOtherUses[0].pinyin;
-      for (let i = 1; i < foundCharInOtherUses.length; i++) {
-        if (foundCharInOtherUses[i].pinyin !== previousDifferentPinyin) {
-          previousDifferentPinyin = foundCharInOtherUses[i].pinyin;
-        } else {
-          foundCharInOtherUses[i].pinyin = undefined;
-        }
-      }
-    }
-  } catch (err) {
-    return new HttpError(OTHER_USES_DATABASE_QUERY_FAILED_ERROR, 500);
-  }
-  objectToAddInfoTo.otherUses = foundCharInOtherUses;
-
-  // Generates a constituent list for the character (if not present already) based on its story.
-  // Constituents are in the format {charChinese|text to display}.
-  // For the admin interface, this is generated on the fly as the story can be changed, so it will not be sent from here.
-  if (
-    !requestedChar.constituents ||
-    (!requestedChar.constituents.length && !admin)
-  ) {
-    try {
-      let collectedConstituentsArray = [];
-      collectedConstituentsArray = requestedChar.story
-        .split(/[{}]/)
-        .filter(substring => substring.includes('|'))
-        .filter(
-          bracesElement =>
-            bracesElement.split('|')[0] !== StoryBraceType.PRIMITIVE &&
-            bracesElement.split('|')[0] !== StoryBraceType.KEYWORD
-        )
-        .map(substring => substring.split('|')[0])
-        .filter((item, pos, self) => self.indexOf(item) === pos);
-
-      requestedChar.constituents = collectedConstituentsArray;
-    } catch (err) {
-      return new HttpError(CONSTITUENTS_QUERY_FAILED_ERROR, 500);
-    }
-  } else {
-    // If the character does have its "constituents" field populated (in CSV), convert it to an array.
-    try {
-      requestedChar.constituents = requestedChar.constituents.split(',');
-    } catch (err) {
-      return new HttpError(CONSTITUENTS_QUERY_FAILED_ERROR, 500);
-    }
-  }
-
-  // Finds the character entries for the given charChineses.
-  if (requestedChar.constituents?.length && !admin) {
-    try {
-      let foundConstituentsInCharacterArray = [];
-      for (let i = 0; i < requestedChar.constituents.length; i++) {
-        let currentConstituent;
-        currentConstituent = await findCharacter(
-          requestedChar.tier,
-          requestedChar.lessonNumber,
-          requestedChar.constituents[i],
-          false
-        );
-        if (currentConstituent) {
-          foundConstituentsInCharacterArray.push(currentConstituent);
-        }
-        // Note: if the constituent can't be found, a {code: 404} will be pushed into the array.
-        // This should be handled on the frontend.
-        // It should be kept in as it points out the gaps in the database.
-      }
-      requestedChar.constituents = foundConstituentsInCharacterArray;
-    } catch (err) {
-      return new HttpError(CONSTITUENT_ENTRY_QUERY_FAILED_ERROR, 500);
-    }
-  }
-
-  return objectToAddInfoTo;
-};
+  return {
+    ...char,
+    similars,
+    phrases,
+    otherUses,
+    constituents,
+  };
+}
 
 // A function that checks if the request arrived here from the search function in LessonSelect
 // (in which case the :charChinese parameter may be a Chinese character, a keyword or a primitiveMeaning),

@@ -24,11 +24,11 @@ const {
  * @param {Progress} progress - The tier and lesson that the user is currently at.
  * Alternatively, when called by a supplement-gathering function like findSimilars,
  * the tier, lesson and index of a character that serves as a comparison point.
- * @param {Character} requestedChar - The character object whose similars we're querying.
- * @returns {Promise<Character>} The character's entry in the "Similars" table.
+ * @param {string} char - The character string we're querying.
+ * @returns {Promise<Character>} The character object.
  */
-async function findBareCharacter(progress, requestedChar) {
-  const ids = await findAllCharIdsByChar(requestedChar);
+async function findBareCharacter(progress, char) {
+  const ids = await findAllCharIdsByChar(char);
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
 
@@ -67,15 +67,15 @@ async function findBareCharacter(progress, requestedChar) {
 /**
  * Takes a Chinese character and returns all the character object ID's associated with the character.
  *
- * @param {string} requestedChar - A Chinese character.
+ * @param {string} char - A Chinese character.
  * @returns {Promise<string[]>} An array of character ID's.
  */
-async function findAllCharIdsByChar(requestedChar) {
+async function findAllCharIdsByChar(char) {
   let currentCharEntries;
 
   try {
     currentCharEntries = await Character.findAll({
-      where: { charChinese: requestedChar },
+      where: { charChinese: char },
       attributes: ['charId'],
     });
   } catch (err) {

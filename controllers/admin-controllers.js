@@ -78,12 +78,8 @@ const getAdditionalInfoAdmin = async (req, res, next) => {
     console.log(err);
   }
 
-  const additionalCharInfo = await findSupplements(
-    5,
-    100,
-    requestedCharById,
-    true
-  );
+  const additionalCharInfo = await findSupplements(requestedCharById, true);
+  console.log(additionalCharInfo);
   res.json({ additionalCharInfo });
 };
 

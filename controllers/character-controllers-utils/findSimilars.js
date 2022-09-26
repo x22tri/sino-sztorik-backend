@@ -7,7 +7,7 @@ const {
 } = require('../../util/string-literals');
 const { SimilarType } = require('../../util/enums/enums');
 
-const { findBareCharacter } = require('./findCharacter');
+const { findBareCharacter } = require('./findBareCharacter');
 
 require('../../util/helper-functions');
 const { getProgress } = require('../../util/helper-functions');
@@ -21,17 +21,16 @@ const { getProgress } = require('../../util/helper-functions');
  * Finds all characters similar to the requested character and returns their latest character object version
  * that the user is eligible to see.
  *
- * @param {Character} requestedChar - The character object whose similars we're querying.
- * @param {boolean} admin - `true` when the function is called from the admin dashboard, `false` otherwise.
- * @returns {Promise<[Character[], Character[]]>} The character's entry in the "Similars" table.
+ * @param {Character} char - The character object whose similars we're querying.
+ * @returns {Promise<{similarAppearance: Character[], similarMeaning: Character[]}>} The character's entry in the "Similars" table.
  */
-async function findSimilars(requestedChar, admin) {
-  let similarAppearanceArray = [];
-  let similarMeaningArray = [];
+async function findSimilars(char) {
+  let similarAppearance = [];
+  let similarMeaning = [];
   const emptyResponse = [[], []];
 
   try {
-    const foundCharInDB = await findCharInSimilarDB(requestedChar);
+    const foundCharInDB = await findCharInSimilarDB(char);
 
     if (!foundCharInDB) {
       return emptyResponse;
@@ -45,33 +44,26 @@ async function findSimilars(requestedChar, admin) {
 
     for (const similarChar of similarChars) {
       try {
-        const latestEligibleVersion = admin
-          ? similarChar
-          : await findBareCharacter(
-              getProgress(requestedChar),
-              similarChar.charChinese
-            );
+        const latestEligibleVersion = await findBareCharacter(
+          getProgress(char),
+          similarChar.charChinese
+        );
 
         if (!latestEligibleVersion) {
           continue;
         }
 
-        // The findCharacter call earlier already filters out the characters in higher tiers or lessons,
-        // but not those that are in the same lesson but come later.
-        // if (latestEligibleVersion.comesLaterThan(requestedChar)) {
-        //   console.log('triggered in findSimilars');
-        //   continue;
-        // }
-
         if (similarChar.similarType === SimilarType.APPEARANCE) {
-          similarAppearanceArray.push(latestEligibleVersion);
+          similarAppearance.push(latestEligibleVersion);
         }
 
         if (similarChar.similarType === SimilarType.MEANING) {
-          latestEligibleVersion.similarToPrimitiveMeaning =
-            similarChar.similarToPrimitiveMeaning || undefined;
+          const { similarToPrimitiveMeaning } = similarChar;
 
-          similarMeaningArray.push(latestEligibleVersion);
+          similarMeaning.push({
+            ...latestEligibleVersion,
+            similarToPrimitiveMeaning: !!similarToPrimitiveMeaning,
+          });
         }
         // An error returned from findCharacter should only skip the character in question, not crash the application.
         // To-Do: Change this behavior (remove the inner try-catch) testing with a finished database
@@ -84,18 +76,18 @@ async function findSimilars(requestedChar, admin) {
     throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
-  return [similarAppearanceArray, similarMeaningArray];
+  return { similarAppearance, similarMeaning };
 }
 
 /**
  * Takes a character object and finds its entry in the "Similars" table.
  *
- * @param {Character} requestedChar - A character object.
+ * @param {Character} char - A character object.
  * @returns {Promise<Similar>} The character's entry in the "Similars" table.
  */
-async function findCharInSimilarDB(requestedChar) {
+async function findCharInSimilarDB(char) {
   const foundCharInDB = await Similar.findOne({
-    where: { charChinese: requestedChar.charChinese },
+    where: { charChinese: char.charChinese },
     raw: true,
   });
 
