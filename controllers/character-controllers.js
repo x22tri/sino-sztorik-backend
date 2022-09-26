@@ -47,6 +47,7 @@ Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
  * @param {number} currentLesson - The user's current lesson.
  * @param {string} char - The character string we're querying.
  * @param {boolean} supplementsNeeded - `true` if supplemental information should be provided in the result, `false` otherwise.
+ *
  * @returns {Promise<Character>} The character object.
  */
 async function findCharacter(

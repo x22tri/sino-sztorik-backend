@@ -7,7 +7,7 @@ const HttpError = require('../models/http-error');
 
 const { findCharacter } = require('./character-controllers');
 const getUserData = require('../util/getUserData');
-const { checkEligibilityHelper } = require('../util/helper-functions');
+require('../util/helper-functions');
 
 const {
   USER_QUERY_FAILED_ERROR,
@@ -135,14 +135,14 @@ const findLessonHelper = async (
     let status = undefined;
     if (requestType === 'lesson-select') {
       // Adding the tiers (all four) with a status, comparing it with user's progress.
+      const userProgress = {
+        tier: currentTier,
+        lessonNumber: currentLesson,
+      };
+
       status = !charIdsInGivenLesson?.length
         ? LESSON_NOT_IN_TIER
-        : !checkEligibilityHelper(
-            tier,
-            currentTier,
-            lessonNumber,
-            currentLesson
-          )
+        : { tier, lessonNumber }.comesLaterThan(userProgress)
         ? LESSON_LOCKED
         : lessonDatabase[lessonNumber - 1] &&
           tier === currentTier &&
