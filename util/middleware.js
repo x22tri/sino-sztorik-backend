@@ -3,7 +3,7 @@ const { UNSUPPORTED_ROUTE_ERROR, UNKNOWN_ERROR } = require('./string-literals');
 
 require('dotenv').config();
 
-const headerConfiguration = (req, res, next) => {
+const headerConfiguration = (_, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
 
   res.setHeader(
@@ -23,7 +23,7 @@ const unsupportedRouteHandler = () => {
   throw new HttpError(UNSUPPORTED_ROUTE_ERROR, 404);
 };
 
-const errorHandler = (error, req, res, next) => {
+const errorHandler = (error, _, res, next) => {
   if (res.headerSent) {
     return next(error);
   }

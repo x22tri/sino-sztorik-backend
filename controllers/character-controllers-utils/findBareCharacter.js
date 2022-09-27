@@ -7,6 +7,7 @@ const {
   CHARACTER_QUERY_FAILED_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
+  NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR,
 } = require('../../util/string-literals');
 
 /**
@@ -33,7 +34,10 @@ async function findBareCharacter(progress, char) {
   const firstCharVersion = characterVersionsInOrder[0];
 
   if (firstCharVersion.comesLaterThan(progress)) {
-    throw new HttpError(NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR, 401);
+    throw new HttpError(
+      `${NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR}: ${firstCharVersion.charChinese}`,
+      401
+    );
   }
 
   let charToMutate = await JSON.parse(JSON.stringify(firstCharVersion));

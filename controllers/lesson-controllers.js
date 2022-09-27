@@ -6,7 +6,7 @@ const CharacterOrder = require('../models/character-orders');
 const HttpError = require('../models/http-error');
 
 const { findCharacter } = require('./character-controllers');
-const getUserData = require('../util/getUserData');
+const { getUserData } = require('../util/getUserData');
 require('../util/helper-functions');
 
 const {
@@ -72,18 +72,22 @@ const getLesson = async (req, res, next) => {
         continue;
       } else {
         charChineseArray.push(foundCharChinese);
-        foundChar = await findCharacter(
-          currentTier,
-          currentLesson,
-          foundCharChinese,
-          true
-        );
-        if (foundChar && !foundChar.code) {
-          charIDsInLessonArray.push(foundChar);
-        } else if (foundChar && foundChar.code === 401) {
-          continue; // Don't include characters the user is not eligible to see.
-        } else {
-          return next(foundChar); // If there was an error, throw it.
+        try {
+          foundChar = await findCharacter(
+            currentTier,
+            currentLesson,
+            foundCharChinese,
+            true
+          );
+          if (foundChar) {
+            charIDsInLessonArray.push(foundChar);
+          }
+        } catch (err) {
+          if (err.code === 401) {
+            continue; // Don't include characters the user is not eligible to see.
+          } else {
+            return next(err);
+          }
         }
       }
     }

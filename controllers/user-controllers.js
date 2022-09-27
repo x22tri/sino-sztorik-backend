@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const getUserData = require('../util/getUserData');
+const { getUserData } = require('../util/getUserData');
 
 const User = require('../models/users');
 const CharacterOrder = require('../models/character-orders');

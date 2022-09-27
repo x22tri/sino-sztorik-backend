@@ -4,7 +4,7 @@ const Character = require('../models/characters');
 const CharacterOrder = require('../models/character-orders');
 const HttpError = require('../models/http-error');
 
-const getUserData = require('../util/getUserData');
+const { getUserData } = require('../util/getUserData');
 
 const {
   findBareCharacter,
@@ -97,100 +97,86 @@ async function findSupplements(char) {
   };
 }
 
-async function handleSearch(searchTerm) {}
+async function handleForceSearch(searchTerm) {
+  const userProgress = {
+    tier: COURSE_FINISHED_TIER,
+    lessonNumber: COURSE_FINISHED_LESSON_NUMBER,
+  };
 
-// A function that checks if the request arrived here from the search function in LessonSelect
-// (in which case the :charChinese parameter may be a Chinese character, a keyword or a primitiveMeaning),
-// or elsewhere (in which case it should only be a Chinese character).
-const checkIfSearch = async (req, res, next) => {
-  // Gets the type of request, i.e. what comes after "api/".
-  // Is either "/char/:charChinese", "/search/:charChinese", or "/force-search/:charChinese", or else the request doesn't arrive here.
-  let requestType = req.originalUrl.split('/')[2];
-  let requestedChar = req.params.charChinese;
+  return handleSearch(searchTerm, userProgress);
+}
 
-  // Gets the user info to customize the shown character for the user,
-  // unless this is a "force search" request, in which case all info should be shown.
-  let user, currentTier, currentLesson;
-  if (requestType === 'force-search') {
-    currentTier = COURSE_FINISHED_TIER;
-    currentLesson = COURSE_FINISHED_LESSON_NUMBER;
-  } else {
-    try {
-      user = await getUserData(req, res, next);
-      currentTier = user.currentTier;
-      currentLesson = user.currentLesson;
-    } catch (err) {
-      return next(new HttpError(USER_QUERY_FAILED_ERROR, 500));
-    }
-  }
+function isSearchTermChinese(searchTerm) {
+  return /^[一-鿕]+$/u.test(searchTerm);
+}
 
-  if (requestType === 'search' || requestType === 'force-search') {
-    // If this is a search or force-search request, the user should not be eligible to the upcoming lesson.
-    currentLesson--;
-    // All characters in the string must be in the Unicode CJK Unified Ideographs block.
-    const chineseCharUnicodeRegex = /^[一-鿕]+$/u;
+async function findTermAsKeywordOrPrimitive(searchTerm) {
+  try {
+    const keywordsOrPrimitives = await Character.findAll({
+      where: {
+        [Op.or]: [{ keyword: searchTerm }, { primitiveMeaning: searchTerm }],
+      },
+      raw: true,
+    });
 
-    // If we've recognized the search term as a Chinese character
-    if (chineseCharUnicodeRegex.test(requestedChar)) {
-      let foundSearchChar = await findCharacter(
-        currentTier,
-        currentLesson,
-        requestedChar,
-        true
-      );
-      if (foundSearchChar) {
-        if (foundSearchChar.code)
-          return next(foundSearchChar); // If there was an error, throw it.
-        else res.json(foundSearchChar);
-      }
+    if (!keywordsOrPrimitives?.length) {
+      throw new HttpError(SEARCH_NO_MATCH, 404);
     } else {
-      // If we've recognized the search term as non-Chinese characters, it must be Latin (and thus a keyword/primitive).
-      let keywordOrPrimitive;
-      try {
-        keywordOrPrimitive = await Character.findAll({
-          where: {
-            [Op.or]: [
-              { keyword: requestedChar },
-              { primitiveMeaning: requestedChar },
-            ],
-          },
-        });
-
-        console.log(keywordOrPrimitive);
-
-        if (!keywordOrPrimitive || !keywordOrPrimitive.length) {
-          return next(new HttpError(SEARCH_NO_MATCH, 404));
-        } else {
-          let foundSearchCharsArray = [];
-          for (let i = 0; i < keywordOrPrimitive.length; i++) {
-            requestedChar = keywordOrPrimitive[i].dataValues.charChinese;
-            let foundSearchChar = await findCharacter(
-              currentTier,
-              currentLesson,
-              requestedChar,
-              true
-            );
-
-            // console.log(foundSearchChar);
-            if (foundSearchChar && !foundSearchChar.code) {
-              foundSearchCharsArray.push(foundSearchChar);
-            }
-          }
-          if (!foundSearchCharsArray.length) {
-            return next(new HttpError(SEARCH_NO_ELIGIBLE_MATCH, 401));
-          } else {
-            res.json(foundSearchCharsArray);
-          }
-        }
-      } catch (err) {
-        return new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
-      }
+      return keywordsOrPrimitives;
     }
-  } else {
-    findCharacter(currentTier, currentLesson, requestedChar, true);
+  } catch (err) {
+    throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
   }
-};
+}
 
-exports.findCharacter = findCharacter;
-exports.findSupplements = findSupplements;
-exports.checkIfSearch = checkIfSearch;
+async function findCharByKeywordOrPrimitive(array, userProgress) {
+  let foundSearchCharsArray = [];
+
+  for (const keywordOrPrimitive of array) {
+    const foundSearchChar = await findCharacter(
+      userProgress.tier,
+      userProgress.lessonNumber,
+      keywordOrPrimitive.charChinese,
+      true
+    );
+
+    if (foundSearchChar) {
+      foundSearchCharsArray.push(foundSearchChar);
+    }
+  }
+
+  if (!foundSearchCharsArray.length) {
+    throw new HttpError(SEARCH_NO_ELIGIBLE_MATCH, 401);
+  } else {
+    return foundSearchCharsArray;
+  }
+}
+
+async function handleSearch(searchTerm, userProgress) {
+  userProgress.lessonNumber = userProgress.lessonNumber - 1; // User isn't eligible to the upcoming lesson in a search request.
+
+  if (isSearchTermChinese(searchTerm)) {
+    const foundSearchChar = await findCharacter(
+      userProgress.tier,
+      userProgress.lessonNumber,
+      searchTerm,
+      true
+    );
+
+    return foundSearchChar;
+  }
+
+  const keywordsOrPrimitives = await findTermAsKeywordOrPrimitive(searchTerm);
+  const foundChars = await findCharByKeywordOrPrimitive(
+    keywordsOrPrimitives,
+    userProgress
+  );
+
+  return foundChars;
+}
+
+module.exports = {
+  findCharacter,
+  findSupplements,
+  handleSearch,
+};

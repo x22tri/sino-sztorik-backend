@@ -76,7 +76,7 @@ const SEARCH_NO_MATCH = 'Nincs a keresésnek megfelelő elem.';
 const SEARCH_NO_ELIGIBLE_MATCH =
   'Nincs a keresésnek megfelelő elem, amelyet jogosult lennél megnézni.';
 
-const NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR = 'Még nem láthatod ezt a karaktert.';
+const NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR = 'Még nem láthatod ezt a karaktert';
 
 const INVALID_NUMBERS_PROVIDED = 'Érvénytelen számértékek megadva.';
 
