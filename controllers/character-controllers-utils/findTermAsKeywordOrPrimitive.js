@@ -5,7 +5,7 @@ const HttpError = require('../../models/http-error');
 const {
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
-} = require('../util/string-literals');
+} = require('../../util/string-literals');
 
 async function findTermAsKeywordOrPrimitive(searchTerm) {
   try {
