@@ -18,7 +18,7 @@ const { getProgress } = require('../../util/helper-functions');
 
 /**
  * Takes a character object and finds all the phrases containing the character that the user is eligible to see,
- * with the last eligible version of each character's full character object.
+ * with the last eligible version of each character's character object.
  *
  * @param {number} currentTier - The tier that the user is currently at.
  * @param {number} currentLesson - The lesson that the user is currently at.
@@ -89,8 +89,8 @@ async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
   for (const phraseChar of phrase) {
     try {
       const latestEligibleVersion = await findBareCharacter(
-        progress,
-        phraseChar
+        phraseChar,
+        progress
       );
 
       if (!latestEligibleVersion) {
@@ -103,9 +103,9 @@ async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
         return charObjectsInPhrase;
       }
 
-      // An error returned from findCharacter should only skip the phrase, not crash the application.
+      // An error returned from findBareCharacter should only skip the phrase, not crash the application.
       // To-Do: Change this behavior while testing with a finished database
-      // as it points to gaps in the database or errors in the findCharacter function.
+      // as it points to gaps in the database or errors in the findBareCharacter function.
       // Potentially separate a "forbidden" response (which is normal and indicates the phrase is to be skipped)
       // from any other response (which indicates a bug).
     } catch (err) {

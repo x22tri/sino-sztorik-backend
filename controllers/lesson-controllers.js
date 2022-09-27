@@ -73,12 +73,13 @@ const getLesson = async (req, res, next) => {
       } else {
         charChineseArray.push(foundCharChinese);
         try {
-          foundChar = await findCharacter(
-            currentTier,
-            currentLesson,
-            foundCharChinese,
-            true
-          );
+          const userProgress = {
+            tier: currentTier,
+            lessonNumber: currentLesson,
+          };
+
+          foundChar = await findCharacter(foundCharChinese, userProgress);
+
           if (foundChar) {
             charIDsInLessonArray.push(foundChar);
           }

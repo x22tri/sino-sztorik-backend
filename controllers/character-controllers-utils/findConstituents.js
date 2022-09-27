@@ -41,7 +41,7 @@ async function findConstituents(char) {
     const progress = { tier: tier, lessonNumber: lessonNumber };
 
     for (const constituent of constituentStringArray) {
-      const currentConstituent = await findBareCharacter(progress, constituent);
+      const currentConstituent = await findBareCharacter(constituent, progress);
       constituentCharacterObjects.push(currentConstituent);
     }
 

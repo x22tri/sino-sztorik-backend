@@ -45,8 +45,8 @@ async function findSimilars(char) {
     for (const similarChar of similarChars) {
       try {
         const latestEligibleVersion = await findBareCharacter(
-          getProgress(char),
-          similarChar.charChinese
+          similarChar.charChinese,
+          getProgress(char)
         );
 
         if (!latestEligibleVersion) {
@@ -65,7 +65,7 @@ async function findSimilars(char) {
             similarToPrimitiveMeaning: !!similarToPrimitiveMeaning,
           });
         }
-        // An error returned from findCharacter should only skip the character in question, not crash the application.
+        // An error returned from findBareCharacter should only skip the character in question, not crash the application.
         // To-Do: Change this behavior (remove the inner try-catch) testing with a finished database
         // as it points to gaps in the CharacterOrder database.
       } catch (err) {

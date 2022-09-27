@@ -6,10 +6,7 @@ const {
   advanceUser,
 } = require('../controllers/user-controllers');
 
-const {
-  handleSearch,
-  findCharacter,
-} = require('../controllers/character-controllers');
+const { handleSearch } = require('../controllers/character-controllers');
 
 const {
   getLesson,
@@ -55,25 +52,6 @@ router.get('/api/users/:userID', getUserData);
 router.get('/api/learn', getLesson);
 router.get('/api/learn/select', getLessonSelect);
 router.get('/api/review/:charID', getLesson);
-
-// This might not be needed at all. I can't find who calls it. Please test without it.
-// router.get('/api/char/:charChinese', async (req, res, next) => {
-//   try {
-//     const searchTerm = req.params.searchTerm;
-//     const authHeader = req.headers.authorization;
-//     const { currentTier, currentLesson } = await authenticate(authHeader);
-//     const userProgress = { tier: currentTier, lessonNumber: currentLesson };
-//     const searchResult = await findCharacter(
-//       currentTier,
-//       currentLesson,
-//       searchTerm,
-//       true
-//     );
-//     res.json(searchResult);
-//   } catch (err) {
-//     next(err);
-//   }
-// });
 
 router.get('/api/force-search/:searchTerm', async (req, res, next) => {
   try {

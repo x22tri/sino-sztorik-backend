@@ -22,13 +22,13 @@ const {
 /**
  * Finds the character object for the requested character, without finding supplements.
  *
+ * @param {string} char - The character string we're querying.
  * @param {Progress} progress - The tier and lesson that the user is currently at.
  * Alternatively, when called by a supplement-gathering function like findSimilars,
  * the tier, lesson and index of a character that serves as a comparison point.
- * @param {string} char - The character string we're querying.
  * @returns {Promise<Character>} The character object.
  */
-async function findBareCharacter(progress, char) {
+async function findBareCharacter(char, progress) {
   const ids = await findAllCharIdsByChar(char);
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
@@ -98,7 +98,7 @@ async function findAllCharIdsByChar(char) {
  * sorted by the order that the user will see them in the course.
  *
  * @param {string[]} charIds - An array of character ID's.
- * @returns {Promise<Character[]>} An array of full character objects.
+ * @returns {Promise<Character[]>} An array of character objects.
  */
 async function findAllCharVersionsByCharIds(charIds) {
   let characterVersionsInOrder;
