@@ -1,6 +1,6 @@
 const { INVALID_NUMBERS_PROVIDED } = require('./string-literals');
 
-// A method that compares two states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
+// A method that compares two progress states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
 // These can be entries from the CharacterOrders table, or objects with the user's current tier and lessonNumber.
 Object.defineProperty(Object.prototype, 'comesLaterThan', {
   value: function (secondState) {

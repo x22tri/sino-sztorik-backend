@@ -45,7 +45,7 @@ Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
  *
  * @param {number} currentTier - The user's current tier.
  * @param {number} currentLesson - The user's current lesson.
- * @param {string} char - The character string we're querying.
+ * @param {string} charString - The character string we're querying.
  * @param {boolean} supplementsNeeded - `true` if supplemental information should be provided in the result, `false` otherwise.
  *
  * @returns {Promise<Character>} The character object.
@@ -53,7 +53,7 @@ Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
 async function findCharacter(
   currentTier,
   currentLesson,
-  char,
+  charString,
   supplementsNeeded = false
 ) {
   if (isNaN(currentTier) || isNaN(currentLesson)) {
@@ -62,7 +62,7 @@ async function findCharacter(
 
   const userProgress = { tier: currentTier, lessonNumber: currentLesson };
 
-  const bareCharacter = await findBareCharacter(userProgress, char);
+  const bareCharacter = await findBareCharacter(userProgress, charString);
 
   if (supplementsNeeded === false) {
     return bareCharacter;
@@ -96,6 +96,8 @@ async function findSupplements(char) {
     constituents,
   };
 }
+
+async function handleSearch(searchTerm) {}
 
 // A function that checks if the request arrived here from the search function in LessonSelect
 // (in which case the :charChinese parameter may be a Chinese character, a keyword or a primitiveMeaning),
@@ -153,6 +155,9 @@ const checkIfSearch = async (req, res, next) => {
             ],
           },
         });
+
+        console.log(keywordOrPrimitive);
+
         if (!keywordOrPrimitive || !keywordOrPrimitive.length) {
           return next(new HttpError(SEARCH_NO_MATCH, 404));
         } else {
@@ -165,6 +170,8 @@ const checkIfSearch = async (req, res, next) => {
               requestedChar,
               true
             );
+
+            // console.log(foundSearchChar);
             if (foundSearchChar && !foundSearchChar.code) {
               foundSearchCharsArray.push(foundSearchChar);
             }

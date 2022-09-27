@@ -5,7 +5,7 @@ const HttpError = require('../../models/http-error');
 const {
   SIMILARS_DATABASE_QUERY_FAILED_ERROR,
 } = require('../../util/string-literals');
-const { SimilarType } = require('../../util/enums/enums');
+const { SimilarType } = require('../../util/enums');
 
 const { findBareCharacter } = require('./findBareCharacter');
 

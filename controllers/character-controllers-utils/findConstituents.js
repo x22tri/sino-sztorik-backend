@@ -9,7 +9,7 @@ const {
   INTERACTIVE_WORD_WRAPPER,
   INTERACTIVE_WORD_SEPARATOR,
 } = require('../../util/config');
-const { InteractiveWordType } = require('../../util/enums/enums');
+const { InteractiveWordType } = require('../../util/enums');
 const { findBareCharacter } = require('./findBareCharacter');
 
 /**
