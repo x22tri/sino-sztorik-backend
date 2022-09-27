@@ -80,6 +80,10 @@ const NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR = 'Még nem láthatod ezt a karaktert.
 
 const INVALID_NUMBERS_PROVIDED = 'Érvénytelen számértékek megadva.';
 
+const UNAUTHENTICATED_ERROR = 'Nincs jogosultságod.';
+
+const AUTHENTICATION_FAILED_ERROR = 'Hiba történt a hitelesítéskor.';
+
 module.exports = {
   NO_LESSON_FOUND_IN_SAME_TIER_ERROR,
   NO_LESSON_FOUND_IN_NEXT_TIER_ERROR,
@@ -116,4 +120,6 @@ module.exports = {
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
   SEARCH_NO_ELIGIBLE_MATCH,
   INVALID_NUMBERS_PROVIDED,
+  UNAUTHENTICATED_ERROR,
+  AUTHENTICATION_FAILED_ERROR,
 };

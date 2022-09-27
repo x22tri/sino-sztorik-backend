@@ -29,7 +29,7 @@ const {
 
 const signup = async (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
-    return next(new HttpError(VALIDATION_FAILED_ERROR, 422));
+    throw new HttpError(VALIDATION_FAILED_ERROR, 422);
   }
 
   const { displayName, email, password } = req.body;
@@ -37,7 +37,9 @@ const signup = async (req, res, next) => {
   try {
     const existingUser = await User.findOne({ where: { email: email } });
 
-    if (existingUser) return next(new HttpError(EMAIL_TAKEN_ERROR, 422));
+    if (existingUser) {
+      throw new HttpError(EMAIL_TAKEN_ERROR, 422);
+    }
 
     let createdUser;
     try {
@@ -51,14 +53,14 @@ const signup = async (req, res, next) => {
         currentLesson: 1,
       });
     } catch (err) {
-      return next(new HttpError(SIGNUP_FAILED_ERROR, 500));
+      throw new HttpError(SIGNUP_FAILED_ERROR, 500);
     }
 
     const token = jwt.sign({ userId: createdUser.userId }, process.env.JWT_KEY);
 
     res.status(201).json({ userId: createdUser.userId, token: token });
   } catch (err) {
-    return next(new HttpError(err, 500));
+    throw new HttpError(err, 500);
   }
 };
 
@@ -69,7 +71,7 @@ const login = async (req, res, next) => {
     const identifiedUser = await User.findOne({ where: { email: email } });
 
     if (!identifiedUser) {
-      return next(new HttpError(WRONG_CREDENTIALS_ERROR, 401));
+      throw new HttpError(WRONG_CREDENTIALS_ERROR, 401);
     }
 
     try {
@@ -79,10 +81,10 @@ const login = async (req, res, next) => {
       );
 
       if (isValidPassword === false) {
-        return next(new HttpError(WRONG_CREDENTIALS_ERROR, 401));
+        throw new HttpError(WRONG_CREDENTIALS_ERROR, 401);
       }
     } catch (err) {
-      return next(new HttpError(LOGIN_FAILED_ERROR, 500));
+      throw new HttpError(LOGIN_FAILED_ERROR, 500);
     }
 
     const token = jwt.sign(
@@ -92,7 +94,7 @@ const login = async (req, res, next) => {
 
     res.status(200).json({ userId: identifiedUser.userId, token: token });
   } catch (err) {
-    return next(new HttpError(err, 500));
+    throw new HttpError(err, 500);
   }
 };
 
@@ -100,7 +102,7 @@ const advanceUser = async (req, res, next) => {
   const authenticationQuery = await authenticate(req, res, next);
 
   if (authenticationQuery.success === false) {
-    return next(new HttpError(authenticationQuery.message, 500));
+    throw new HttpError(authenticationQuery.message, 500);
   }
 
   try {
@@ -121,7 +123,7 @@ const advanceUser = async (req, res, next) => {
 
     res.json(lessonQuery);
   } catch (err) {
-    return next(new HttpError(ADVANCE_USER_FAILED_ERROR, 500));
+    throw new HttpError(ADVANCE_USER_FAILED_ERROR, 500);
   }
 };
 
@@ -208,6 +210,8 @@ const tryFindLessonInNextTier = async currentTier => {
     : { success: false, message: NO_LESSON_FOUND_IN_NEXT_TIER_ERROR };
 };
 
-exports.signup = signup;
-exports.login = login;
-exports.advanceUser = advanceUser;
+module.exports = {
+  signup,
+  login,
+  advanceUser,
+};
