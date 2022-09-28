@@ -1,12 +1,8 @@
-const { check } = require('express-validator');
-
 const {
   signup,
   login,
   advanceUser,
 } = require('../controllers/user-controllers');
-
-const { handleSearch } = require('../controllers/characters/handleSearch');
 
 const {
   getLesson,
@@ -24,26 +20,20 @@ const {
   updateCharacter,
 } = require('../controllers/admin-controllers');
 
-const { getUserData, authenticate } = require('./getUserData');
+const { getUserData, getUser } = require('./getUserData');
 
 const {
   COURSE_FINISHED_TIER,
   COURSE_FINISHED_LESSON_NUMBER,
 } = require('./config');
 
+const { signupValidators, searchRoute } = require('./router-utils');
+
 const express = require('express');
 const router = express.Router();
 
 // Routes start here.
-router.post(
-  '/api/users/signup',
-  [
-    check('displayName').not().isEmpty(),
-    check('email').not().isEmpty(),
-    check('password').isLength({ min: 6 }),
-  ],
-  signup
-);
+router.post('/api/users/signup', signupValidators, signup);
 
 router.post('/api/users/login', login);
 router.post('/api/users/advance', advanceUser);
@@ -53,31 +43,7 @@ router.get('/api/learn', getLesson);
 router.get('/api/learn/select', getLessonSelect);
 router.get('/api/review/:charID', getLesson);
 
-router.get('/api/force-search/:searchTerm', async (req, res, next) => {
-  try {
-    const searchTerm = req.params.searchTerm;
-    const searchResult = await handleSearch(searchTerm, {
-      tier: COURSE_FINISHED_TIER,
-      lessonNumber: COURSE_FINISHED_LESSON_NUMBER,
-    });
-    res.json(searchResult);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/api/search/:searchTerm', async (req, res, next) => {
-  try {
-    const searchTerm = req.params.searchTerm;
-    const authHeader = req.headers.authorization;
-    const { currentTier, currentLesson } = await authenticate(authHeader);
-    const userProgress = { tier: currentTier, lessonNumber: currentLesson };
-    const searchResult = await handleSearch(searchTerm, userProgress);
-    res.json(searchResult);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/api/search/:searchTerm', searchRoute);
 
 router.get('/api/admin/all-lessons', getAllLessons);
 router.get('/api/admin/additional-info/:charId', getAdditionalInfoAdmin);

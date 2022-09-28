@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const { getUserData } = require('../util/getUserData');
+const { getUser } = require('../util/getUserData');
 
 const User = require('../models/users');
 const CharacterOrder = require('../models/character-orders');
@@ -99,14 +99,8 @@ const login = async (req, res, next) => {
 };
 
 const advanceUser = async (req, res, next) => {
-  const authenticationQuery = await authenticate(req, res, next);
-
-  if (authenticationQuery.success === false) {
-    throw new HttpError(authenticationQuery.message, 500);
-  }
-
   try {
-    const user = authenticationQuery.result;
+    const user = await getUser(req.headers.authorization);
 
     const { currentTier, currentLesson } = user;
 
@@ -123,21 +117,7 @@ const advanceUser = async (req, res, next) => {
 
     res.json(lessonQuery);
   } catch (err) {
-    throw new HttpError(ADVANCE_USER_FAILED_ERROR, 500);
-  }
-};
-
-const authenticate = async (req, res, next) => {
-  try {
-    const userQuery = await getUserData(req, res, next);
-
-    if (userQuery.message) {
-      return { success: false, message: userQuery };
-    }
-
-    return { success: true, result: userQuery };
-  } catch (err) {
-    return { success: false, message: err.message };
+    throw new HttpError(err || ADVANCE_USER_FAILED_ERROR, 500);
   }
 };
 

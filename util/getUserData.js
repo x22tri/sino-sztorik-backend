@@ -24,7 +24,7 @@ const getUserData = async (req, res, next) => {
   }
 };
 
-const authenticate = async authHeader => {
+async function getUser(authHeader) {
   try {
     const token = authHeader.split(' ')[1];
 
@@ -42,9 +42,9 @@ const authenticate = async authHeader => {
   } catch (err) {
     throw new HttpError(AUTHENTICATION_FAILED_ERROR, 500);
   }
-};
+}
 
 module.exports = {
   getUserData,
-  authenticate,
+  getUser,
 };
