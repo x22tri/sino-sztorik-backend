@@ -7,7 +7,7 @@ const {
 } = require('../../../util/string-literals');
 
 const { findBareCharacter } = require('./findBareCharacter');
-const { getProgress } = require('../../../util/helper-functions');
+const { getCharProgress } = require('../../../util/helper-functions');
 
 /**
  * @typedef {Object} Character
@@ -35,7 +35,7 @@ async function findPhrases(char) {
     for (const phraseObject of phrasesWithchar) {
       const allCharObjectsInPhrase =
         await findLastEligibleVersionOfCharsInPhrase(
-          getProgress(char),
+          getCharProgress(char),
           phraseObject.phraseChinese
         );
 

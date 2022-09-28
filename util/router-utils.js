@@ -5,7 +5,7 @@ const {
   COURSE_FINISHED_LESSON_NUMBER,
 } = require('./config');
 
-const { getUser } = require('./getUserData');
+const { getUserProgress } = require('./helper-functions');
 
 const { handleSearch } = require('../controllers/characters/handleSearch');
 
@@ -26,9 +26,7 @@ async function searchRoute(req, res, next) {
         lessonNumber: COURSE_FINISHED_LESSON_NUMBER,
       };
     } else {
-      const authHeader = req.headers.authorization;
-      const { currentTier, currentLesson } = await getUser(authHeader);
-      progress = { tier: currentTier, lessonNumber: currentLesson };
+      progress = await getUserProgress(req);
     }
 
     const searchResult = await handleSearch(searchTerm, progress);

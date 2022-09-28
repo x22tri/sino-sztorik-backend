@@ -20,7 +20,7 @@ const {
   updateCharacter,
 } = require('../controllers/admin-controllers');
 
-const { getUserData, getUser } = require('./getUserData');
+const { getUser } = require('../controllers/users/utils/getUser');
 
 const {
   COURSE_FINISHED_TIER,
@@ -37,7 +37,9 @@ router.post('/api/users/signup', signupValidators, signup);
 
 router.post('/api/users/login', login);
 router.post('/api/users/advance', advanceUser);
-router.get('/api/users/:userID', getUserData);
+router.get('/api/users/:userID', (req, res, next) => {
+  getUser(req.headers.authorization);
+});
 
 router.get('/api/learn', getLesson);
 router.get('/api/learn/select', getLessonSelect);

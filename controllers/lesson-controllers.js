@@ -6,7 +6,8 @@ const CharacterOrder = require('../models/character-orders');
 const HttpError = require('../models/http-error');
 
 const { findCharacter } = require('./characters/findCharacter');
-const { getUserData } = require('../util/getUserData');
+const { getUser } = require('./users/utils/getUser');
+const { getUserProgress } = require('../util/helper-functions');
 
 const {
   USER_QUERY_FAILED_ERROR,
@@ -22,15 +23,9 @@ const {
 
 // An exported function that gets the lesson corresponding to the requested tier and lessonNumber.
 const getLesson = async (req, res, next) => {
-  // Getting the current tier and lesson by the currently logged in user.
-  let user, currentTier, currentLesson;
-  try {
-    user = await getUserData(req, res, next);
-    currentTier = user.currentTier;
-    currentLesson = user.currentLesson;
-  } catch (err) {
-    return next(new HttpError(USER_QUERY_FAILED_ERROR, 500));
-  }
+  const user = await getUserProgress(req);
+  const currentTier = user.tier;
+  const currentLesson = user.lessonNumber;
 
   // Gets the type of request, i.e. what comes after "api/".
   // Is one of "learn" or "review", or else the request doesn't arrive here.
@@ -169,20 +164,10 @@ const findLessonHelper = async (
 
 // An exported function that gets all lessons for the lesson selection screen.
 const getLessonSelect = async (req, res, next) => {
-  // Getting the current tier and lesson by the currently logged in user.
-  let user, currentTier, currentLesson, displayName;
-  try {
-    user = await getUserData(req, res, next);
-    if (user) {
-      currentTier = user.currentTier;
-      currentLesson = user.currentLesson;
-      displayName = user.displayName;
-    } else {
-      return next(new HttpError(USER_NOT_FOUND_ERROR, 404));
-    }
-  } catch (err) {
-    return next(new HttpError(USER_QUERY_FAILED_ERROR, 500));
-  }
+  const user = await getUserProgress(req);
+  const currentTier = user.tier;
+  const currentLesson = user.lessonNumber;
+  const displayName = user.displayName;
 
   let lessonArray = [];
   let currentLessonName;
@@ -218,7 +203,8 @@ const getLessonSelect = async (req, res, next) => {
       lessonArray.push(lessonObject);
     }
   } catch (err) {
-    return next(new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500));
+    // return next(new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500));
+    return next(new HttpError(err, 500));
   }
 
   res.json({

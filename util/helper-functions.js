@@ -1,9 +1,19 @@
-function getProgress(characterObject) {
+const { getUser } = require('../controllers/users/utils/getUser');
+
+async function getUserProgress(req) {
+  const authHeader = req.headers.authorization;
+  const { currentTier, currentLesson, displayName } = await getUser(authHeader);
+
   return {
-    tier: characterObject.tier,
-    lessonNumber: characterObject.lessonNumber,
-    indexInLesson: characterObject.indexInLesson,
+    displayName: displayName,
+    tier: currentTier,
+    lessonNumber: currentLesson,
   };
 }
 
-module.exports = { getProgress };
+function getCharProgress(characterObject) {
+  const { tier, lessonNumber, indexInLesson } = characterObject;
+  return { tier, lessonNumber, indexInLesson };
+}
+
+module.exports = { getUserProgress, getCharProgress };

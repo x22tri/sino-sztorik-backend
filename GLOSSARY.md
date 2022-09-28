@@ -25,4 +25,4 @@ To ensure this codebase - and, by extension, the application - can be understood
   A conjunction of a user's "currentTier" and "currentLesson" properties from the user's database entry. These together describe how far the user has gotten into the course. In an extended meaning, _progress_ can mean any state that specifies a tier, a lesson number, and optionally a character's index in a lesson.
 
 - **Supplements**
-  Information relating to a character that isn't contained in the Characters (or CharacterOrders) table, such as phrases with the character, other characters similar to the character, or the character's other uses.
+  Information relating to a character that isn't strictly contained in the Characters (or CharacterOrders) table, such as phrases with the character, other characters similar to the character, or the character's other uses.

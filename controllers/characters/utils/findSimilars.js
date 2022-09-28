@@ -8,7 +8,7 @@ const {
 const { SimilarType } = require('../../../util/enums');
 
 const { findBareCharacter } = require('./findBareCharacter');
-const { getProgress } = require('../../../util/helper-functions');
+const { getCharProgress } = require('../../../util/helper-functions');
 
 /**
  * @typedef {Object} Character
@@ -44,7 +44,7 @@ async function findSimilars(char) {
       try {
         const latestEligibleVersion = await findBareCharacter(
           similarChar.charChinese,
-          getProgress(char)
+          getCharProgress(char)
         );
 
         if (!latestEligibleVersion) {
