@@ -1,15 +1,15 @@
-const HttpError = require('../../models/http-error');
+const HttpError = require('../../../models/http-error');
 
 const {
   CONSTITUENTS_QUERY_FAILED_ERROR,
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
-} = require('../../util/string-literals');
+} = require('../../../util/string-literals');
 const {
   CONSTITUENT_SEPARATOR,
   INTERACTIVE_WORD_WRAPPER,
   INTERACTIVE_WORD_SEPARATOR,
-} = require('../../util/config');
-const { InteractiveWordType } = require('../../util/enums');
+} = require('../../../util/config');
+const { InteractiveWordType } = require('../../../util/enums');
 const { findBareCharacter } = require('./findBareCharacter');
 
 /**

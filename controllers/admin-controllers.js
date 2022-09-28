@@ -9,7 +9,7 @@ const OtherUse = require('../models/other-uses');
 const HttpError = require('../models/http-error');
 
 const { findLessonHelper } = require('./lesson-controllers');
-const { findSupplements } = require('./character-controllers');
+const { findSupplements } = require('./characters/findSupplements');
 
 const {
   LESSON_DATABASE_QUERY_FAILED,

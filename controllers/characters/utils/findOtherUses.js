@@ -1,9 +1,9 @@
-const OtherUse = require('../../models/other-uses');
-const HttpError = require('../../models/http-error');
+const OtherUse = require('../../../models/other-uses');
+const HttpError = require('../../../models/http-error');
 
 const {
   OTHER_USES_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../util/string-literals');
+} = require('../../../util/string-literals');
 
 /**
  * @typedef {Object} Character

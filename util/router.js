@@ -1,3 +1,6 @@
+const Character = require('../models/characters');
+const CharacterOrder = require('../models/character-orders');
+
 const { check } = require('express-validator');
 
 const {
@@ -6,7 +9,7 @@ const {
   advanceUser,
 } = require('../controllers/user-controllers');
 
-const { handleSearch } = require('../controllers/character-controllers');
+const { handleSearch } = require('../controllers/characters/handleSearch');
 
 const {
   getLesson,
@@ -33,6 +36,9 @@ const {
 
 const express = require('express');
 const router = express.Router();
+
+CharacterOrder.belongsTo(Character, { foreignKey: 'charId' });
+Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
 
 // Routes start here.
 router.post(

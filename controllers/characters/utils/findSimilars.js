@@ -1,16 +1,16 @@
 const { Op } = require('sequelize');
-const Similar = require('../../models/similars');
-const HttpError = require('../../models/http-error');
+const Similar = require('../../../models/similars');
+const HttpError = require('../../../models/http-error');
 
 const {
   SIMILARS_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../util/string-literals');
-const { SimilarType } = require('../../util/enums');
+} = require('../../../util/string-literals');
+const { SimilarType } = require('../../../util/enums');
 
 const { findBareCharacter } = require('./findBareCharacter');
 
-require('../../util/helper-functions');
-const { getProgress } = require('../../util/helper-functions');
+require('../../../util/helper-functions');
+const { getProgress } = require('../../../util/helper-functions');
 
 /**
  * @typedef {Object} Character

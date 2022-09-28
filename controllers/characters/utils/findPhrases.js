@@ -1,15 +1,15 @@
 const { Op } = require('sequelize');
-const Phrase = require('../../models/phrases');
-const HttpError = require('../../models/http-error');
+const Phrase = require('../../../models/phrases');
+const HttpError = require('../../../models/http-error');
 
 const {
   PHRASES_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../util/string-literals');
+} = require('../../../util/string-literals');
 
 const { findBareCharacter } = require('./findBareCharacter');
 
-require('../../util/helper-functions');
-const { getProgress } = require('../../util/helper-functions');
+require('../../../util/helper-functions');
+const { getProgress } = require('../../../util/helper-functions');
 
 /**
  * @typedef {Object} Character

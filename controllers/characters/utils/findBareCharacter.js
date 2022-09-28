@@ -1,6 +1,6 @@
-const Character = require('../../models/characters');
-const CharacterOrder = require('../../models/character-orders');
-const HttpError = require('../../models/http-error');
+const Character = require('../../../models/characters');
+const CharacterOrder = require('../../../models/character-orders');
+const HttpError = require('../../../models/http-error');
 
 const {
   CHARACTER_NOT_FOUND_ERROR,
@@ -8,7 +8,7 @@ const {
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
   NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR,
-} = require('../../util/string-literals');
+} = require('../../../util/string-literals');
 
 /**
  * @typedef {Object} Character
