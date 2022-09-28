@@ -1,11 +1,10 @@
-const HttpError = require('../../models/http-error');
-
 const { findCharacter } = require('./findCharacter');
 const {
   findTermAsKeywordOrPrimitive,
 } = require('./utils/findTermAsKeywordOrPrimitive');
-
-const { SEARCH_NO_ELIGIBLE_MATCH } = require('../../util/string-literals');
+const {
+  findCharByKeywordOrPrimitive,
+} = require('./utils/findCharByKeywordOrPrimitive');
 
 /**
  * @typedef {Object} Character
@@ -23,7 +22,7 @@ const { SEARCH_NO_ELIGIBLE_MATCH } = require('../../util/string-literals');
  * @param {string} searchTerm - The string we're querying.
  * @param {Progress} userProgress - The user's current progress in the course.
  *
- * @returns {Promise<Character | Character[]>} The character object(s).
+ * @returns {Character | Character[]} The character object(s).
  */
 async function search(searchTerm, userProgress) {
   userProgress.lessonNumber = userProgress.lessonNumber - 1; // User isn't eligible to the upcoming lesson in a search request.
@@ -35,6 +34,7 @@ async function search(searchTerm, userProgress) {
   }
 
   const keywordsOrPrimitives = await findTermAsKeywordOrPrimitive(searchTerm);
+
   const foundChars = await findCharByKeywordOrPrimitive(
     keywordsOrPrimitives,
     userProgress
@@ -45,27 +45,6 @@ async function search(searchTerm, userProgress) {
 
 function isSearchTermChinese(searchTerm) {
   return /^[一-鿕]+$/u.test(searchTerm);
-}
-
-async function findCharByKeywordOrPrimitive(array, userProgress) {
-  let foundSearchCharsArray = [];
-
-  for (const keywordOrPrimitive of array) {
-    const foundSearchChar = await findCharacter(
-      keywordOrPrimitive.charChinese,
-      userProgress
-    );
-
-    if (foundSearchChar) {
-      foundSearchCharsArray.push(foundSearchChar);
-    }
-  }
-
-  if (!foundSearchCharsArray.length) {
-    throw new HttpError(SEARCH_NO_ELIGIBLE_MATCH, 401);
-  } else {
-    return foundSearchCharsArray;
-  }
 }
 
 module.exports = {
