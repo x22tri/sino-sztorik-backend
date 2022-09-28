@@ -1,4 +1,4 @@
-const { courseFinishedProgress } = require('../../util/config');
+const { COURSE_FINISHED } = require('../../util/config');
 const { getUserProgress } = require('../users/utils/getUserProgress');
 const { search } = require('./search');
 
@@ -7,7 +7,7 @@ async function handleSearchRequest(req, res, next) {
     const searchTerm = req.params.searchTerm;
 
     const progress = req.query.force
-      ? courseFinishedProgress
+      ? COURSE_FINISHED
       : await getUserProgress(req);
 
     const searchResult = await search(searchTerm, progress);

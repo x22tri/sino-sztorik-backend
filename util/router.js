@@ -1,8 +1,6 @@
-const {
-  signup,
-  login,
-  advanceUser,
-} = require('../controllers/users/user-controllers');
+const { signup } = require('../controllers/users/signup');
+const { login } = require('../controllers/users/login');
+const { advanceUser } = require('../controllers/users/advanceUser');
 
 const {
   getLesson,
@@ -39,15 +37,23 @@ router.get('/api/review/:charID', getLesson);
 
 router.get('/api/search/:searchTerm', handleSearchRequest);
 
-router.get('/api/admin/all-lessons', getAllLessons);
-router.get('/api/admin/additional-info/:charId', getAdditionalInfoAdmin);
-router.put('/api/admin/lesson/update/:lessonId', updateLesson);
+// router.get('/api/admin/all-lessons', getAllLessons);
+// router.get('/api/admin/additional-info/:charId', getAdditionalInfoAdmin);
+// router.put('/api/admin/lesson/update/:lessonId', updateLesson);
 
-router.get('/api/admin/all-phrases', getAllPhrases);
-router.put('/api/admin/all-phrases/update', updateAllPhrasesOrOtherUses);
-router.get('/api/admin/all-other-uses', getAllOtherUses);
-router.put('/api/admin/all-other-uses/update', updateAllPhrasesOrOtherUses);
-router.get('/api/admin/all-similars/:similarType', getAllSimilars);
-router.put('/api/admin/character/:charId/update', updateCharacter);
+// router.get('/api/admin/all-phrases', getAllPhrases);
+// router.put('/api/admin/all-phrases/update', updateAllPhrasesOrOtherUses);
+// router.get('/api/admin/all-other-uses', getAllOtherUses);
+// router.put('/api/admin/all-other-uses/update', updateAllPhrasesOrOtherUses);
+// router.get('/api/admin/all-similars/:similarType', getAllSimilars);
+// router.put('/api/admin/character/:charId/update', updateCharacter);
+
+router.put('/api/admin*', (req, res, next) => {
+  next(new Error('The admin functionality is currently turned off.'));
+});
+
+router.get('/api/admin*', (req, res, next) => {
+  next(new Error('The admin functionality is currently turned off.'));
+});
 
 module.exports = router;

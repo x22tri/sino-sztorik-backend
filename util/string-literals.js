@@ -1,9 +1,3 @@
-const NO_LESSON_FOUND_IN_SAME_TIER_ERROR =
-  'A jelenlegi körben nincs több feloldható lecke.';
-
-const NO_LESSON_FOUND_IN_NEXT_TIER_ERROR =
-  'A következő körben nincs több feloldható lecke.';
-
 const NEXT_LESSON_NOT_FOUND_ERROR = 'A soron következő lecke nem található.';
 
 const ADVANCE_USER_FAILED_ERROR = 'Nem sikerült frissíteni az előrehaladásod.';
@@ -85,8 +79,6 @@ const UNAUTHENTICATED_ERROR = 'Nincs jogosultságod.';
 const AUTHENTICATION_FAILED_ERROR = 'Hiba történt a hitelesítéskor.';
 
 module.exports = {
-  NO_LESSON_FOUND_IN_SAME_TIER_ERROR,
-  NO_LESSON_FOUND_IN_NEXT_TIER_ERROR,
   NEXT_LESSON_NOT_FOUND_ERROR,
   ADVANCE_USER_FAILED_ERROR,
   WRONG_CREDENTIALS_ERROR,
