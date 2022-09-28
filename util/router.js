@@ -2,12 +2,12 @@ const {
   signup,
   login,
   advanceUser,
-} = require('../controllers/user-controllers');
+} = require('../controllers/users/user-controllers');
 
 const {
   getLesson,
   getLessonSelect,
-} = require('../controllers/lesson-controllers');
+} = require('../controllers/lessons/lesson-controllers');
 
 const {
   getAllLessons,
@@ -18,14 +18,9 @@ const {
   getAllOtherUses,
   getAllSimilars,
   updateCharacter,
-} = require('../controllers/admin-controllers');
+} = require('../controllers/admin/admin-controllers');
 
 const { getUser } = require('../controllers/users/utils/getUser');
-
-const {
-  COURSE_FINISHED_TIER,
-  COURSE_FINISHED_LESSON_NUMBER,
-} = require('./config');
 
 const { signupValidators, searchRoute } = require('./router-utils');
 

@@ -1,15 +1,15 @@
 const { Op } = require('sequelize');
 
-const RevampedLesson = require('../models/revamped-lessons');
+const RevampedLesson = require('../../models/revamped-lessons');
 
-const Character = require('../models/characters');
-const Similar = require('../models/similars');
-const Phrase = require('../models/phrases');
-const OtherUse = require('../models/other-uses');
-const HttpError = require('../models/http-error');
+const Character = require('../../models/characters');
+const Similar = require('../../models/similars');
+const Phrase = require('../../models/phrases');
+const OtherUse = require('../../models/other-uses');
+const HttpError = require('../../models/http-error');
 
-const { findLessonHelper } = require('./lesson-controllers');
-const { findSupplements } = require('./characters/findSupplements');
+const { findLessonHelper } = require('../lessons/lesson-controllers');
+const { findSupplements } = require('../characters/findSupplements');
 
 const {
   LESSON_DATABASE_QUERY_FAILED,
@@ -17,12 +17,12 @@ const {
   SAVING_ERROR,
   SAVING_SUCCESS,
   LESSON_NOT_FOUND_ERROR,
-} = require('../util/string-literals');
+} = require('../../util/string-literals');
 
 const {
   COURSE_FINISHED_TIER,
   COURSE_FINISHED_LESSON_NUMBER,
-} = require('../util/config');
+} = require('../../util/config');
 
 const getAllLessons = async (req, res, next) => {
   // The "true" flag gets the preface and the full info about the Chinese characters.

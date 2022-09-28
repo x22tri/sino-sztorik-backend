@@ -7,7 +7,7 @@ const {
 } = require('../../../util/string-literals');
 
 const { findBareCharacter } = require('./findBareCharacter');
-const { getCharProgress } = require('../../../util/helper-functions');
+const { getCharProgress } = require('./getCharProgress');
 
 /**
  * @typedef {Object} Character

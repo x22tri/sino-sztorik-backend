@@ -2,18 +2,17 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const { getUser } = require('./users/utils/getUser');
+const { getUser } = require('./utils/getUser');
 
-const User = require('../models/users');
-const CharacterOrder = require('../models/character-orders');
-const HttpError = require('../models/http-error');
+const User = require('../../models/users');
+const CharacterOrder = require('../../models/character-orders');
+const HttpError = require('../../models/http-error');
 
 const {
   LAST_TIER,
-  COURSE_FINISHED_TIER,
-  COURSE_FINISHED_LESSON_NUMBER,
+  courseFinishedProgress,
   PW_SALT_ROUNDS,
-} = require('../util/config');
+} = require('../../util/config');
 
 const {
   NO_LESSON_FOUND_IN_SAME_TIER_ERROR,
@@ -25,7 +24,7 @@ const {
   EMAIL_TAKEN_ERROR,
   SIGNUP_FAILED_ERROR,
   LOGIN_FAILED_ERROR,
-} = require('../util/string-literals');
+} = require('../../util/string-literals');
 
 const signup = async (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
@@ -139,10 +138,7 @@ const findNextLesson = async (currentTier, currentLesson) => {
   if (currentTier === LAST_TIER) {
     return {
       success: true,
-      result: {
-        tier: COURSE_FINISHED_TIER,
-        lessonNumber: COURSE_FINISHED_LESSON_NUMBER,
-      },
+      result: courseFinishedProgress,
     };
   }
 

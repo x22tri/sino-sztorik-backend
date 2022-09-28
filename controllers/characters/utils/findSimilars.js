@@ -8,7 +8,7 @@ const {
 const { SimilarType } = require('../../../util/enums');
 
 const { findBareCharacter } = require('./findBareCharacter');
-const { getCharProgress } = require('../../../util/helper-functions');
+const { getCharProgress } = require('./getCharProgress');
 
 /**
  * @typedef {Object} Character

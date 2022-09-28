@@ -1,11 +1,10 @@
 const { check } = require('express-validator');
 
-const {
-  COURSE_FINISHED_TIER,
-  COURSE_FINISHED_LESSON_NUMBER,
-} = require('./config');
+const { courseFinishedProgress } = require('./config');
 
-const { getUserProgress } = require('./helper-functions');
+const {
+  getUserProgress,
+} = require('../controllers/users/utils/getUserProgress');
 
 const { handleSearch } = require('../controllers/characters/handleSearch');
 
@@ -18,16 +17,10 @@ const signupValidators = [
 async function searchRoute(req, res, next) {
   try {
     const searchTerm = req.params.searchTerm;
-    let progress;
 
-    if (req.query.force) {
-      progress = {
-        tier: COURSE_FINISHED_TIER,
-        lessonNumber: COURSE_FINISHED_LESSON_NUMBER,
-      };
-    } else {
-      progress = await getUserProgress(req);
-    }
+    const progress = req.query.force
+      ? courseFinishedProgress
+      : await getUserProgress(req);
 
     const searchResult = await handleSearch(searchTerm, progress);
 

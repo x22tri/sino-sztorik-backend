@@ -1,16 +1,14 @@
 const { Op } = require('sequelize');
-const RevampedLesson = require('../models/revamped-lessons');
+const RevampedLesson = require('../../models/revamped-lessons');
 
-const Character = require('../models/characters');
-const CharacterOrder = require('../models/character-orders');
-const HttpError = require('../models/http-error');
+const Character = require('../../models/characters');
+const CharacterOrder = require('../../models/character-orders');
+const HttpError = require('../../models/http-error');
 
-const { findCharacter } = require('./characters/findCharacter');
-const { getUser } = require('./users/utils/getUser');
-const { getUserProgress } = require('../util/helper-functions');
+const { findCharacter } = require('../characters/findCharacter');
+const { getUserProgress } = require('../users/utils/getUserProgress');
 
 const {
-  USER_QUERY_FAILED_ERROR,
   INVALID_REQUEST_ERROR,
   LESSON_NOT_FOUND_ERROR,
   LESSON_DATABASE_QUERY_FAILED_ERROR,
@@ -18,8 +16,7 @@ const {
   LESSON_COMPLETED,
   LESSON_UPCOMING,
   LESSON_NOT_IN_TIER,
-  USER_NOT_FOUND_ERROR,
-} = require('../util/string-literals');
+} = require('../../util/string-literals');
 
 // An exported function that gets the lesson corresponding to the requested tier and lessonNumber.
 const getLesson = async (req, res, next) => {
