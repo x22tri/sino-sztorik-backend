@@ -8,8 +8,6 @@ const {
 const { SimilarType } = require('../../../util/enums');
 
 const { findBareCharacter } = require('./findBareCharacter');
-
-require('../../../util/helper-functions');
 const { getProgress } = require('../../../util/helper-functions');
 
 /**

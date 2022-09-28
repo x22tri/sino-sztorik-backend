@@ -7,7 +7,6 @@ const HttpError = require('../models/http-error');
 
 const { findCharacter } = require('./characters/findCharacter');
 const { getUserData } = require('../util/getUserData');
-require('../util/helper-functions');
 
 const {
   USER_QUERY_FAILED_ERROR,

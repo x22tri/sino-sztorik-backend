@@ -1,19 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const router = require('./util/router');
-const {
-  headerConfiguration,
-  unsupportedRouteHandler,
-  errorHandler,
-} = require('./util/middleware');
+const { unsupportedRouteHandler, errorHandler } = require('./util/middleware');
 
 require('dotenv').config();
 
 const database = require('./util/database');
 const app = express();
 
-app.use(cors());
-app.use(headerConfiguration);
+require('./util/setup');
+
+app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());
 app.use(router);
 app.use(unsupportedRouteHandler);
