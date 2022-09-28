@@ -25,7 +25,7 @@ const { SEARCH_NO_ELIGIBLE_MATCH } = require('../../util/string-literals');
  *
  * @returns {Promise<Character | Character[]>} The character object(s).
  */
-async function handleSearch(searchTerm, userProgress) {
+async function search(searchTerm, userProgress) {
   userProgress.lessonNumber = userProgress.lessonNumber - 1; // User isn't eligible to the upcoming lesson in a search request.
 
   if (isSearchTermChinese(searchTerm)) {
@@ -69,5 +69,5 @@ async function findCharByKeywordOrPrimitive(array, userProgress) {
 }
 
 module.exports = {
-  handleSearch,
+  search,
 };

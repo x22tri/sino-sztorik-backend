@@ -10,6 +10,10 @@ const {
 } = require('../controllers/lessons/lesson-controllers');
 
 const {
+  handleSearchRequest,
+} = require('../controllers/characters/handleSearchRequest');
+
+const {
   getAllLessons,
   getAdditionalInfoAdmin,
   updateLesson,
@@ -20,27 +24,20 @@ const {
   updateCharacter,
 } = require('../controllers/admin/admin-controllers');
 
-const { getUser } = require('../controllers/users/utils/getUser');
+const { signupValidators } = require('./router-utils');
 
-const { signupValidators, searchRoute } = require('./router-utils');
-
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 
 // Routes start here.
 router.post('/api/users/signup', signupValidators, signup);
-
 router.post('/api/users/login', login);
 router.post('/api/users/advance', advanceUser);
-router.get('/api/users/:userID', (req, res, next) => {
-  getUser(req.headers.authorization);
-});
 
 router.get('/api/learn', getLesson);
 router.get('/api/learn/select', getLessonSelect);
 router.get('/api/review/:charID', getLesson);
 
-router.get('/api/search/:searchTerm', searchRoute);
+router.get('/api/search/:searchTerm', handleSearchRequest);
 
 router.get('/api/admin/all-lessons', getAllLessons);
 router.get('/api/admin/additional-info/:charId', getAdditionalInfoAdmin);
