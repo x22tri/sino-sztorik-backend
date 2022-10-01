@@ -63,23 +63,15 @@ const getLesson = async (req, res, next) => {
         continue;
       } else {
         charChineseArray.push(foundCharChinese);
-        try {
-          const userProgress = {
-            tier: currentTier,
-            lessonNumber: currentLesson,
-          };
+        const userProgress = {
+          tier: currentTier,
+          lessonNumber: currentLesson,
+        };
 
-          foundChar = await findCharacter(foundCharChinese, userProgress);
+        foundChar = await findCharacter(foundCharChinese, userProgress);
 
-          if (foundChar) {
-            charIDsInLessonArray.push(foundChar);
-          }
-        } catch (err) {
-          if (err.code === 401) {
-            continue; // Don't include characters the user is not eligible to see.
-          } else {
-            return next(err);
-          }
+        if (foundChar) {
+          charIDsInLessonArray.push(foundChar);
         }
       }
     }
