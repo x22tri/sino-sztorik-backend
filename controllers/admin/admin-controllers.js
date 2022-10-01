@@ -8,7 +8,7 @@ const Phrase = require('../../models/phrases');
 const OtherUse = require('../../models/other-uses');
 const HttpError = require('../../models/http-error');
 
-const { findLessonHelper } = require('../lessons/lesson-controllers');
+const { findLessonWithChars } = require('../lessons/lesson-controllers');
 const { addSupplements } = require('../characters/utils/addSupplements');
 
 const {
@@ -26,7 +26,7 @@ const {
 
 const getAllLessons = async (req, res, next) => {
   // The "true" flag gets the preface and the full info about the Chinese characters.
-  // const tieredLessonArray = await findAllLessonsHelper(true)
+  // const tieredLessonArray = await findAllLessonObjectsHelper(true)
   // res.json({ tieredLessonArray })
 
   let lessonArray = [];
@@ -45,7 +45,7 @@ const getAllLessons = async (req, res, next) => {
         tiers: [],
       };
       for (let tier = 1; tier < 5; tier++) {
-        let foundLesson = await findLessonHelper(
+        let foundLesson = await findLessonWithChars(
           tier,
           COURSE_FINISHED_TIER,
           lessonNumber,

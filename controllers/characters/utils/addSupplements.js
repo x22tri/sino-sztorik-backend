@@ -4,10 +4,6 @@ const { findOtherUses } = require('./findOtherUses');
 const { findConstituents } = require('./findConstituents');
 
 /**
- * @typedef {Object} Character
- */
-
-/**
  * Takes a character object and finds all supplemental information about it:
  * other characters that are similar (either in appearance or meaning),
  * phrases with the character, the character's other uses,

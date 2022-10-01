@@ -13,10 +13,6 @@ const { InteractiveWordType } = require('../../../util/enums');
 const { findBareCharacter } = require('./findBareCharacter');
 
 /**
- * @typedef {Object} Character
- */
-
-/**
  * Takes a character object and returns the bare character objects of its constituents.
  * If the input character's "constituents" field is not specified,
  * the function will collect all constituent references from its story.

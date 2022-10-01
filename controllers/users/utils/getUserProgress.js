@@ -5,7 +5,7 @@ async function getUserProgress(req) {
   const { currentTier, currentLesson, displayName } = await getUser(authHeader);
 
   return {
-    displayName: displayName,
+    // displayName: displayName,
     tier: currentTier,
     lessonNumber: currentLesson,
   };

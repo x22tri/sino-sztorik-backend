@@ -6,11 +6,6 @@ const {
 } = require('../../../util/string-literals');
 
 /**
- * @typedef {Object} Character
- * @typedef {Object} OtherUse
- */
-
-/**
  * Takes a character object and finds all meanings of the character other than its keyword, together with
  * how the character is pronounced when used in that meaning.
  *

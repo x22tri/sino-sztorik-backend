@@ -11,11 +11,6 @@ const { findBareCharacter } = require('./findBareCharacter');
 const { getCharProgress } = require('./getCharProgress');
 
 /**
- * @typedef {Object} Character
- * @typedef {Object} Similar
- */
-
-/**
  * Finds all characters similar to the requested character and returns their latest character object version
  * that the user is eligible to see.
  *
@@ -41,7 +36,6 @@ async function findSimilars(char) {
     }
 
     for (const similarChar of similarChars) {
-      // console.log(similarChar);
       try {
         const latestEligibleVersion = await findBareCharacter(
           similarChar.charChinese,
@@ -72,8 +66,7 @@ async function findSimilars(char) {
       }
     }
   } catch (err) {
-    // throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
-    throw new HttpError(err, 500);
+    throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
   return { similarAppearance, similarMeaning };

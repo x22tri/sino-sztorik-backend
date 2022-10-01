@@ -10,11 +10,6 @@ const { findBareCharacter } = require('./findBareCharacter');
 const { getCharProgress } = require('./getCharProgress');
 
 /**
- * @typedef {Object} Character
- * @typedef {Object} Phrase
- */
-
-/**
  * Takes a character object and finds all the phrases containing the character that the user is eligible to see,
  * with the last eligible version of each character's character object.
  *

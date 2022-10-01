@@ -7,15 +7,6 @@ const {
 } = require('./findCharByKeywordOrPrimitive');
 
 /**
- * @typedef {Object} Character
- *
- * @typedef {Object} Progress
- * @property {number} tier The tier the user is currently at.
- * @property {number} lessonNumber The lesson the user is currently at.
- * @property {number} [indexInLesson] The index of the character the user is currently at.
- */
-
-/**
  * Based on a string the user searched for, finds the relevant character object(s).
  * If the string is not already a Chinese character, it is presumed to be a keyword or primitive meaning.
  *
