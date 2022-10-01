@@ -12,7 +12,7 @@ const {
   SIGNUP_FAILED_ERROR,
 } = require('../../util/string-literals');
 
-const signup = async (req, res, next) => {
+async function signup(req, res, next) {
   try {
     if (!validationResult(req).isEmpty()) {
       throw new HttpError(VALIDATION_FAILED_ERROR, 422);
@@ -43,7 +43,7 @@ const signup = async (req, res, next) => {
   } catch (err) {
     next(err || new HttpError(SIGNUP_FAILED_ERROR, 500));
   }
-};
+}
 
 module.exports = {
   signup,

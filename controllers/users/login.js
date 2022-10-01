@@ -9,7 +9,7 @@ const {
   LOGIN_FAILED_ERROR,
 } = require('../../util/string-literals');
 
-const login = async (req, res, next) => {
+async function login(req, res, next) {
   try {
     const { email, password } = req.body;
 
@@ -37,7 +37,7 @@ const login = async (req, res, next) => {
   } catch (err) {
     next(err || new HttpError(LOGIN_FAILED_ERROR, 500));
   }
-};
+}
 
 module.exports = {
   login,
