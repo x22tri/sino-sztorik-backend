@@ -1,11 +1,11 @@
-const HttpError = require('../../models/http-error');
+const HttpError = require('../../../models/http-error');
 
-const { findBareCharacter } = require('./utils/findBareCharacter');
+const { findBareCharacter } = require('./findBareCharacter');
 const { findSupplements } = require('./findSupplements');
 
 const {
   TIER_OR_LESSON_NOT_NUMBER_ERROR,
-} = require('../../util/string-literals');
+} = require('../../../util/string-literals');
 
 /**
  * @typedef {Object} Character

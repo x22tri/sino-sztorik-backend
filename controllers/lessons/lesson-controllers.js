@@ -5,7 +5,7 @@ const Character = require('../../models/characters');
 const CharacterOrder = require('../../models/character-orders');
 const HttpError = require('../../models/http-error');
 
-const { findCharacter } = require('../characters/findCharacter');
+const { findCharacter } = require('../characters/utils/findCharacter');
 const { getUserProgress } = require('../users/utils/getUserProgress');
 
 const {

@@ -1,6 +1,6 @@
 const HttpError = require('../../../models/http-error');
 
-const { findCharacter } = require('../findCharacter');
+const { findCharacter } = require('./findCharacter');
 
 const { SEARCH_NO_ELIGIBLE_MATCH } = require('../../../util/string-literals');
 

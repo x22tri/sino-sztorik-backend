@@ -1,7 +1,7 @@
-const { findSimilars } = require('./utils/findSimilars');
-const { findPhrases } = require('./utils/findPhrases');
-const { findOtherUses } = require('./utils/findOtherUses');
-const { findConstituents } = require('./utils/findConstituents');
+const { findSimilars } = require('./findSimilars');
+const { findPhrases } = require('./findPhrases');
+const { findOtherUses } = require('./findOtherUses');
+const { findConstituents } = require('./findConstituents');
 
 /**
  * @typedef {Object} Character

@@ -1,10 +1,10 @@
 const { findCharacter } = require('./findCharacter');
 const {
   findTermAsKeywordOrPrimitive,
-} = require('./utils/findTermAsKeywordOrPrimitive');
+} = require('./findTermAsKeywordOrPrimitive');
 const {
   findCharByKeywordOrPrimitive,
-} = require('./utils/findCharByKeywordOrPrimitive');
+} = require('./findCharByKeywordOrPrimitive');
 
 /**
  * @typedef {Object} Character

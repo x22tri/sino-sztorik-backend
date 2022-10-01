@@ -1,6 +1,6 @@
 const { COURSE_FINISHED } = require('../../util/config');
 const { getUserProgress } = require('../users/utils/getUserProgress');
-const { search } = require('./search');
+const { search } = require('./utils/search');
 
 async function handleSearchRequest(req, res, next) {
   try {
