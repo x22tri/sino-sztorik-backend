@@ -8,8 +8,10 @@ Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
 // Setting up custom object properties.
 const { INVALID_NUMBERS_PROVIDED } = require('./string-literals');
 
-// A method that compares two progress states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
-// These can be entries from the CharacterOrders table, or objects with the user's current tier and lessonNumber.
+/**
+ * A method that compares two progress states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
+ * These can be entries from the CharacterOrders table, or objects with the user's current tier and lessonNumber.
+ */
 Object.defineProperty(Object.prototype, 'comesLaterThan', {
   value: function (secondState) {
     const firstState = Object(this).valueOf();
@@ -56,3 +58,31 @@ Object.defineProperty(Object.prototype, 'comesLaterThan', {
     return false;
   },
 });
+
+/**
+ * In an array of objects containing a nested object, modifies the objects by extracting the nested object into the main object.
+ * Use after a Sequelize query with an "include" parameter.
+ *
+ * @param {string} field - The name of the property which contains the nested object.
+ * @returns {void} Modifies `this` to now have the nested property extracted to the main object.
+ *
+ * ---
+ *
+ * When Sequelize queries are made with the "include" parameter,
+ * the included (outer joined) table is placed into a nested object with the table's name.
+ *
+ * If, for example, the query is `CharacterOrder.findAll({include: [Character]})`,
+ * the returned `characterOrder` object will have a `characters` field,
+ * containing an object with the queried character's data.
+ *
+ * This function extracts the nested object (bearing the property name `field`)
+ * and adds its content to the main object.
+ */
+
+Array.prototype.hoistField = function (field) {
+  for (let i = 0; i < this.length; i++) {
+    this[i] = { ...this[i], ...this[i][field] };
+
+    delete this[i][field];
+  }
+};

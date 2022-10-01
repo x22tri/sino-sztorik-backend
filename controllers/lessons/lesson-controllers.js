@@ -5,8 +5,8 @@ const Character = require('../../models/characters');
 const CharacterOrder = require('../../models/character-orders');
 const HttpError = require('../../models/http-error');
 
-const { findCharacter } = require('../characters/utils/findCharacter');
 const { getUserProgress } = require('../users/utils/getUserProgress');
+const { addSupplements } = require('../characters/utils/addSupplements');
 
 const {
   INVALID_REQUEST_ERROR,
@@ -48,27 +48,35 @@ const getLesson = async (req, res, next) => {
   );
   if (!foundLesson) return next(new HttpError(LESSON_NOT_FOUND_ERROR, 404));
 
+  // console.log(JSON.stringify(foundLesson.characters));
+
   // Converts the charId's to charChinese's and runs "findCharacter" on the ones that aren't already in the lesson.
   let charIDsInLessonArray = [];
   let charChineseArray = [];
   let foundChar;
   try {
     for (let j = 0; j < foundLesson.characters.length; j++) {
-      foundCharInCharactersTable = await Character.findOne({
-        where: { charId: foundLesson.characters[j].charId },
-      });
-      foundCharChinese = foundCharInCharactersTable.charChinese;
+      // foundCharInCharactersTable = await Character.findOne({
+      //   where: { charId: foundLesson.characters[j].charId },
+      // });
+      // foundCharChinese = foundCharInCharactersTable.charChinese;
+
+      let foundCharChinese = foundLesson.characters[j].charChinese;
 
       if (charChineseArray.includes(foundCharChinese)) {
         continue;
       } else {
         charChineseArray.push(foundCharChinese);
+
         const userProgress = {
           tier: currentTier,
           lessonNumber: currentLesson,
         };
 
-        foundChar = await findCharacter(foundCharChinese, userProgress);
+        console.log(foundLesson.characters[j]);
+
+        // foundChar = await findCharacter(foundCharChinese, userProgress);
+        foundChar = await addSupplements(foundLesson.characters[j]);
 
         if (foundChar) {
           charIDsInLessonArray.push(foundChar);
@@ -77,6 +85,8 @@ const getLesson = async (req, res, next) => {
     }
     // Add the characters to the lesson.
     foundLesson.characters = charIDsInLessonArray;
+
+    // console.log(JSON.stringify(foundLesson.characters));
   } catch (err) {
     console.log(err);
     return next(new HttpError(err, err.code || 500));
@@ -84,6 +94,76 @@ const getLesson = async (req, res, next) => {
 
   res.json({ foundLesson });
 };
+
+async function findAllLessons() {
+  try {
+    const allLessons = await RevampedLesson.findAll();
+
+    return allLessons;
+  } catch (err) {
+    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+  }
+}
+
+/**
+ * Takes a progress state and returns the characters in the given lesson.
+ *
+ * @param {Progress} progress - The progress state (tier and lesson number) to query.
+ * @param {boolean} exactTierOnly - `true` if you want to get a given lesson's chars from only the tier provided in `progress`.
+ * `false` if you want all tiers up to (less than or equal than) the provided tier.
+ * @returns {CharacterOrder & Character} An array of CharacterOrder objects with the corresponding character objects.
+ */
+async function findAllCharsInLesson(progress, exactTierOnly) {
+  try {
+    const tierOperator = exactTierOnly ? Op.eq : Op.lte;
+    const { tier, lessonNumber } = progress;
+
+    let charsInGivenLesson = await CharacterOrder.findAll({
+      where: {
+        tier: { [tierOperator]: tier },
+        lessonNumber: { [Op.eq]: lessonNumber },
+      },
+      include: [Character],
+      raw: true,
+      nest: true,
+    });
+
+    // const charsInGivenLessonFlattened = charsInGivenLesson.map(char => {
+    //   char = { ...char, ...char.character };
+    //   delete char.character;
+
+    //   return char;
+    // });
+
+    // charsInGivenLesson = flattenIncludeQueries(charsInGivenLesson, 'character');
+
+    charsInGivenLesson.hoistField('character');
+
+    return charsInGivenLesson;
+  } catch (err) {
+    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+  }
+}
+
+/**
+ * Takes a lesson (with progress state and length) and the user's progress in the course,
+ * and returns the lesson's "status".
+ *
+ * @param {Progress} lessonProgress - The lesson's progress state (tier and lesson number).
+ * @param {number} lessonLength - The length of the array containing the characters from the requested lesson.
+ * @param {Progress} userProgress - The user's progress state (tier and lesson number).
+ * @returns {LESSON_NOT_IN_TIER | LESSON_LOCKED | LESSON_UPCOMING | LESSON_COMPLETED} The lesson's status.
+ */
+function getLessonStatus(lessonProgress, lessonLength, userProgress) {
+  return lessonLength === 0
+    ? LESSON_NOT_IN_TIER
+    : lessonProgress.comesLaterThan(userProgress)
+    ? LESSON_LOCKED
+    : lessonProgress.tier === userProgress.tier &&
+      lessonProgress.lessonNumber === userProgress.lessonNumber
+    ? LESSON_UPCOMING
+    : LESSON_COMPLETED;
+}
 
 const findLessonHelper = async (
   tier,
@@ -118,9 +198,15 @@ const findLessonHelper = async (
         lessonNumber: { [Op.eq]: lessonNumber },
       },
       include: [Character],
+      raw: true,
+      nest: true,
     });
 
+    charIdsInGivenLesson.hoistField('character');
+
     let status = undefined;
+    const givenLesson = lessonDatabase[lessonNumber - 1];
+
     if (requestType === 'lesson-select') {
       // Adding the tiers (all four) with a status, comparing it with user's progress.
       const userProgress = {
@@ -132,22 +218,21 @@ const findLessonHelper = async (
         ? LESSON_NOT_IN_TIER
         : { tier, lessonNumber }.comesLaterThan(userProgress)
         ? LESSON_LOCKED
-        : lessonDatabase[lessonNumber - 1] &&
-          tier === currentTier &&
-          lessonNumber === currentLesson
+        : tier === currentTier && lessonNumber === currentLesson
         ? LESSON_UPCOMING
         : LESSON_COMPLETED;
     }
     return {
       tier: tier,
       lessonNumber: lessonNumber,
-      name: lessonDatabase[lessonNumber - 1].name,
-      preface: lessonDatabase[lessonNumber - 1]['prefaceTier' + tier],
+      name: givenLesson.name,
+      preface: givenLesson['prefaceTier' + tier],
       characters: charIdsInGivenLesson,
       status: status,
     };
   } catch (err) {
-    return new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
+    // return new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+    return new HttpError(err, 500);
   }
 };
 

@@ -97,10 +97,10 @@ async function findAllCharIdsByChar(char) {
  * @returns {Promise<Character[]>} An array of character objects.
  */
 async function findAllCharVersionsByCharIds(charIds) {
-  let characterVersionsInOrder;
+  let charVersionsInOrder;
 
   try {
-    characterVersionsInOrder = await CharacterOrder.findAll({
+    charVersionsInOrder = await CharacterOrder.findAll({
       where: { charId: charIds },
       include: [Character],
       order: [['tier'], ['lessonNumber'], ['indexInLesson']],
@@ -111,20 +111,13 @@ async function findAllCharVersionsByCharIds(charIds) {
     throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
-  if (!characterVersionsInOrder?.length) {
+  if (!charVersionsInOrder?.length) {
     throw new HttpError(SEARCH_NO_MATCH, 404);
   }
 
-  const characterVersionsInOrderFlattened = characterVersionsInOrder.map(
-    char => {
-      char = { ...char, ...char.character };
-      delete char.character;
+  charVersionsInOrder.hoistField('character');
 
-      return char;
-    }
-  );
-
-  return characterVersionsInOrderFlattened;
+  return charVersionsInOrder;
 }
 
 /**

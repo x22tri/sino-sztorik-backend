@@ -41,6 +41,7 @@ async function findSimilars(char) {
     }
 
     for (const similarChar of similarChars) {
+      // console.log(similarChar);
       try {
         const latestEligibleVersion = await findBareCharacter(
           similarChar.charChinese,
@@ -71,7 +72,8 @@ async function findSimilars(char) {
       }
     }
   } catch (err) {
-    throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
+    // throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
+    throw new HttpError(err, 500);
   }
 
   return { similarAppearance, similarMeaning };

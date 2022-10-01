@@ -1,7 +1,7 @@
 const HttpError = require('../../../models/http-error');
 
 const { findBareCharacter } = require('./findBareCharacter');
-const { findSupplements } = require('./findSupplements');
+const { addSupplements } = require('./addSupplements');
 
 const {
   TIER_OR_LESSON_NOT_NUMBER_ERROR,
@@ -37,7 +37,7 @@ async function findCharacter(charString, userProgress) {
     return;
   }
 
-  const characterWithSupplements = await findSupplements(bareCharacter);
+  const characterWithSupplements = await addSupplements(bareCharacter);
 
   return characterWithSupplements;
 }

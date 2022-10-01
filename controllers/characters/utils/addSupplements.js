@@ -16,7 +16,7 @@ const { findConstituents } = require('./findConstituents');
  * @param {Character} char - The character object whose supplements we're querying.
  * @returns {Promise<Character>} The character object, complete with supplemental information.
  */
-async function findSupplements(char) {
+async function addSupplements(char) {
   const similars = await findSimilars(char);
   const phrases = await findPhrases(char);
   const otherUses = await findOtherUses(char);
@@ -32,5 +32,5 @@ async function findSupplements(char) {
 }
 
 module.exports = {
-  findSupplements,
+  addSupplements,
 };
