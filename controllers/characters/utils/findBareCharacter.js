@@ -7,7 +7,6 @@ const {
   CHARACTER_QUERY_FAILED_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
-  NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR,
 } = require('../../../util/string-literals');
 
 /**
@@ -26,7 +25,7 @@ const {
  * @param {Progress} progress - The tier and lesson that the user is currently at.
  * Alternatively, when called by a supplement-gathering function like findSimilars,
  * the tier, lesson and index of a character that serves as a comparison point.
- * @returns {Promise<Character>} The character object.
+ * @returns {Promise<Character | null>} The character object.
  */
 async function findBareCharacter(char, progress) {
   const ids = await findAllCharIdsByChar(char);
@@ -34,10 +33,7 @@ async function findBareCharacter(char, progress) {
   const firstCharVersion = characterVersionsInOrder[0];
 
   if (firstCharVersion.comesLaterThan(progress)) {
-    throw new HttpError(
-      `${NOT_ELIGIBLE_TO_SEE_CHARACTER_ERROR}: ${firstCharVersion.charChinese}`,
-      401
-    );
+    return null;
   }
 
   let charToMutate = await JSON.parse(JSON.stringify(firstCharVersion));

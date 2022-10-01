@@ -92,7 +92,7 @@ async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
       );
 
       if (!latestEligibleVersion) {
-        break;
+        break; // If the user is ineligible for even one character in the phrase, they are ineligible for the phrase altogether.
       }
 
       charObjectsInPhrase.push(latestEligibleVersion);

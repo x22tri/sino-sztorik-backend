@@ -24,7 +24,7 @@ const {
  * @param {string} charString - The character string we're querying.
  * @param {Progress} userProgress - The user's current progress in the course.
  *
- * @returns {Promise<Character>} The character object.
+ * @returns {Promise<Character | void>} The character object.
  */
 async function findCharacter(charString, userProgress) {
   if (isNaN(userProgress.tier) || isNaN(userProgress.lessonNumber)) {
@@ -32,6 +32,10 @@ async function findCharacter(charString, userProgress) {
   }
 
   const bareCharacter = await findBareCharacter(charString, userProgress);
+
+  if (!bareCharacter) {
+    return;
+  }
 
   const characterWithSupplements = await findSupplements(bareCharacter);
 

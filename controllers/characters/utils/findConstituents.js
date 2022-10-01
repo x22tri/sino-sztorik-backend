@@ -42,6 +42,11 @@ async function findConstituents(char) {
 
     for (const constituent of constituentStringArray) {
       const currentConstituent = await findBareCharacter(constituent, progress);
+
+      if (!currentConstituent) {
+        continue;
+      }
+
       constituentCharacterObjects.push(currentConstituent);
     }
 
