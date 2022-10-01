@@ -1,8 +1,8 @@
-const RevampedLesson = require('../../models/revamped-lessons');
 const HttpError = require('../../models/http-error');
 
 const { findAllLessonObjects } = require('./utils/findAllLessonObjects');
-const { findAllCharsInLesson } = require('./utils/findAllCharsInLesson');
+const { findCurrentLessonName } = require('./utils/findCurrentLessonName');
+const { findLessonWithChars } = require('./utils/findLessonWithChars');
 const { getLessonStatus } = require('./utils/getLessonStatus');
 
 const { getUserProgress } = require('../users/utils/getUserProgress');
@@ -74,29 +74,6 @@ const getLesson = async (req, res, next) => {
   res.json({ foundLesson });
 };
 
-const findLessonWithChars = async (lessonProgress, requestType) => {
-  try {
-    const lessonDatabase = await findAllLessonObjects();
-
-    const givenLesson = lessonDatabase[lessonProgress.lessonNumber - 1];
-
-    const charsInGivenLesson = await findAllCharsInLesson(
-      { tier: lessonProgress.tier, lessonNumber: lessonProgress.lessonNumber },
-      requestType !== 'review'
-    );
-
-    return {
-      tier: lessonProgress.tier,
-      lessonNumber: lessonProgress.lessonNumber,
-      name: givenLesson.name,
-      preface: givenLesson['prefaceTier' + lessonProgress.tier],
-      characters: charsInGivenLesson,
-    };
-  } catch (err) {
-    return new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
-  }
-};
-
 // An exported function that gets all lessons for the lesson selection screen.
 const getLessonSelect = async (req, res, next) => {
   const user = await getUser(req.headers.authorization);
@@ -109,10 +86,7 @@ const getLessonSelect = async (req, res, next) => {
   let lessonArray = [];
   let currentLessonName;
   try {
-    let lessonDatabase = await RevampedLesson.findAll();
-    currentLessonName = lessonDatabase.find(
-      lesson => lesson.lessonNumber === user.currentLesson
-    ).name;
+    let lessonDatabase = await findAllLessonObjects();
 
     // Iterates over all lessonNumbers and tiers to get all lessons.
     for (
@@ -130,7 +104,8 @@ const getLessonSelect = async (req, res, next) => {
 
         let foundLesson = await findLessonWithChars(
           lessonProgress,
-          'lesson-select'
+          'lesson-select',
+          lessonDatabase
         );
 
         if (foundLesson) {
@@ -155,6 +130,8 @@ const getLessonSelect = async (req, res, next) => {
   } catch (err) {
     return next(new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500));
   }
+
+  currentLessonName = findCurrentLessonName(lessonArray, user.currentLesson);
 
   res.json({
     lessonArray,

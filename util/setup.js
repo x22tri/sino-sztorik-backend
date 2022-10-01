@@ -75,7 +75,7 @@ Object.defineProperty(Object.prototype, 'comesLaterThan', {
  * the returned `characterOrder` object will have a `characters` field,
  * containing an object with the queried character's data.
  *
- * This function extracts the nested object (bearing the property name `field`)
+ * This function extracts the nested object (bearing the property name in the `field` argument)
  * and adds its content to the main object.
  */
 
