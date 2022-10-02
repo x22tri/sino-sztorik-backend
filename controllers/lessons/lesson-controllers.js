@@ -8,6 +8,7 @@ const { getLessonStatus } = require('./utils/getLessonStatus');
 const { getUserProgress } = require('../users/utils/getUserProgress');
 const { getUser } = require('../users/utils/getUser');
 const { addSupplements } = require('../characters/utils/addSupplements');
+const { findCharacter } = require('../characters/utils/findCharacter');
 
 const {
   INVALID_REQUEST_ERROR,
@@ -57,7 +58,7 @@ const getLesson = async (req, res, next) => {
       } else {
         charChineseArray.push(foundCharChinese);
 
-        const foundChar = await addSupplements(foundLesson.characters[j]);
+        const foundChar = await findCharacter(foundCharChinese, user);
 
         if (foundChar) {
           charIDsInLessonArray.push(foundChar);
