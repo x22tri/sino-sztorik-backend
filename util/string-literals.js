@@ -25,6 +25,8 @@ const INVALID_REQUEST_ERROR = 'Érvénytelen kérés.';
 
 const LESSON_NOT_FOUND_ERROR = 'A lecke nem található.';
 
+const LESSON_CHARS_NOT_FOUND_ERROR = 'A lecke karakterei nem találhatók.';
+
 const LESSON_DATABASE_QUERY_FAILED_ERROR = 'Nem sikerült lekérni a leckéket.';
 
 const DATABASE_QUERY_FAILED_ERROR = 'Nem sikerült lekérni az adatbázist.';
@@ -89,6 +91,7 @@ module.exports = {
   UNKNOWN_ERROR,
   INVALID_REQUEST_ERROR,
   LESSON_NOT_FOUND_ERROR,
+  LESSON_CHARS_NOT_FOUND_ERROR,
   LESSON_DATABASE_QUERY_FAILED_ERROR,
   LESSON_LOCKED,
   LESSON_COMPLETED,

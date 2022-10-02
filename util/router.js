@@ -1,15 +1,18 @@
-const { signup } = require('../controllers/users/signup');
-const { login } = require('../controllers/users/login');
-const { advanceUser } = require('../controllers/users/advanceUser');
+const {
+  signup,
+  login,
+  advanceUser,
+} = require('../controllers/users/users-controllers');
 
 const {
-  getLesson,
   getLessonSelect,
+  getLearn,
+  getReview,
 } = require('../controllers/lessons/lesson-controllers');
 
 const {
   handleSearchRequest,
-} = require('../controllers/characters/handleSearchRequest');
+} = require('../controllers/characters/characters-controllers');
 
 const {
   getAllLessons,
@@ -31,9 +34,9 @@ router.post('/api/users/signup', signupValidators, signup);
 router.post('/api/users/login', login);
 router.post('/api/users/advance', advanceUser);
 
-router.get('/api/learn', getLesson);
+router.get('/api/learn', getLearn);
 router.get('/api/learn/select', getLessonSelect);
-router.get('/api/review/:charID', getLesson);
+router.get('/api/review/:lessonToReview', getReview);
 
 router.get('/api/search/:searchTerm', handleSearchRequest);
 

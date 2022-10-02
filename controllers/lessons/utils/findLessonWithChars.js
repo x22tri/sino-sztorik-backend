@@ -14,12 +14,12 @@ const { LESSON_PREFACE_TIER_PREFIX } = require('../../../util/config');
  * and all characters within the lesson.
  *
  * @param {Progress} lessonProgress - The lesson's progress state (tier and lesson number).
- * @param {string} requestType - The type of the request.
+ * @param {boolean} isReview - `true` if the request arrives from a lesson review request, `false` otherwise.
  * @param {Lesson[]} [lessonDb] - The lesson database, if it has already been queried during an earlier function,
  * can optionally be passed to this function to avoid expensive re-querying.
  * @returns {Promise<Lesson & Character>} The found lesson.
  */
-async function findLessonWithChars(lessonProgress, requestType, lessonDb) {
+async function findLessonWithChars(lessonProgress, isReview, lessonDb) {
   try {
     const { tier, lessonNumber } = lessonProgress;
 
@@ -29,7 +29,7 @@ async function findLessonWithChars(lessonProgress, requestType, lessonDb) {
 
     const charsInGivenLesson = await findAllCharsInLesson(
       { tier, lessonNumber },
-      requestType !== 'review'
+      !isReview
     );
 
     return {
