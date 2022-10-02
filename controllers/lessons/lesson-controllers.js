@@ -50,20 +50,24 @@ const getLesson = async (req, res, next) => {
   let charIDsInLessonArray = [];
   let charChineseArray = [];
   try {
+    // console.log(foundLesson.characters);
+
     for (let j = 0; j < foundLesson.characters.length; j++) {
+      // console.log(characters[j])
+
       let foundCharChinese = foundLesson.characters[j].charChinese;
 
-      if (charChineseArray.includes(foundCharChinese)) {
-        continue;
-      } else {
-        charChineseArray.push(foundCharChinese);
+      // if (charChineseArray.includes(foundCharChinese)) {
+      //   continue;
+      // } else {
+      charChineseArray.push(foundCharChinese);
 
-        const foundChar = await findCharacter(foundCharChinese, user);
+      const foundChar = await findCharacter(foundCharChinese, user);
 
-        if (foundChar) {
-          charIDsInLessonArray.push(foundChar);
-        }
+      if (foundChar) {
+        charIDsInLessonArray.push(foundChar);
       }
+      // }
     }
     // Add the characters to the lesson.
     foundLesson.characters = charIDsInLessonArray;

@@ -87,6 +87,24 @@ Array.prototype.hoistField = function (field) {
   }
 };
 
+Array.prototype.filterByField = function (field) {
+  let obj = {};
+
+  for (let i = 0; i < this.length; i++) {
+    if (!this[i] || !this[i][field]) {
+      continue;
+    }
+
+    if (obj[this[i][field]]) {
+      this.splice(i, 1);
+    } else {
+      obj[this[i][field]] = true;
+    }
+  }
+
+  obj = {};
+};
+
 // Setting up type definitions.
 
 /**

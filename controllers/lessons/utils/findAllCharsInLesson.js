@@ -32,6 +32,8 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
 
     charsInGivenLesson.hoistField('character');
 
+    charsInGivenLesson.filterByField('charChinese');
+
     return charsInGivenLesson;
   } catch (err) {
     throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
