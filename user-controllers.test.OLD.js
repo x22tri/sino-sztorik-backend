@@ -23,7 +23,7 @@ jest.mock('../models/character-orders', () => {
 });
 
 // Tests start here.
-describe('Tests for the function "advanceUser" (route /api/users/advance)', () => {
+xdescribe('Tests for the function "advanceUser" (route /api/users/advance)', () => {
   it("finds the next lesson (via CharacterOrders DB) in the same tier (if it exists) and updates user's currentLesson", async () => {
     currentTier = 1;
     currentLesson = 8;

@@ -8,7 +8,7 @@ const Phrase = require('../../models/phrases');
 const OtherUse = require('../../models/other-uses');
 const HttpError = require('../../models/http-error');
 
-const { findLessonWithChars } = require('../lessons/lesson-controllers');
+const { findLessonWithChars } = require('../lessons/utils/findLessonWithChars');
 const { addSupplements } = require('../characters/utils/addSupplements');
 
 const {
