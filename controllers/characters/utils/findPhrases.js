@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { like } = require('sequelize').Op;
 const Phrase = require('../../../models/phrases');
 const HttpError = require('../../../models/http-error');
 
@@ -60,7 +60,7 @@ async function findAllPhrasesWithChar(char) {
   const foundCharInDB = await Phrase.findAll({
     where: {
       phraseChinese: {
-        [Op.like]: `%${char.charChinese}%`,
+        [like]: `%${char.charChinese}%`,
       },
     },
     raw: true,

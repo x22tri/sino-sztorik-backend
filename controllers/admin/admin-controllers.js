@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { and, not, like, notIn } = require('sequelize').Op;
 
 const RevampedLesson = require('../../models/revamped-lessons');
 
@@ -208,9 +208,9 @@ const getAllSimilars = async (req, res, next) => {
 
       foundKeyword = await Character.findOne({
         where: {
-          [Op.and]: [
+          [and]: [
             { charChinese: allSimilarsArray[i].charChinese },
-            { [Op.not]: [{ keyword: null }] },
+            { [not]: [{ keyword: null }] },
           ],
         },
         attributes: ['keyword'],
@@ -220,9 +220,9 @@ const getAllSimilars = async (req, res, next) => {
 
       foundPrimitive = await Character.findOne({
         where: {
-          [Op.and]: [
+          [and]: [
             { charChinese: allSimilarsArray[i].charChinese },
-            { [Op.not]: [{ primitiveMeaning: null }] },
+            { [not]: [{ primitiveMeaning: null }] },
           ],
         },
         attributes: ['primitiveMeaning'],
@@ -326,7 +326,7 @@ const updateCharacter = async (req, res, next) => {
         if (foundCurrentCharInSimilar) {
           await Similar.findOrCreate({
             where: {
-              [Op.and]: [
+              [and]: [
                 { charChinese: char[attributeName][i] },
                 { similarType: similarType },
               ],
@@ -379,7 +379,7 @@ const updateCharacter = async (req, res, next) => {
         let similarsInDatabase = await Similar.findAll({
           where: {
             similarGroup: foundCurrentCharInSimilar.similarGroup,
-            charChinese: { [Op.not]: char.charChinese },
+            charChinese: { [not]: char.charChinese },
             similarType: similarType,
           },
           raw: true,
@@ -462,8 +462,8 @@ const updateCharacter = async (req, res, next) => {
       );
       await database.destroy({
         where: {
-          [charColumnName]: { [Op.like]: `%${char.charChinese}%` },
-          [idName]: { [Op.notIn]: allIDsInRequest },
+          [charColumnName]: { [like]: `%${char.charChinese}%` },
+          [idName]: { [notIn]: allIDsInRequest },
         },
         raw: true,
       });

@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { or } = require('sequelize').Op;
 const Character = require('../../../models/characters');
 const HttpError = require('../../../models/http-error');
 
@@ -11,7 +11,7 @@ async function findTermAsKeywordOrPrimitive(searchTerm) {
   try {
     const keywordsOrPrimitives = await Character.findAll({
       where: {
-        [Op.or]: [{ keyword: searchTerm }, { primitiveMeaning: searchTerm }],
+        [or]: [{ keyword: searchTerm }, { primitiveMeaning: searchTerm }],
       },
       raw: true,
     });

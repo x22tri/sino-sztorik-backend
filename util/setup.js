@@ -7,6 +7,7 @@ Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
 
 // Setting up custom object properties.
 const { INVALID_NUMBERS_PROVIDED } = require('./string-literals');
+// const { Model } = require('sequelize/dist');
 
 /**
  * A method that compares two progress states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
@@ -104,6 +105,8 @@ Array.prototype.filterByField = function (field) {
 
   obj = {};
 };
+
+// Model.prototype.findAllHoisted = function () {};
 
 // Setting up type definitions.
 

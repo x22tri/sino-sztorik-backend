@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { gt } = require('sequelize').Op;
 
 const CharacterOrder = require('../../../models/character-orders');
 const HttpError = require('../../../models/http-error');
@@ -36,7 +36,7 @@ async function findNextLesson(currentTier, currentLesson) {
 
 async function lookForLessonInSameTier(currentTier, currentLesson) {
   const remainingLessonsInTier = await CharacterOrder.findAll({
-    where: { tier: currentTier, lessonNumber: { [Op.gt]: currentLesson } },
+    where: { tier: currentTier, lessonNumber: { [gt]: currentLesson } },
     order: ['lessonNumber'],
   });
 

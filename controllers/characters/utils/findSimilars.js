@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { and, not } = require('sequelize').Op;
 const Similar = require('../../../models/similars');
 const HttpError = require('../../../models/http-error');
 
@@ -97,10 +97,10 @@ async function findCharInSimilarDB(char) {
 async function findCharsInSameSimilarGroup(similarEntry) {
   const similarChars = await Similar.findAll({
     where: {
-      [Op.and]: [
+      [and]: [
         { similarGroup: similarEntry.similarGroup },
         {
-          [Op.not]: [{ charChinese: similarEntry.charChinese }],
+          [not]: [{ charChinese: similarEntry.charChinese }],
         },
       ],
     },

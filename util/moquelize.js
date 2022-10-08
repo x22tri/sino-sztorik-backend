@@ -1,19 +1,44 @@
-const firstBy = require('thenby');
+const initializeSortStack = (function () {
+  function compare(field, descending) {
+    let f = (a, b) => (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0);
+    return descending ? -f : f;
+  }
+
+  function addToSort(field, descending) {
+    let f = () => 0;
+    f.addToSort = addToSort;
+
+    if (!field) {
+      return f;
+    } else {
+      f = (a, b) => this(a, b) || compare(field, descending)(a, b);
+      return f;
+    }
+  }
+
+  return addToSort;
+})();
 
 function isObject(value) {
   return typeof value === 'object' && !Array.isArray(value) && value !== null;
 }
 
-function gatherFindParams(where) {
+function gatherWhereParams(where) {
   if (!where || where === {}) {
     return {};
   }
 
-  let whereParams = {};
+  let whereParams = [];
 
-  Object.entries(where).forEach(([property, value], index) => {
+  Object.entries(where).forEach(([property, value]) => {
+    // Shorthand syntax for [Op.in].
+    if (Array.isArray(value)) {
+      whereParams.push(item => value.includes(item[property]));
+    }
+
+    // Shorthand syntax for [Op.eq].
     if (!isObject(value)) {
-      whereParams[index] = item => item[property] === value;
+      whereParams.push(item => item[property] === value);
     }
 
     // Sequelize stores operators in symbol format.
@@ -50,35 +75,73 @@ function gatherFindParams(where) {
               We apologize for the inconvenience.`);
       }
 
-      whereParams[index] = operatorDictionary[operator];
+      whereParams.push(operatorDictionary[operator]);
     }
   });
 
   return whereParams;
 }
 
-function moquelize(testData) {
+function orderFilteredData(filteredData, order) {
+  if (!order?.length) {
+    return filteredData;
+  }
+
+  let sortStack = initializeSortStack();
+
+  order.forEach(property => (sortStack = sortStack.addToSort(property)));
+
+  filteredData.sort(sortStack);
+
+  return filteredData;
+}
+
+function moquelize(data) {
   return {
     findAll({ where, order }) {
-      let whereParams = gatherFindParams(where);
+      try {
+        const whereParams = gatherWhereParams(where);
 
-      let filteredData = testData.filter(item =>
-        Object.values(whereParams).every(query => query(item))
-      );
+        const filtered = data.filter(item =>
+          whereParams.every(func => func(item))
+        );
 
-      if (!order?.length) {
-        () => {};
+        const sorted = orderFilteredData(filtered, order);
+
+        return sorted;
+      } catch (err) {
+        throw new Error(err);
       }
+    },
 
-      let sortStack = firstBy(() => 0);
+    findOne({ where }) {
+      try {
+        const whereParams = gatherWhereParams(where);
 
-      order.forEach(property => (sortStack = sortStack.thenBy([property])));
+        const found = data.find(item => whereParams.every(func => func(item)));
 
-      filteredData.sort(sortStack);
+        return found;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
 
-      // console.log(filteredData);
+    count({ where }) {
+      const whereParams = gatherWhereParams(where);
 
-      return filteredData;
+      let filtered = data.filter(item => whereParams.every(func => func(item)));
+
+      return filtered.length;
+    },
+
+    min(field, { where }) {
+      let sorted = this.findAll({ where, order: [[field]] });
+      return sorted[0];
+    },
+
+    max(field, { where }) {
+      let sorted = this.findAll({ where, order: [[field]] });
+      return sorted[sorted.length - 1];
     },
   };
 }

@@ -33,6 +33,7 @@ const CharacterOrder = sequelize.define(
   },
   {
     timestamps: false,
+    raw: true,
   }
 );
 
