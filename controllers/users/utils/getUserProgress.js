@@ -1,4 +1,4 @@
-const { getUser } = require('./getUser');
+import { getUser } from './getUser.js';
 
 async function getUserProgress(req) {
   const authHeader = req.headers.authorization;
@@ -11,4 +11,4 @@ async function getUserProgress(req) {
   };
 }
 
-module.exports = { getUserProgress };
+export { getUserProgress };

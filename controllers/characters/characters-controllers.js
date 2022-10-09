@@ -1,9 +1,9 @@
-const {
+import {
   COURSE_FINISHED,
   FORCE_SEARCH_QUERY_PARAM,
-} = require('../../util/config');
-const { getUserProgress } = require('../users/utils/getUserProgress');
-const { search } = require('./utils/search');
+} from '../../util/config.js';
+import { getUserProgress } from '../users/utils/getUserProgress.js';
+import { search } from './utils/search.js';
 
 async function handleSearchRequest(req, res, next) {
   try {
@@ -21,6 +21,4 @@ async function handleSearchRequest(req, res, next) {
   }
 }
 
-module.exports = {
-  handleSearchRequest,
-};
+export { handleSearchRequest };

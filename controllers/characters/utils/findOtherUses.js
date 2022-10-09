@@ -1,9 +1,6 @@
-const OtherUse = require('../../../models/other-uses');
-const HttpError = require('../../../models/http-error');
-
-const {
-  OTHER_USES_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
+import OtherUse from '../../../models/other-uses.js';
+import HttpError from '../../../models/http-error.js';
+import { OTHER_USES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 
 /**
  * Takes a character object and finds all meanings of the character other than its keyword, together with
@@ -54,6 +51,4 @@ function removeDuplicatePinyins(otherUseEntries) {
   }
 }
 
-module.exports = {
-  findOtherUses,
-};
+export { findOtherUses };

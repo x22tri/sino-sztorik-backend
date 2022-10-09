@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../util/database');
+import Sequelize from 'sequelize';
+import sequelize from '../util/database.js';
 
 const Phrase = sequelize.define(
   'phrase',
@@ -28,4 +28,4 @@ const Phrase = sequelize.define(
   }
 );
 
-module.exports = Phrase;
+export default Phrase;

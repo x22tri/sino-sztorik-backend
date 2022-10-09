@@ -1,4 +1,4 @@
-const { check } = require('express-validator');
+import { check } from 'express-validator';
 
 const signupValidators = [
   check('displayName').not().isEmpty(),
@@ -6,6 +6,4 @@ const signupValidators = [
   check('password').isLength({ min: 6 }),
 ];
 
-module.exports = {
-  signupValidators,
-};
+export { signupValidators };

@@ -1,13 +1,11 @@
-const { like } = require('sequelize').Op;
-const Phrase = require('../../../models/phrases');
-const HttpError = require('../../../models/http-error');
+import { Op } from 'sequelize';
+const { like } = Op;
 
-const {
-  PHRASES_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
-
-const { findBareCharacter } = require('./findBareCharacter');
-const { getCharProgress } = require('./getCharProgress');
+import Phrase from '../../../models/phrases.js';
+import HttpError from '../../../models/http-error.js';
+import { PHRASES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import { findBareCharacter } from './findBareCharacter.js';
+import { getCharProgress } from './getCharProgress.js';
 
 /**
  * Takes a character object and finds all the phrases containing the character that the user is eligible to see,
@@ -109,6 +107,4 @@ async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
   return null;
 }
 
-module.exports = {
-  findPhrases,
-};
+export { findPhrases };

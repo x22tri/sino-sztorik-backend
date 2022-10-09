@@ -1,9 +1,9 @@
-const {
+import {
   LESSON_LOCKED,
   LESSON_COMPLETED,
   LESSON_UPCOMING,
   LESSON_NOT_IN_TIER,
-} = require('../../../util/string-literals');
+} from '../../../util/string-literals.js';
 
 /**
  * Takes a lesson (with progress state and length) and the user's progress in the course,
@@ -25,6 +25,4 @@ function getLessonStatus(userProgress, lessonProgress, lessonLength) {
     : LESSON_COMPLETED;
 }
 
-module.exports = {
-  getLessonStatus,
-};
+export { getLessonStatus };

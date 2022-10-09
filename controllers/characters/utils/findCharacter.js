@@ -1,11 +1,7 @@
-const HttpError = require('../../../models/http-error');
-
-const { findBareCharacter } = require('./findBareCharacter');
-const { addSupplements } = require('./addSupplements');
-
-const {
-  TIER_OR_LESSON_NOT_NUMBER_ERROR,
-} = require('../../../util/string-literals');
+import HttpError from '../../../models/http-error.js';
+import { findBareCharacter } from './findBareCharacter.js';
+import { addSupplements } from './addSupplements.js';
+import { TIER_OR_LESSON_NOT_NUMBER_ERROR } from '../../../util/string-literals.js';
 
 /**
  * Takes the user's current progress and character string and finds the character object for the character
@@ -33,6 +29,4 @@ async function findCharacter(charString, userProgress) {
   return characterWithSupplements;
 }
 
-module.exports = {
-  findCharacter,
-};
+export { findCharacter };

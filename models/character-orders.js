@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../util/database');
-const Character = require('./characters');
+import Sequelize from 'sequelize';
+import sequelize from '../util/database.js';
+import Character from './characters.js';
 
 const CharacterOrder = sequelize.define(
   'characterOrder',
@@ -37,4 +37,4 @@ const CharacterOrder = sequelize.define(
   }
 );
 
-module.exports = CharacterOrder;
+export default CharacterOrder;

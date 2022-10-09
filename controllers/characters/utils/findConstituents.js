@@ -1,16 +1,17 @@
-const HttpError = require('../../../models/http-error');
-
-const {
+import HttpError from '../../../models/http-error.js';
+import {
   CONSTITUENTS_QUERY_FAILED_ERROR,
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
-const {
+} from '../../../util/string-literals.js';
+
+import {
   CONSTITUENT_SEPARATOR,
   INTERACTIVE_WORD_WRAPPER,
   INTERACTIVE_WORD_SEPARATOR,
-} = require('../../../util/config');
-const { InteractiveWordType } = require('../../../util/enums');
-const { findBareCharacter } = require('./findBareCharacter');
+} from '../../../util/config.js';
+
+import { InteractiveWordType } from '../../../util/enums.js';
+import { findBareCharacter } from './findBareCharacter.js';
 
 /**
  * Takes a character object and returns the bare character objects of its constituents.
@@ -89,6 +90,4 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
-module.exports = {
-  findConstituents,
-};
+export { findConstituents };

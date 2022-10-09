@@ -1,15 +1,11 @@
-const { gt } = require('sequelize').Op;
+import { Op } from 'sequelize';
+const { gt } = Op;
 
-const CharacterOrder = require('../../../models/character-orders');
-const HttpError = require('../../../models/http-error');
-
-const { getCharProgress } = require('../../characters/utils/getCharProgress');
-
-const { LAST_TIER, COURSE_FINISHED } = require('../../../util/config');
-
-const {
-  NEXT_LESSON_NOT_FOUND_ERROR,
-} = require('../../../util/string-literals');
+import CharacterOrder from '../../../models/character-orders.js';
+import HttpError from '../../../models/http-error.js';
+import { getCharProgress } from '../../characters/utils/getCharProgress.js';
+import { LAST_TIER, COURSE_FINISHED } from '../../../util/config.js';
+import { NEXT_LESSON_NOT_FOUND_ERROR } from '../../../util/string-literals.js';
 
 async function findNextLesson(currentTier, currentLesson) {
   const nextLessonInTier = await lookForLessonInSameTier(
@@ -88,6 +84,4 @@ function isValidProgress(progress) {
   );
 }
 
-module.exports = {
-  findNextLesson,
-};
+export { findNextLesson };

@@ -1,8 +1,6 @@
-const HttpError = require('../../../models/http-error');
-
-const { findCharacter } = require('./findCharacter');
-
-const { SEARCH_NO_ELIGIBLE_MATCH } = require('../../../util/string-literals');
+import HttpError from '../../../models/http-error.js';
+import { findCharacter } from './findCharacter.js';
+import { SEARCH_NO_ELIGIBLE_MATCH } from '../../../util/string-literals.js';
 
 async function findCharByKeywordOrPrimitive(array, userProgress) {
   let foundSearchCharsArray = [];
@@ -25,6 +23,4 @@ async function findCharByKeywordOrPrimitive(array, userProgress) {
   }
 }
 
-module.exports = {
-  findCharByKeywordOrPrimitive,
-};
+export { findCharByKeywordOrPrimitive };

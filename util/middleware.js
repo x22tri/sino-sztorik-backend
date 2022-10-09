@@ -1,5 +1,5 @@
-const HttpError = require('../models/http-error');
-const { UNSUPPORTED_ROUTE_ERROR, UNKNOWN_ERROR } = require('./string-literals');
+import HttpError from '../models/http-error.js';
+import { UNSUPPORTED_ROUTE_ERROR, UNKNOWN_ERROR } from './string-literals.js';
 
 const unsupportedRouteHandler = () => {
   throw new HttpError(UNSUPPORTED_ROUTE_ERROR, 404);
@@ -14,7 +14,4 @@ const errorHandler = (error, _, res, next) => {
   res.json({ message: error.message || UNKNOWN_ERROR });
 };
 
-module.exports = {
-  unsupportedRouteHandler,
-  errorHandler,
-};
+export { unsupportedRouteHandler, errorHandler };

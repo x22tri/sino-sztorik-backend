@@ -224,6 +224,4 @@ function testGatherQueries() {
   console.log(tarr);
 }
 
-module.exports = {
-  testGatherQueries,
-};
+export { testGatherQueries };

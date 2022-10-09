@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../util/database');
+import Sequelize from 'sequelize';
+import sequelize from '../util/database.js';
 
 const Character = sequelize.define(
   'character',
@@ -57,4 +57,4 @@ const Character = sequelize.define(
   }
 );
 
-module.exports = Character;
+export default Character;

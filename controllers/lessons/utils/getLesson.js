@@ -1,13 +1,12 @@
-const HttpError = require('../../../models/http-error');
+import HttpError from '../../../models/http-error.js';
+import { findCharacter } from '../../characters/utils/findCharacter.js';
+import { findLessonWithChars } from './findLessonWithChars.js';
 
-const { findCharacter } = require('../../characters/utils/findCharacter');
-const { findLessonWithChars } = require('./findLessonWithChars');
-
-const {
+import {
   LESSON_CHARS_NOT_FOUND_ERROR,
   LESSON_NOT_FOUND_ERROR,
   LESSON_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
+} from '../../../util/string-literals.js';
 
 /**
  * Gets a lesson, together with the characters within the lesson, based on the user's eligibility.
@@ -69,6 +68,4 @@ async function removeIneligiblesAndAddSupplements(lessonObject, userProgress) {
   }
 }
 
-module.exports = {
-  getLesson,
-};
+export { getLesson };

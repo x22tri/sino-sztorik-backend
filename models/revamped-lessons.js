@@ -1,6 +1,5 @@
-const Sequelize = require('sequelize');
-
-const sequelize = require('../util/database');
+import Sequelize from 'sequelize';
+import sequelize from '../util/database.js';
 
 const RevampedLesson = sequelize.define(
   'revampedLesson',
@@ -32,4 +31,4 @@ const RevampedLesson = sequelize.define(
   }
 );
 
-module.exports = RevampedLesson;
+export default RevampedLesson;

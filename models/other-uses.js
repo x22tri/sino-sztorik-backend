@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../util/database');
+import Sequelize from 'sequelize';
+import sequelize from '../util/database.js';
 
 const OtherUse = sequelize.define(
   'otheruse',
@@ -33,4 +33,4 @@ const OtherUse = sequelize.define(
   }
 );
 
-module.exports = OtherUse;
+export default OtherUse;

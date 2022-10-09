@@ -1,12 +1,11 @@
-const User = require('../../../models/users');
-const HttpError = require('../../../models/http-error');
-const jwt = require('jsonwebtoken');
-
-const {
+import User from '../../../models/users.js';
+import HttpError from '../../../models/http-error.js';
+import jwt from 'jsonwebtoken';
+import {
   UNAUTHENTICATED_ERROR,
   AUTHENTICATION_FAILED_ERROR,
   USER_NOT_FOUND_ERROR,
-} = require('../../../util/string-literals');
+} from '../../../util/string-literals.js';
 
 async function getUser(authHeader) {
   try {
@@ -28,6 +27,4 @@ async function getUser(authHeader) {
   }
 }
 
-module.exports = {
-  getUser,
-};
+export { getUser };

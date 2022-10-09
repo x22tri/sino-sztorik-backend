@@ -1,23 +1,20 @@
-const User = require('../../models/users');
-const HttpError = require('../../models/http-error');
+import User from '../../models/users.js';
+import HttpError from '../../models/http-error.js';
+import { getUser } from './utils/getUser.js';
+import { updateUserInDatabase } from './utils/updateUserInDatabase.js';
+import { findNextLesson } from './utils/findNextLesson.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { validationResult } from 'express-validator';
+import { PW_SALT_ROUNDS } from '../../util/config.js';
 
-const { getUser } = require('./utils/getUser');
-const { updateUserInDatabase } = require('./utils/updateUserInDatabase');
-const { findNextLesson } = require('./utils/findNextLesson');
-
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
-const { validationResult } = require('express-validator');
-const { PW_SALT_ROUNDS } = require('../../util/config');
-
-const {
+import {
   VALIDATION_FAILED_ERROR,
   EMAIL_TAKEN_ERROR,
   SIGNUP_FAILED_ERROR,
   WRONG_CREDENTIALS_ERROR,
   LOGIN_FAILED_ERROR,
-} = require('../../util/string-literals');
+} from '../../util/string-literals.js';
 
 async function signup(req, res, next) {
   try {
@@ -98,8 +95,4 @@ async function advanceUser(req, res, next) {
   }
 }
 
-module.exports = {
-  signup,
-  login,
-  advanceUser,
-};
+export { signup, login, advanceUser };

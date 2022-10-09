@@ -1,15 +1,12 @@
-const { eq, lte } = require('sequelize').Op;
-const CharacterOrder = require('../../../models/character-orders');
-const Character = require('../../../models/characters');
-const HttpError = require('../../../models/http-error');
+import { Op } from 'sequelize';
+const { eq, lte } = Op;
 
-const { findAllLessonObjects } = require('./findAllLessonObjects');
-
-const {
-  LESSON_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
-
-const { LESSON_PREFACE_TIER_PREFIX } = require('../../../util/config');
+import CharacterOrder from '../../../models/character-orders.js';
+import Character from '../../../models/characters.js';
+import HttpError from '../../../models/http-error.js';
+import { findAllLessonObjects } from './findAllLessonObjects.js';
+import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import { LESSON_PREFACE_TIER_PREFIX } from '../../../util/config.js';
 
 /**
  * Based on a lesson's progress state (tier and lesson number), finds the lesson object
@@ -79,6 +76,4 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
   }
 }
 
-module.exports = {
-  findLessonWithChars,
-};
+export { findLessonWithChars };

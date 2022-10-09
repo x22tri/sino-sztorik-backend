@@ -146,4 +146,4 @@ function moquelize(data) {
   };
 }
 
-module.exports = moquelize;
+export default moquelize;

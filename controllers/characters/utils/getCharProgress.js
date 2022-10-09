@@ -3,4 +3,4 @@ function getCharProgress(characterObject) {
   return { tier, lessonNumber, indexInLesson };
 }
 
-module.exports = { getCharProgress };
+export { getCharProgress };

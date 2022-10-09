@@ -1,7 +1,7 @@
-const { findSimilars } = require('./findSimilars');
-const { findPhrases } = require('./findPhrases');
-const { findOtherUses } = require('./findOtherUses');
-const { findConstituents } = require('./findConstituents');
+import { findSimilars } from './findSimilars.js';
+import { findPhrases } from './findPhrases.js';
+import { findOtherUses } from './findOtherUses.js';
+import { findConstituents } from './findConstituents.js';
 
 /**
  * Takes a character object and finds all supplemental information about it:
@@ -27,6 +27,4 @@ async function addSupplements(char) {
   };
 }
 
-module.exports = {
-  addSupplements,
-};
+export { addSupplements };

@@ -1,6 +1,5 @@
-const HttpError = require('../../../models/http-error');
-
-const { ADVANCE_USER_FAILED_ERROR } = require('../../../util/string-literals');
+import HttpError from '../../../models/http-error.js';
+import { ADVANCE_USER_FAILED_ERROR } from '../../../util/string-literals.js';
 
 async function updateUserInDatabase(user, nextLesson) {
   try {
@@ -15,6 +14,4 @@ async function updateUserInDatabase(user, nextLesson) {
   }
 }
 
-module.exports = {
-  updateUserInDatabase,
-};
+export { updateUserInDatabase };

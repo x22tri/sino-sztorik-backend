@@ -1,9 +1,6 @@
-const RevampedLesson = require('../../../models/revamped-lessons');
-const HttpError = require('../../../models/http-error');
-
-const {
-  LESSON_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
+import RevampedLesson from '../../../models/revamped-lessons.js';
+import HttpError from '../../../models/http-error.js';
+import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 
 /**
  * Queries the database for all lesson objects.
@@ -20,6 +17,4 @@ async function findAllLessonObjects() {
   }
 }
 
-module.exports = {
-  findAllLessonObjects,
-};
+export { findAllLessonObjects };

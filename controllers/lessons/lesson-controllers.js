@@ -1,9 +1,9 @@
-const { findAllLessonObjects } = require('./utils/findAllLessonObjects');
-const { findCurrentLessonName } = require('./utils/findCurrentLessonName');
-const { getAllLessonsWithStatus } = require('./utils/getAllLessonsWithStatus');
-const { getLesson } = require('./utils/getLesson');
-const { getUser } = require('../users/utils/getUser');
-const { getUserProgress } = require('../users/utils/getUserProgress');
+import { findAllLessonObjects } from './utils/findAllLessonObjects.js';
+import { findCurrentLessonName } from './utils/findCurrentLessonName.js';
+import { getAllLessonsWithStatus } from './utils/getAllLessonsWithStatus.js';
+import { getLesson } from './utils/getLesson.js';
+import { getUser } from '../users/utils/getUser.js';
+import { getUserProgress } from '../users/utils/getUserProgress.js';
 
 async function getLearn(req, res, next) {
   try {
@@ -66,8 +66,4 @@ async function getLessonSelect(req, res, next) {
   }
 }
 
-module.exports = {
-  getLessonSelect,
-  getLearn,
-  getReview,
-};
+export { getLessonSelect, getLearn, getReview };

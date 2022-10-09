@@ -1,12 +1,14 @@
 // Setting up database associations.
-const Character = require('../models/characters');
-const CharacterOrder = require('../models/character-orders');
+import Character from '../models/characters.js';
+
+import CharacterOrder from '../models/character-orders.js';
 
 CharacterOrder.belongsTo(Character, { foreignKey: 'charId' });
 Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
 
 // Setting up custom object properties.
-const { INVALID_NUMBERS_PROVIDED } = require('./string-literals');
+import { INVALID_NUMBERS_PROVIDED } from './string-literals.js';
+
 // const { Model } = require('sequelize/dist');
 
 /**

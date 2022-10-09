@@ -1,28 +1,27 @@
-const { and, not, like, notIn } = require('sequelize').Op;
+import { Op } from 'sequelize';
+const { and, not, like, notIn } = Op;
 
-const RevampedLesson = require('../../models/revamped-lessons');
+import RevampedLesson from '../../models/revamped-lessons.js';
+import Character from '../../models/characters.js';
+import Similar from '../../models/similars.js';
+import Phrase from '../../models/phrases.js';
+import OtherUse from '../../models/other-uses.js';
+import HttpError from '../../models/http-error.js';
+import { findLessonWithChars } from '../lessons/utils/findLessonWithChars.js';
+import { addSupplements } from '../characters/utils/addSupplements.js';
 
-const Character = require('../../models/characters');
-const Similar = require('../../models/similars');
-const Phrase = require('../../models/phrases');
-const OtherUse = require('../../models/other-uses');
-const HttpError = require('../../models/http-error');
-
-const { findLessonWithChars } = require('../lessons/utils/findLessonWithChars');
-const { addSupplements } = require('../characters/utils/addSupplements');
-
-const {
-  LESSON_DATABASE_QUERY_FAILED,
+import {
+  LESSON_DATABASE_QUERY_FAILED_ERROR,
   CHARACTER_NOT_FOUND_ERROR,
   SAVING_ERROR,
   SAVING_SUCCESS,
   LESSON_NOT_FOUND_ERROR,
-} = require('../../util/string-literals');
+} from '../../util/string-literals.js';
 
-const {
+import {
   COURSE_FINISHED_TIER,
   COURSE_FINISHED_LESSON_NUMBER,
-} = require('../../util/config');
+} from '../../util/config.js';
 
 const getAllLessons = async (req, res, next) => {
   // The "true" flag gets the preface and the full info about the Chinese characters.
@@ -62,7 +61,7 @@ const getAllLessons = async (req, res, next) => {
     res.json({ lessonArray });
   } catch (err) {
     console.log(err);
-    return next(new HttpError(LESSON_DATABASE_QUERY_FAILED, 500));
+    return next(new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500));
   }
 };
 
@@ -483,7 +482,7 @@ const updateCharacter = async (req, res, next) => {
   }
 };
 
-module.exports = {
+export {
   getAllLessons,
   getAdditionalInfoAdmin,
   updateLesson,

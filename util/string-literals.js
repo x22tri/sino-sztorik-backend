@@ -78,7 +78,7 @@ const UNAUTHENTICATED_ERROR = 'Nincs jogosultságod.';
 
 const AUTHENTICATION_FAILED_ERROR = 'Hiba történt a hitelesítéskor.';
 
-module.exports = {
+export {
   NEXT_LESSON_NOT_FOUND_ERROR,
   ADVANCE_USER_FAILED_ERROR,
   WRONG_CREDENTIALS_ERROR,

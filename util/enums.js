@@ -8,7 +8,4 @@ const InteractiveWordType = Object.freeze({
   KEYWORD: 'k',
 });
 
-module.exports = {
-  SimilarType,
-  InteractiveWordType,
-};
+export { SimilarType, InteractiveWordType };

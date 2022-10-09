@@ -1,20 +1,16 @@
-const {
+import {
   signup,
   login,
   advanceUser,
-} = require('../controllers/users/users-controllers');
-
-const {
+} from '../controllers/users/users-controllers.js';
+import {
   getLessonSelect,
   getLearn,
   getReview,
-} = require('../controllers/lessons/lesson-controllers');
+} from '../controllers/lessons/lesson-controllers.js';
+import { handleSearchRequest } from '../controllers/characters/characters-controllers.js';
 
-const {
-  handleSearchRequest,
-} = require('../controllers/characters/characters-controllers');
-
-const {
+import {
   getAllLessons,
   getAdditionalInfoAdmin,
   updateLesson,
@@ -23,11 +19,12 @@ const {
   getAllOtherUses,
   getAllSimilars,
   updateCharacter,
-} = require('../controllers/admin/admin-controllers');
+} from '../controllers/admin/admin-controllers.js';
 
-const { signupValidators } = require('./router-utils');
+import { signupValidators } from './router-utils.js';
 
-const router = require('express').Router();
+import express from 'express';
+const router = express.Router();
 
 // Routes start here.
 router.post('/api/users/signup', signupValidators, signup);
@@ -59,4 +56,4 @@ router.get('/api/admin*', (req, res, next) => {
   next(new Error('The admin functionality is currently turned off.'));
 });
 
-module.exports = router;
+export default router;

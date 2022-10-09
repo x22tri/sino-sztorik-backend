@@ -1,13 +1,13 @@
-const Character = require('../../../models/characters');
-const CharacterOrder = require('../../../models/character-orders');
-const HttpError = require('../../../models/http-error');
+import Character from '../../../models/characters.js';
+import CharacterOrder from '../../../models/character-orders.js';
+import HttpError from '../../../models/http-error.js';
 
-const {
+import {
   CHARACTER_NOT_FOUND_ERROR,
   CHARACTER_QUERY_FAILED_ERROR,
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
-} = require('../../../util/string-literals');
+} from '../../../util/string-literals.js';
 
 /**
  * Finds the character object for the requested character, without finding supplements.
@@ -130,6 +130,4 @@ function replaceNewProperties(currentCharVersion, charToMutate) {
   }
 }
 
-module.exports = {
-  findBareCharacter,
-};
+export { findBareCharacter };

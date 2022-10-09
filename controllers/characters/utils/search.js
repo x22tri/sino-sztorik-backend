@@ -1,10 +1,6 @@
-const { findCharacter } = require('./findCharacter');
-const {
-  findTermAsKeywordOrPrimitive,
-} = require('./findTermAsKeywordOrPrimitive');
-const {
-  findCharByKeywordOrPrimitive,
-} = require('./findCharByKeywordOrPrimitive');
+import { findCharacter } from './findCharacter.js';
+import { findTermAsKeywordOrPrimitive } from './findTermAsKeywordOrPrimitive.js';
+import { findCharByKeywordOrPrimitive } from './findCharByKeywordOrPrimitive.js';
 
 /**
  * Based on a string the user searched for, finds the relevant character object(s).
@@ -38,6 +34,4 @@ function isSearchTermChinese(searchTerm) {
   return /^[一-鿕]+$/u.test(searchTerm);
 }
 
-module.exports = {
-  search,
-};
+export { search };

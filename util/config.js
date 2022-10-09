@@ -15,7 +15,7 @@ const INTERACTIVE_WORD_SEPARATOR = '|';
 const FORCE_SEARCH_QUERY_PARAM = 'force';
 const LESSON_PREFACE_TIER_PREFIX = 'prefaceTier';
 
-module.exports = {
+export {
   LAST_TIER,
   COURSE_FINISHED_TIER,
   COURSE_FINISHED_LESSON_NUMBER,

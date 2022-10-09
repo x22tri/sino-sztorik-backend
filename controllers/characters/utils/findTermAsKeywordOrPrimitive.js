@@ -1,11 +1,12 @@
-const { or } = require('sequelize').Op;
-const Character = require('../../../models/characters');
-const HttpError = require('../../../models/http-error');
+import { Op } from 'sequelize';
+const { or } = Op;
 
-const {
+import Character from '../../../models/characters.js';
+import HttpError from '../../../models/http-error.js';
+import {
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
-} = require('../../../util/string-literals');
+} from '../../../util/string-literals.js';
 
 async function findTermAsKeywordOrPrimitive(searchTerm) {
   try {
@@ -26,6 +27,4 @@ async function findTermAsKeywordOrPrimitive(searchTerm) {
   }
 }
 
-module.exports = {
-  findTermAsKeywordOrPrimitive,
-};
+export { findTermAsKeywordOrPrimitive };

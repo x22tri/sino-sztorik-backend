@@ -1,13 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const { unsupportedRouteHandler, errorHandler } = require('./util/middleware');
-const router = require('./util/router');
-const database = require('./util/database');
-// const { testGatherQueries } = require('./util/moq-test');
+import express from 'express';
+import cors from 'cors';
+import { unsupportedRouteHandler, errorHandler } from './util/middleware.js';
+import router from './util/router.js';
+import database from './util/database.js';
+// import { testGatherQueries } from './util/moq-test'
+
 const app = express();
 
-require('dotenv').config();
-require('./util/setup');
+import { config } from 'dotenv';
+config();
+import './util/setup.js';
 
 app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());

@@ -1,14 +1,12 @@
-const { and, not } = require('sequelize').Op;
-const Similar = require('../../../models/similars');
-const HttpError = require('../../../models/http-error');
+import { Op } from 'sequelize';
+const { and, not } = Op;
 
-const {
-  SIMILARS_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
-const { SimilarType } = require('../../../util/enums');
-
-const { findBareCharacter } = require('./findBareCharacter');
-const { getCharProgress } = require('./getCharProgress');
+import Similar from '../../../models/similars.js';
+import HttpError from '../../../models/http-error.js';
+import { SIMILARS_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import { SimilarType } from '../../../util/enums.js';
+import { findBareCharacter } from './findBareCharacter.js';
+import { getCharProgress } from './getCharProgress.js';
 
 /**
  * Finds all characters similar to the requested character and returns their latest character object version
@@ -110,6 +108,4 @@ async function findCharsInSameSimilarGroup(similarEntry) {
   return similarChars;
 }
 
-module.exports = {
-  findSimilars,
-};
+export { findSimilars };

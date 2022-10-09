@@ -1,15 +1,9 @@
-const HttpError = require('../../../models/http-error');
+import HttpError from '../../../models/http-error.js';
 
-// const { findAllTiersOfLesson } = require('./findAllTiersOfLesson');
-
-const { findLessonWithChars } = require('./findLessonWithChars');
-const { getLessonStatus } = require('./getLessonStatus');
-
-const {
-  LESSON_DATABASE_QUERY_FAILED_ERROR,
-} = require('../../../util/string-literals');
-
-const { COURSE_FINISHED_TIER } = require('../../../util/config');
+import { findLessonWithChars } from './findLessonWithChars.js';
+import { getLessonStatus } from './getLessonStatus.js';
+import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import { COURSE_FINISHED_TIER } from '../../../util/config.js';
 
 /**
  * Takes the Lesson database and queries all info about all versions of all lessons,
@@ -91,6 +85,4 @@ async function findAllTiersOfLesson(
   return tierArray;
 }
 
-module.exports = {
-  getAllLessonsWithStatus,
-};
+export { getAllLessonsWithStatus };

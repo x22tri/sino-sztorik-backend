@@ -10,6 +10,4 @@ function findCurrentLessonName(lessonArray, currentLesson) {
   return lessonArray.find(lesson => lesson.lessonNumber === currentLesson).name;
 }
 
-module.exports = {
-  findCurrentLessonName,
-};
+export { findCurrentLessonName };
