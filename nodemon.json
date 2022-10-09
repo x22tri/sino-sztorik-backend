@@ -1,9 +1,0 @@
-{
-    "env": {
-        "DB_USER": "root",
-        "DB_PASSWORD": "Kebnekaise1!",
-        "DB_NAME": "sino-sztorik",
-        "FRONTEND_URL": "http://localhost:3000",
-        "JWT_KEY": "privateKey"
-    }
-}

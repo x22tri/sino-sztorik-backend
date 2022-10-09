@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "jest --experimental-vm-modules --detectOpenHandles",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
