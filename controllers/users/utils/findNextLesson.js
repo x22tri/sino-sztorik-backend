@@ -34,6 +34,7 @@ async function lookForLessonInSameTier(currentTier, currentLesson) {
   const remainingLessonsInTier = await CharacterOrder.findAll({
     where: { tier: currentTier, lessonNumber: { [gt]: currentLesson } },
     order: ['lessonNumber'],
+    raw: true,
   });
 
   const nextLessonInSameTierChar = remainingLessonsInTier?.[0];

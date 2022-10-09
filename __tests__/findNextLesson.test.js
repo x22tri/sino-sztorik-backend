@@ -1,24 +1,30 @@
-const { LAST_TIER, COURSE_FINISHED } = require('../util/config');
-const { NEXT_LESSON_NOT_FOUND_ERROR } = require('../util/string-literals');
+import { jest } from '@jest/globals';
 
-const moquelize = require('../util/moquelize');
+import { LAST_TIER, COURSE_FINISHED } from '../util/config.js';
+import { NEXT_LESSON_NOT_FOUND_ERROR } from '../util/string-literals.js';
+
+import moquelize from '../util/moquelize.js';
+
 let findNextLesson;
 
-// mockData type: Partial<CharacterOrder>[]
-function setupWith(mockData) {
-  jest.doMock('../models/character-orders', () => moquelize(mockData));
+async function setupDatabaseWith(testData) {
+  jest.unstable_mockModule('../models/character-orders.js', () => ({
+    __esModule: true,
+    default: moquelize(testData),
+  }));
 
-  findNextLesson =
-    require('../controllers/users/utils/findNextLesson').findNextLesson;
+  const f = await import('../controllers/users/utils/findNextLesson.js');
+
+  findNextLesson = f.findNextLesson;
 }
 
-fdescribe('findNextLesson()', function () {
+describe('findNextLesson()', function () {
   afterEach(() => {
     jest.resetModules();
   });
 
   it('finds the next lesson in the same tier when exists, even when database entries are in wrong order', async () => {
-    setupWith([
+    await setupDatabaseWith([
       { tier: 1, lessonNumber: 1 },
       { tier: 1, lessonNumber: 3 },
       { tier: 1, lessonNumber: 2 },
@@ -32,7 +38,7 @@ fdescribe('findNextLesson()', function () {
   });
 
   it(`finds the next lesson in the same tier when exists, even when lesson number is not the number directly after user's lesson`, async () => {
-    setupWith([
+    await setupDatabaseWith([
       { tier: 1, lessonNumber: 1 },
       { tier: 1, lessonNumber: 3 },
       { tier: 3, lessonNumber: 2 },
@@ -45,7 +51,7 @@ fdescribe('findNextLesson()', function () {
   });
 
   it(`finds the first lesson in the next tier when no more lessons are found in the current tier`, async () => {
-    setupWith([
+    await setupDatabaseWith([
       { tier: 1, lessonNumber: 1 },
       { tier: 3, lessonNumber: 2 },
       { tier: 2, lessonNumber: 3 },
@@ -59,7 +65,7 @@ fdescribe('findNextLesson()', function () {
   });
 
   it(`returns the "course finished" progress state when user is at last tier and there are no more lessons left`, async () => {
-    setupWith([
+    await setupDatabaseWith([
       { tier: 1, lessonNumber: 1 },
       { tier: 3, lessonNumber: 2 },
       { tier: 4, lessonNumber: 1 },
@@ -71,7 +77,7 @@ fdescribe('findNextLesson()', function () {
   });
 
   it(`returns error when user is not at last tier but no more lessons are found`, async () => {
-    setupWith([{ tier: 1, lessonNumber: 1 }]);
+    await setupDatabaseWith([{ tier: 1, lessonNumber: 1 }]);
 
     await expect(findNextLesson(LAST_TIER - 1, 10)).rejects.toThrow(
       NEXT_LESSON_NOT_FOUND_ERROR
@@ -79,7 +85,7 @@ fdescribe('findNextLesson()', function () {
   });
 
   it(`returns error when no valid lesson objects are found`, async () => {
-    setupWith([
+    await setupDatabaseWith([
       { tier: 1 },
       { tier: 2 },
       { lessonNumber: 3 },
