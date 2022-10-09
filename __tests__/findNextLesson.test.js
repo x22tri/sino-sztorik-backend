@@ -68,7 +68,7 @@ describe('findNextLesson()', function () {
     await setupDatabaseWith([
       { tier: 1, lessonNumber: 1 },
       { tier: 3, lessonNumber: 2 },
-      { tier: 4, lessonNumber: 1 },
+      { tier: LAST_TIER, lessonNumber: 1 },
     ]);
 
     const nextLesson = await findNextLesson(LAST_TIER, 2);
