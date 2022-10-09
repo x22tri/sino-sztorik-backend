@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { eq, lte } = require('sequelize').Op;
 const CharacterOrder = require('../../../models/character-orders');
 const Character = require('../../../models/characters');
 const HttpError = require('../../../models/http-error');
@@ -56,13 +56,13 @@ async function findLessonWithChars(lessonProgress, isReview, lessonDb) {
  */
 async function findAllCharsInLesson(progress, exactTierOnly) {
   try {
-    const tierOperator = exactTierOnly ? Op.eq : Op.lte;
+    const tierOperator = exactTierOnly ? eq : lte;
     const { tier, lessonNumber } = progress;
 
     let charsInGivenLesson = await CharacterOrder.findAll({
       where: {
         tier: { [tierOperator]: tier },
-        lessonNumber: { [Op.eq]: lessonNumber },
+        lessonNumber: { [eq]: lessonNumber },
       },
       include: [Character],
       raw: true,
