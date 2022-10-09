@@ -1,9 +1,5 @@
 const HttpError = require('../../../models/http-error');
 
-// const {
-//   removeIneligiblesAndAddSupplements,
-// } = require('./removeIneligiblesAndAddSupplements');
-
 const { findCharacter } = require('../../characters/utils/findCharacter');
 const { findLessonWithChars } = require('./findLessonWithChars');
 
@@ -23,8 +19,10 @@ const {
 async function getLesson(progress, lessonToView = undefined) {
   const { tier, lessonNumber } = progress;
 
+  let tierToView = lessonToView > lessonNumber ? tier - 1 : tier;
+
   let lesson = await findLessonWithChars(
-    { tier, lessonNumber: lessonToView ?? lessonNumber },
+    { tier: tierToView, lessonNumber: lessonToView ?? lessonNumber },
     lessonToView !== undefined
   );
 
