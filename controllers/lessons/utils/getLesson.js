@@ -1,6 +1,6 @@
 import HttpError from '../../../models/http-error.js';
-import { findCharacter } from '../../characters/utils/findCharacter.js';
 import { findLessonWithChars } from './findLessonWithChars.js';
+import { addSupplements } from '../../characters/utils/addSupplements.js';
 
 import {
   LESSON_CHARS_NOT_FOUND_ERROR,
@@ -29,43 +29,27 @@ async function getLesson(progress, lessonToView = undefined) {
     throw new HttpError(LESSON_NOT_FOUND_ERROR, 404);
   }
 
-  const chars = await removeIneligiblesAndAddSupplements(lesson, progress);
+  let charsWithSupplements = [];
 
-  if (chars) {
-    lesson.characters = chars;
+  try {
+    for (const charInLesson of lesson.characters) {
+      const characterWithSupplements = await addSupplements(charInLesson);
+
+      if (characterWithSupplements) {
+        charsWithSupplements.push(characterWithSupplements);
+      }
+    }
+  } catch (err) {
+    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+  }
+
+  if (charsWithSupplements.length) {
+    lesson.characters = charsWithSupplements;
   } else {
     throw new HttpError(LESSON_CHARS_NOT_FOUND_ERROR, 404);
   }
 
   return lesson;
-}
-
-/**
- * Takes a lesson object and runs findCharacter on its characters to filter out the ones that user is ineligible to see,
- * as well as to add supplemental information.
- *
- * @param {Lesson} lessonObject - The lesson object to process.
- * @param {Progress} userProgress - The user's progress (tier and lesson number) in the course.
- * @returns {Promise<Character[]>} An array of characters.
- */
-async function removeIneligiblesAndAddSupplements(lessonObject, userProgress) {
-  try {
-    let filteredChars = [];
-
-    for (const charInLesson of lessonObject.characters) {
-      const charInLessonChinese = charInLesson.charChinese;
-
-      const fullChar = await findCharacter(charInLessonChinese, userProgress);
-
-      if (fullChar) {
-        filteredChars.push(fullChar);
-      }
-    }
-
-    return filteredChars;
-  } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
-  }
 }
 
 export { getLesson };
