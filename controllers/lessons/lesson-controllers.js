@@ -1,5 +1,3 @@
-import { findAllLessonObjects } from './utils/findAllLessonObjects.js';
-import { findCurrentLessonName } from './utils/findCurrentLessonName.js';
 import { getAllLessonsWithStatus } from './utils/getAllLessonsWithStatus.js';
 import { getLesson } from './utils/getLesson.js';
 import { getUser } from '../users/utils/getUser.js';
@@ -40,26 +38,16 @@ async function getLessonSelect(req, res, next) {
       lessonNumber: user.currentLesson,
     };
 
-    const lessonDatabase = await findAllLessonObjects();
+    const lessonArray = await getAllLessonsWithStatus(userProgress);
 
-    const lessonArray = await getAllLessonsWithStatus(
-      lessonDatabase,
-      userProgress
-    );
-
-    const currentLessonName = findCurrentLessonName(
-      lessonArray,
-      user.currentLesson
-    );
+    const currentLessonName = lessonArray.find(
+      lesson => lesson.lessonNumber === user.currentLesson
+    ).name;
 
     res.json({
       lessonArray,
-      user: {
-        displayName: user.displayName,
-        currentTier: user.currentTier,
-        currentLesson: user.currentLesson,
-        currentLessonName: currentLessonName,
-      },
+      user,
+      currentLessonName,
     });
   } catch (err) {
     next(err);

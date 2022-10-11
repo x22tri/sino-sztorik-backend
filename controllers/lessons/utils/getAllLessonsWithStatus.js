@@ -2,6 +2,7 @@ import HttpError from '../../../models/http-error.js';
 
 import { findLessonWithChars } from './findLessonWithChars.js';
 import { getLessonStatus } from './getLessonStatus.js';
+import { findAllLessonObjects } from './findAllLessonObjects.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 import { COURSE_FINISHED_TIER } from '../../../util/config.js';
 
@@ -9,25 +10,22 @@ import { COURSE_FINISHED_TIER } from '../../../util/config.js';
  * Takes the Lesson database and queries all info about all versions of all lessons,
  * as well as appending lesson status to each lesson version.
  *
- * @param {Lesson[]} lessonDb - The database of all lessons.
  * @param {Progress} userProgress - The user's progress (tier and lesson number) in the course.
  * @returns {Promise<Lesson[][]>} An array of all versions of all lessons, with the statuses appended.
  */
-async function getAllLessonsWithStatus(lessonDb, userProgress) {
+async function getAllLessonsWithStatus(userProgress) {
   let lessonArray = [];
-  let lessonNumber = 1;
+  const lessonDb = await findAllLessonObjects();
 
   try {
-    for (lessonNumber; lessonNumber < lessonDb.length + 1; lessonNumber++) {
-      const tiers = await findAllTiersOfLesson(
-        lessonNumber,
-        userProgress,
-        lessonDb
-      );
+    for (let lessonIndex = 0; lessonIndex < lessonDb.length; lessonIndex++) {
+      let lessonNumber = lessonIndex + 1;
 
-      let lessonObject = {
+      const tiers = await findAllTiersOfLesson(lessonNumber, userProgress);
+
+      const lessonObject = {
         lessonNumber,
-        name: lessonDb[lessonNumber - 1].name,
+        name: lessonDb[lessonIndex].name,
         tiers,
       };
 
@@ -46,25 +44,16 @@ async function getAllLessonsWithStatus(lessonDb, userProgress) {
  *
  * @param {number} lessonNumber - The lesson number to get all versions of.
  * @param {Progress} userProgress - The user's progress (tier and lesson number) in the course.
- * @param {Lesson[]} lessonDatabase - The database of all lessons.
  *
  * @returns {Promise<Lesson[]>} An array of lesson versions, with the status appended.
  */
-async function findAllTiersOfLesson(
-  lessonNumber,
-  userProgress,
-  lessonDatabase
-) {
+async function findAllTiersOfLesson(lessonNumber, userProgress) {
   let tierArray = [];
 
   for (let tier = 1; tier < COURSE_FINISHED_TIER; tier++) {
     const lessonProgress = { tier, lessonNumber };
 
-    let foundLesson = await findLessonWithChars(
-      lessonProgress,
-      false,
-      lessonDatabase
-    );
+    let foundLesson = await findLessonWithChars(lessonProgress, false);
 
     if (foundLesson) {
       const lessonStatus = getLessonStatus(

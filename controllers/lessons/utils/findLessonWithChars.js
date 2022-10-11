@@ -7,22 +7,21 @@ import HttpError from '../../../models/http-error.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 import { LESSON_PREFACE_TIER_PREFIX } from '../../../util/config.js';
+import lessonsCache from '../lesson-database-cache.js';
 
 /**
  * Based on a lesson's progress state (tier and lesson number), finds the lesson object
  * and all characters within the lesson.
  *
  * @param {Progress} lessonProgress - The lesson's progress state (tier and lesson number).
- * @param {boolean} isReview - `true` if the request arrives from a lesson review request, `false` otherwise.
- * @param {Lesson[]} [lessonDb] - The lesson database, if it has already been queried during an earlier function,
- * can optionally be passed to this function to avoid expensive re-querying.
+ * @param {boolean} [isReview] - `true` if the request arrives from a lesson review request, `false` otherwise.
  * @returns {Promise<Lesson & Character>} The found lesson.
  */
-async function findLessonWithChars(lessonProgress, isReview, lessonDb) {
+async function findLessonWithChars(lessonProgress, isReview) {
   try {
     const { tier, lessonNumber } = lessonProgress;
 
-    const lessonDatabase = lessonDb ?? (await findAllLessonObjects());
+    const lessonDatabase = lessonsCache.get() ?? (await findAllLessonObjects());
 
     const givenLesson = lessonDatabase[lessonNumber - 1];
 

@@ -18,11 +18,13 @@ import {
 async function getLesson(progress, lessonToView = undefined) {
   const { tier, lessonNumber } = progress;
 
-  let tierToView = lessonToView > lessonNumber ? tier - 1 : tier;
+  const isReview = lessonToView !== undefined;
+
+  const tierToView = lessonToView > lessonNumber ? tier - 1 : tier;
 
   let lesson = await findLessonWithChars(
     { tier: tierToView, lessonNumber: lessonToView ?? lessonNumber },
-    lessonToView !== undefined
+    isReview
   );
 
   if (!lesson) {
