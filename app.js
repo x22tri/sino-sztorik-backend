@@ -5,7 +5,7 @@ import { unsupportedRouteHandler, errorHandler } from './util/middleware.js';
 import router from './util/router.js';
 import database from './util/database.js';
 // import { testGatherQueries } from './util/moq-test.js'
-import './util/setup.js';
+import './util/database-associations.js';
 
 dotenv.config();
 
