@@ -7,7 +7,7 @@ import HttpError from '../../../models/http-error.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 import { LESSON_PREFACE_TIER_PREFIX } from '../../../util/config.js';
-import lessonsCache from '../lesson-database-cache.js';
+import lessonsCache from '../lessons-cache.js';
 
 /**
  * Based on a lesson's progress state (tier and lesson number), finds the lesson object
