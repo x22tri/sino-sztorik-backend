@@ -12,7 +12,7 @@ import lessonsCache from '../lessons-cache.js';
 import {
   addMethods,
   filterByField,
-  hoistField,
+  findAllAndFlatten,
 } from '../../../util/methods.js';
 
 /**
@@ -61,7 +61,9 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
     const tierOperator = exactTierOnly ? eq : lte;
     const { tier, lessonNumber } = progress;
 
-    let charsInGivenLesson = await CharacterOrder.findAll({
+    addMethods(CharacterOrder, [findAllAndFlatten]);
+
+    let charsInGivenLesson = await CharacterOrder.findAllAndFlatten({
       where: {
         tier: { [tierOperator]: tier },
         lessonNumber: { [eq]: lessonNumber },
@@ -71,14 +73,13 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
       nest: true,
     });
 
-    addMethods(charsInGivenLesson, [filterByField, hoistField]);
-
-    charsInGivenLesson.hoistField('character');
+    addMethods(charsInGivenLesson, [filterByField]);
 
     charsInGivenLesson.filterByField('charChinese');
 
     return charsInGivenLesson;
   } catch (err) {
+    console.log(err);
     throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 }

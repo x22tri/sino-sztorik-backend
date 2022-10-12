@@ -11,7 +11,7 @@ import {
 
 import {
   addMethods,
-  hoistField,
+  findAllAndFlatten,
   comesLaterThan,
 } from '../../../util/methods.js';
 
@@ -101,7 +101,9 @@ async function findAllCharVersionsByCharIds(charIds) {
   let charVersionsInOrder;
 
   try {
-    charVersionsInOrder = await CharacterOrder.findAll({
+    addMethods(CharacterOrder, [findAllAndFlatten]);
+
+    charVersionsInOrder = await CharacterOrder.findAllAndFlatten({
       where: { charId: charIds },
       include: [Character],
       order: [['tier'], ['lessonNumber'], ['indexInLesson']],
@@ -115,10 +117,6 @@ async function findAllCharVersionsByCharIds(charIds) {
   if (!charVersionsInOrder?.length) {
     throw new HttpError(SEARCH_NO_MATCH, 404);
   }
-
-  addMethods(charVersionsInOrder, [hoistField]);
-
-  charVersionsInOrder.hoistField('character');
 
   return charVersionsInOrder;
 }

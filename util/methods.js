@@ -60,35 +60,6 @@ function comesLaterThan(secondState) {
 }
 
 /**
- * In an array of objects containing a nested object, modifies the objects by extracting the nested object into the main object.
- * Use after a Sequelize query with an "include" parameter.
- *
- * @param {string} field - The name of the property which contains the nested object.
- * @returns {void} Modifies `this` to now have the nested property extracted to the main object.
- *
- * ---
- *
- * When Sequelize queries are made with the "include" parameter,
- * the included (outer joined) table is placed into a nested object with the table's name.
- *
- * If, for example, the query is `CharacterOrder.findAll({include: [Character]})`,
- * the returned `characterOrder` object will have a `characters` field,
- * containing an object with the queried character's data.
- *
- * This function extracts the nested object (bearing the property name in the `field` argument)
- * and adds its content to the main object.
- */
-function hoistField(field) {
-  for (let i = 0; i < this.length; i++) {
-    this[i] = { ...this[i], ...this[i][field] };
-
-    delete this[i][field];
-  }
-
-  return;
-}
-
-/**
  * In an array of objects, filters out duplicates based on the given field.
  * In other words, for objects where the given field's value is the same, it will only keep the first one found.
  *
@@ -115,4 +86,43 @@ function filterByField(field) {
   return;
 }
 
-export { addMethods, comesLaterThan, hoistField, filterByField };
+/**
+ * Runs a Sequelize `findAll` query with an `include` parameter,
+ * then extracts the nested object created by said `include` command into the main object.
+ *
+ * @param {object} query - The configuration of the `findAll` query.
+ * @returns {object[]} The result of the query.
+ *
+ * ---
+ *
+ * When Sequelize queries are made with the `include` parameter,
+ * the included (outer joined) table is placed into a nested object with the model's name.
+ *
+ * If, for example, the query is `CharacterOrder.findAll({include: [Character]})`,
+ * the returned `characterOrder` object will have a `character` field,
+ * containing an object with the queried character's data.
+ *
+ * This function extracts the nested object and adds its content to the main object.
+ */
+async function findAllAndFlatten(query) {
+  if (!this.findAll || !query?.include || query.include.length !== 1) {
+    throw new Error(
+      `This method can only be called on a Sequelize model instance, in place of findAll.
+        It requires an 'include' parameter with a value of an array containing a single field.`
+    );
+  }
+
+  const fieldToHoist = query.include[0].options.name.singular;
+
+  let queryResults = await this.findAll(query);
+
+  for (let i = 0; i < queryResults.length; i++) {
+    queryResults[i] = { ...queryResults[i], ...queryResults[i][fieldToHoist] };
+
+    delete queryResults[i][fieldToHoist];
+  }
+
+  return queryResults;
+}
+
+export { addMethods, comesLaterThan, filterByField, findAllAndFlatten };
