@@ -9,6 +9,12 @@ import {
   SEARCH_NO_MATCH,
 } from '../../../util/string-literals.js';
 
+import {
+  addMethods,
+  hoistField,
+  comesLaterThan,
+} from '../../../util/methods.js';
+
 /**
  * Finds the character object for the requested character, without finding supplements.
  *
@@ -23,6 +29,8 @@ async function findBareCharacter(char, progress) {
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
 
+  addMethods(firstCharVersion, [comesLaterThan]);
+
   if (firstCharVersion.comesLaterThan(progress)) {
     return null;
   }
@@ -32,6 +40,8 @@ async function findBareCharacter(char, progress) {
   try {
     for (let i = 1; i < characterVersionsInOrder.length; i++) {
       const currentCharVersion = characterVersionsInOrder[i];
+
+      addMethods(currentCharVersion, [comesLaterThan]);
 
       if (currentCharVersion.comesLaterThan(progress)) {
         break; // If a user is ineligible for one version, they'll be ineligible for all versions after that.
@@ -105,6 +115,8 @@ async function findAllCharVersionsByCharIds(charIds) {
   if (!charVersionsInOrder?.length) {
     throw new HttpError(SEARCH_NO_MATCH, 404);
   }
+
+  addMethods(charVersionsInOrder, [hoistField]);
 
   charVersionsInOrder.hoistField('character');
 

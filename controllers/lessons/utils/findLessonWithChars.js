@@ -9,6 +9,12 @@ import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literal
 import { LESSON_PREFACE_TIER_PREFIX } from '../../../util/config.js';
 import lessonsCache from '../lessons-cache.js';
 
+import {
+  addMethods,
+  filterByField,
+  hoistField,
+} from '../../../util/methods.js';
+
 /**
  * Based on a lesson's progress state (tier and lesson number), finds the lesson object
  * and all characters within the lesson.
@@ -64,6 +70,8 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
       raw: true,
       nest: true,
     });
+
+    addMethods(charsInGivenLesson, [filterByField, hoistField]);
 
     charsInGivenLesson.hoistField('character');
 

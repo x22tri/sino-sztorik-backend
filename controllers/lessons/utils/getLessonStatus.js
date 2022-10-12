@@ -5,6 +5,8 @@ import {
   LESSON_NOT_IN_TIER,
 } from '../../../util/string-literals.js';
 
+import { addMethods, comesLaterThan } from '../../../util/methods.js';
+
 /**
  * Takes a lesson (with progress state and length) and the user's progress in the course,
  * and returns the lesson's "status".
@@ -15,6 +17,8 @@ import {
  * @returns {LESSON_NOT_IN_TIER | LESSON_LOCKED | LESSON_UPCOMING | LESSON_COMPLETED} The lesson's status.
  */
 function getLessonStatus(userProgress, lessonProgress, lessonLength) {
+  addMethods(lessonProgress, [comesLaterThan]);
+
   return lessonLength === 0
     ? LESSON_NOT_IN_TIER
     : lessonProgress.comesLaterThan(userProgress)
