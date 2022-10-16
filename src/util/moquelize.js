@@ -1,20 +1,45 @@
-/*
+/**
+ * @this {function(any): any}
+ * @param {function(any): any} func
+ * @returns {function(any): any}
+ */
+function not(func) {
+  return function () {
+    // @ts-ignore
+    return !func.apply(this, arguments);
+  };
+}
+
 const initializeSortStack = (function () {
+  /**
+   * @param {string} field
+   * @param {boolean} descending
+   * @returns {(a: any, b: any) => 0 | 1 | -1}
+   */
   function compare(field, descending) {
     let f = (a, b) => (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0);
-    return descending ? -f : f;
+
+    return descending ? not(f) : f;
   }
 
-  function addToSort(field, descending) {
+  /**
+   * @this {function}
+   * @param {string} [field]
+   * @param {boolean} [descending]
+   */
+  function addToSort(field, descending = false) {
     let f = () => 0;
     f.addToSort = addToSort;
 
     if (!field) {
       return f;
     } else {
+      // @ts-ignore
       f = (a, b) => this(a, b) || compare(field, descending)(a, b);
       return f;
     }
+
+    return f;
   }
 
   return addToSort;
@@ -25,7 +50,7 @@ function isObject(value) {
 }
 
 function gatherWhereParams(where) {
-  if (!where || where === {}) {
+  if (!where) {
     return {};
   }
 
@@ -49,7 +74,7 @@ function gatherWhereParams(where) {
         value[key],
       ]);
 
-      //Op.and, Op.or - need special treatment!
+      // Op.and, Op.or - need special treatment!
 
       const operatorDictionary = {
         [Symbol.for('eq')]: item => item[property] === nestedValue,
@@ -72,7 +97,9 @@ function gatherWhereParams(where) {
       };
 
       if (!operatorDictionary[operator]) {
-        throw new Error(`Moquelize does not support the operator ${operator} at this time.
+        throw new Error(`Moquelize does not support the operator ${String(
+          operator
+        )} at this time.
               We apologize for the inconvenience.`);
       }
 
@@ -83,6 +110,10 @@ function gatherWhereParams(where) {
   return whereParams;
 }
 
+/**
+ * @param {object[]} filteredData
+ * @param {string[]} order
+ */
 function orderFilteredData(filteredData, order) {
   if (!order?.length) {
     return filteredData;
@@ -143,15 +174,6 @@ function moquelize(data) {
     max(field, { where }) {
       let sorted = this.findAll({ where, order: [[field]] });
       return sorted[sorted.length - 1];
-    },
-  };
-}
-*/
-
-function moquelize(data) {
-  return {
-    findAll({ where, order }) {
-      return [];
     },
   };
 }
