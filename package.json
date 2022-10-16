@@ -7,7 +7,8 @@
   "scripts": {
     "test": "nodemon --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "nodemon": "nodemon -r dotenv/config src/app.js",
+    "dev": "nodemon -r dotenv/config --watch src/**/*.ts --watch src/**/*.js --exec ts-node --esm src/app.ts"
   },
   "author": "",
   "license": "ISC",
