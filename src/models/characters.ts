@@ -1,55 +1,56 @@
-import Sequelize from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
+const { INTEGER, STRING, BOOLEAN, VIRTUAL } = DataTypes;
 import sequelize from '../util/database.js';
 
 const Character = sequelize.define(
   'character',
   {
     charId: {
-      type: Sequelize.STRING,
+      type: STRING,
       allowNull: false,
       primaryKey: true,
     },
     charChinese: {
-      type: Sequelize.STRING,
+      type: STRING,
       allowNull: false,
     },
     keyword: {
-      type: Sequelize.STRING,
+      type: STRING,
     },
     pinyin: {
-      type: Sequelize.STRING,
+      type: STRING,
     },
     story: {
-      type: Sequelize.STRING(2500),
+      type: STRING(2500),
     },
     primitiveMeaning: {
-      type: Sequelize.STRING,
+      type: STRING,
     },
     explanation: {
-      type: Sequelize.STRING,
+      type: STRING,
     },
     notes: {
-      type: Sequelize.STRING(1500),
+      type: STRING(1500),
     },
     productivePhonetic: {
-      type: Sequelize.BOOLEAN,
+      type: BOOLEAN,
     },
     frequency: {
-      type: Sequelize.INTEGER,
+      type: INTEGER,
     },
     illustrationAltText: {
-      type: Sequelize.STRING,
+      type: STRING,
     },
     constituents: {
       // Comma-separated values
-      type: Sequelize.STRING,
+      type: STRING,
     },
     prequel: {
-      type: Sequelize.STRING,
+      type: STRING,
     },
     reminder: {
       // Bool value set when it's not the first occurrence of a character.
-      type: Sequelize.VIRTUAL,
+      type: VIRTUAL,
     },
   },
   {

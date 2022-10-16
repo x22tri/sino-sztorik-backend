@@ -36,6 +36,7 @@ async function findPhrases(char) {
       const allCharObjectsInPhrase =
         await findLastEligibleVersionOfCharsInPhrase(
           getCharProgress(char),
+          //@ts-ignore
           phraseObject.phraseChinese
         );
 
@@ -52,6 +53,7 @@ async function findPhrases(char) {
     throw new HttpError(PHRASES_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
+  //@ts-ignore
   return phrasesWithAllCharObjects;
 }
 
@@ -71,6 +73,7 @@ async function findAllPhrasesWithChar(char) {
     raw: true,
   });
 
+  //@ts-ignore
   return foundCharInDB;
 }
 

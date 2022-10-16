@@ -74,6 +74,7 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
 
     addMethods(CharacterOrder, [findAllAndFlatten]);
 
+    //@ts-ignore
     let charsInGivenLesson = await CharacterOrder.findAllAndFlatten({
       where: {
         tier: { [tierOperator]: tier },

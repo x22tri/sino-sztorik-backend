@@ -1,4 +1,5 @@
-import Sequelize from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
+const { INTEGER, STRING } = DataTypes;
 import sequelize from '../util/database.js';
 
 const Phrase = sequelize.define(
@@ -6,21 +7,21 @@ const Phrase = sequelize.define(
   {
     phraseId: {
       // unique ID in this table
-      type: Sequelize.INTEGER,
+      type: INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     phraseChinese: {
-      type: Sequelize.STRING,
+      type: STRING,
       allowNull: false,
     },
     phraseHungarian: {
-      type: Sequelize.STRING,
+      type: STRING,
       allowNull: false,
     },
     pinyin: {
-      type: Sequelize.STRING,
+      type: STRING,
     },
   },
   {

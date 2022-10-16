@@ -1,4 +1,6 @@
-import Sequelize from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
+const { INTEGER, STRING, ENUM, BOOLEAN } = DataTypes;
+
 import sequelize from '../util/database.js';
 
 const Similar = sequelize.define(
@@ -6,27 +8,27 @@ const Similar = sequelize.define(
   {
     similarId: {
       // unique ID in this table
-      type: Sequelize.INTEGER,
+      type: INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
     similarGroup: {
       // checking which characters belong together
-      type: Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
     },
     charChinese: {
-      type: Sequelize.STRING,
+      type: STRING,
       allowNull: false,
     },
     similarType: {
-      type: Sequelize.ENUM(['appearance', 'meaning']),
+      type: ENUM('appearance', 'meaning'),
       allowNull: false,
     },
     similarToPrimitiveMeaning: {
       // is it the primitive meaning that is similar to the others? ("meaning" only)
-      type: Sequelize.BOOLEAN,
+      type: BOOLEAN,
     },
   },
   {

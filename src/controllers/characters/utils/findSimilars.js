@@ -47,6 +47,7 @@ async function findSimilars(char) {
     for (const similarChar of similarChars) {
       try {
         const latestEligibleVersion = await findBareCharacter(
+          // @ts-ignore
           similarChar.charChinese,
           getCharProgress(char)
         );
@@ -55,11 +56,14 @@ async function findSimilars(char) {
           continue;
         }
 
+        // @ts-ignore
         if (similarChar.similarType === SimilarType.APPEARANCE) {
           similarAppearance.push(latestEligibleVersion);
         }
 
+        // @ts-ignore
         if (similarChar.similarType === SimilarType.MEANING) {
+          // @ts-ignore
           const { similarToPrimitiveMeaning } = similarChar;
 
           similarMeaning.push({
@@ -93,6 +97,7 @@ async function findCharInSimilarDB(char) {
     raw: true,
   });
 
+  //@ts-ignore
   return foundCharInDB;
 }
 
@@ -107,8 +112,10 @@ async function findCharsInSameSimilarGroup(similarEntry) {
   const similarChars = await Similar.findAll({
     where: {
       [and]: [
+        //@ts-ignore
         { similarGroup: similarEntry.similarGroup },
         {
+          //@ts-ignore
           [not]: [{ charChinese: similarEntry.charChinese }],
         },
       ],
@@ -116,6 +123,7 @@ async function findCharsInSameSimilarGroup(similarEntry) {
     raw: true,
   });
 
+  //@ts-ignore
   return similarChars;
 }
 

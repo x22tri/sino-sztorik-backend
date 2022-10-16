@@ -1,29 +1,30 @@
-import Sequelize from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
+const { INTEGER, STRING } = DataTypes;
 import sequelize from '../util/database.js';
 
 const RevampedLesson = sequelize.define(
   'revampedLesson',
   {
     lessonNumber: {
-      type: Sequelize.INTEGER,
+      type: INTEGER,
       allowNull: false,
       primaryKey: true,
     },
     name: {
-      type: Sequelize.STRING,
+      type: STRING,
       allowNull: false,
     },
     prefaceTier1: {
-      type: Sequelize.STRING(2500),
+      type: STRING(2500),
     },
     prefaceTier2: {
-      type: Sequelize.STRING(2500),
+      type: STRING(2500),
     },
     prefaceTier3: {
-      type: Sequelize.STRING(2500),
+      type: STRING(2500),
     },
     prefaceTier4: {
-      type: Sequelize.STRING(2500),
+      type: STRING(2500),
     },
   },
   {

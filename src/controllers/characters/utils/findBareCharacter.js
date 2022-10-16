@@ -96,6 +96,7 @@ async function findAllCharIdsByChar(char) {
     throw new HttpError(CHARACTER_NOT_FOUND_ERROR, 404);
   }
 
+  // @ts-ignore
   return currentCharEntries.map(entry => entry.charId);
 }
 
@@ -112,6 +113,7 @@ async function findAllCharVersionsByCharIds(charIds) {
   try {
     addMethods(CharacterOrder, [findAllAndFlatten]);
 
+    //@ts-ignore
     charVersionsInOrder = await CharacterOrder.findAllAndFlatten({
       where: { charId: charIds },
       include: [Character],
