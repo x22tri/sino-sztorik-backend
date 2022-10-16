@@ -13,7 +13,15 @@ async function getUser(authHeader) {
 
     if (!token) throw new HttpError(UNAUTHENTICATED_ERROR, 403);
 
+    if (process.env.JWT_KEY === undefined) {
+      throw new Error();
+    }
+
     const decodedToken = jwt.verify(token, process.env.JWT_KEY);
+
+    if (typeof decodedToken === 'string') {
+      throw new Error();
+    }
 
     const user = await User.findOne({ where: { userId: decodedToken.userId } });
 

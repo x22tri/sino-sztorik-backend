@@ -4,6 +4,10 @@ import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literal
 import lessonsCache from '../lessons-cache.js';
 
 /**
+ * @typedef {Object} Lesson
+ * /
+
+/**
  * Queries the database for all lesson objects.
  *
  * @returns {Promise<Lesson[]>} An array of lesson objects.

@@ -10,11 +10,22 @@ function addMethods(object, methods) {
 }
 
 /**
+ * @typedef {Object} Character
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * A method that compares two progress states (objects that have "tier", "lessonNumber" and optionally "indexInLesson" properties).
  * These can be entries from the CharacterOrders table, or objects with the user's current tier and lessonNumber.
  *
+ * @this {Progress} - The progress state to compare.
  * @param {Progress} secondState - The progress state against which you'd like to compare the object this method was called on.
  * @returns {boolean} `true` if the object this method was called on comes later than `secondState`, `false` otherwise.
+ * 
  */
 function comesLaterThan(secondState) {
   const firstState = Object(this).valueOf();
@@ -51,6 +62,8 @@ function comesLaterThan(secondState) {
   if (
     firstState.tier === secondState.tier &&
     firstState.lessonNumber === secondState.lessonNumber &&
+    firstState.indexInLesson &&
+    secondState.indexInLesson &&
     firstState.indexInLesson > secondState.indexInLesson
   ) {
     return true;
@@ -63,6 +76,7 @@ function comesLaterThan(secondState) {
  * In an array of objects, filters out duplicates based on the given field.
  * In other words, for objects where the given field's value is the same, it will only keep the first one found.
  *
+ * @this {object[]}
  * @param {string} field - The name of the property based on which to filter.
  * @returns {void} Modifies `this` into a filtered array.
  */
@@ -90,8 +104,9 @@ function filterByField(field) {
  * Runs a Sequelize `findAll` query with an `include` parameter,
  * then extracts the nested object created by said `include` command into the main object.
  *
+ * @this {{findAll: Function}} - A Sequelize model.
  * @param {object} query - The configuration of the `findAll` query.
- * @returns {object[]} The result of the query.
+ * @returns {Promise<object[]>} The result of the query.
  *
  * ---
  *

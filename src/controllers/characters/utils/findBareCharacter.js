@@ -16,6 +16,15 @@ import {
 } from '../../../util/methods.js';
 
 /**
+ * @typedef {Object} Character
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Finds the character object for the requested character, without finding supplements.
  *
  * @param {string} char - The character string we're querying.

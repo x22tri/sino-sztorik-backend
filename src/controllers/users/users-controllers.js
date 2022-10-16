@@ -41,6 +41,10 @@ async function signup(req, res, next) {
       currentLesson: 1,
     });
 
+    if (process.env.JWT_KEY === undefined) {
+      throw new Error();
+    }
+
     const token = jwt.sign({ userId: createdUser.userId }, process.env.JWT_KEY);
 
     res.status(201).json({ userId: createdUser.userId, token: token });
@@ -66,6 +70,10 @@ async function login(req, res, next) {
 
     if (isValidPassword === false) {
       throw new HttpError(WRONG_CREDENTIALS_ERROR, 401);
+    }
+
+    if (process.env.JWT_KEY === undefined) {
+      throw new Error();
     }
 
     const token = jwt.sign(

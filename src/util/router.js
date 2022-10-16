@@ -10,16 +10,16 @@ import {
 } from '../controllers/lessons/lesson-controllers.js';
 import { handleSearchRequest } from '../controllers/characters/characters-controllers.js';
 
-import {
-  getAllLessons,
-  getAdditionalInfoAdmin,
-  updateLesson,
-  getAllPhrases,
-  updateAllPhrasesOrOtherUses,
-  getAllOtherUses,
-  getAllSimilars,
-  updateCharacter,
-} from '../controllers/admin/admin-controllers.js';
+// import {
+//   getAllLessons,
+//   getAdditionalInfoAdmin,
+//   updateLesson,
+//   getAllPhrases,
+//   updateAllPhrasesOrOtherUses,
+//   getAllOtherUses,
+//   getAllSimilars,
+//   updateCharacter,
+// } from '../controllers/admin/admin-controllers.js';
 
 import { signupValidators } from './router-utils.js';
 

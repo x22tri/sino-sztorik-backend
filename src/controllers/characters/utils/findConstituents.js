@@ -14,6 +14,15 @@ import { InteractiveWordType } from '../../../util/enums.js';
 import { findBareCharacter } from './findBareCharacter.js';
 
 /**
+ * @typedef {Object} Character
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Takes a character object and returns the bare character objects of its constituents.
  * If the input character's "constituents" field is not specified,
  * the function will collect all constituent references from its story.
@@ -80,6 +89,7 @@ function findConstituentsInStory(story) {
 
   const uniqueConstituents = interactiveWordContentArray
     .map(content => getInteractiveWordType(content))
+    // @ts-ignore
     .filter(type => Object.values(InteractiveWordType).includes(type) === false)
     .filter(onlyUnique);
 

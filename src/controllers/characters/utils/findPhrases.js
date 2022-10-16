@@ -8,11 +8,18 @@ import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
 
 /**
+ * @typedef {Object} Lesson
+ * @typedef {Object} Character
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Takes a character object and finds all the phrases containing the character that the user is eligible to see,
  * with the last eligible version of each character's character object.
- *
- * @param {number} currentTier - The tier that the user is currently at.
- * @param {number} currentLesson - The lesson that the user is currently at.
  * @param {Character} char - The character object whose phrases we're querying.
  
  * @returns {Promise<Phrase[]>} The character objects of all characters that make up the phrase.
@@ -72,7 +79,7 @@ async function findAllPhrasesWithChar(char) {
  *
  * @param {Progress} progress - The tier, lesson and index that the user is currently at.
  * @param {string} phrase - The phrase (the actual string, not the database entry) to analyze.
- * @returns {Promise<Character[]> | null} The character objects of all characters that make up the phrase.
+ * @returns {Promise<Character[] | null>} The character objects of all characters that make up the phrase.
  */
 async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
   let charObjectsInPhrase = [];

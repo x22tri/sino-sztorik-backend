@@ -9,6 +9,16 @@ import {
 } from '../../../util/string-literals.js';
 
 /**
+ * @typedef {Object} Character
+ * @typedef {Object} Lesson
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Gets a lesson, together with the characters within the lesson, based on the user's eligibility.
  *
  * @param {Progress} progress - The user's progress (tier and lesson number) in the course
@@ -20,7 +30,8 @@ async function getLesson(progress, lessonToView = undefined) {
 
   const isReview = lessonToView !== undefined;
 
-  const tierToView = lessonToView > lessonNumber ? tier - 1 : tier;
+  const tierToView =
+    lessonToView && lessonToView > lessonNumber ? tier - 1 : tier;
 
   let lesson = await findLessonWithChars(
     { tier: tierToView, lessonNumber: lessonToView ?? lessonNumber },

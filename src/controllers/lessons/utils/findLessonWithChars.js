@@ -16,6 +16,17 @@ import {
 } from '../../../util/methods.js';
 
 /**
+ * @typedef {Object} Character
+ * @typedef {Object} CharacterOrder
+ * @typedef {Object} Lesson
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Based on a lesson's progress state (tier and lesson number), finds the lesson object
  * and all characters within the lesson.
  *
@@ -54,7 +65,7 @@ async function findLessonWithChars(lessonProgress, isReview) {
  * @param {Progress} progress - The progress state (tier and lesson number) to query.
  * @param {boolean} exactTierOnly - `true` if you want to get a given lesson's chars from only the tier provided in `progress`.
  * `false` if you want all tiers up to (less than or equal to) the provided tier.
- * @returns {CharacterOrder & Character} An array of CharacterOrder objects with the corresponding character objects.
+ * @returns {Promise<CharacterOrder & Character>} An array of CharacterOrder objects with the corresponding character objects.
  */
 async function findAllCharsInLesson(progress, exactTierOnly) {
   try {

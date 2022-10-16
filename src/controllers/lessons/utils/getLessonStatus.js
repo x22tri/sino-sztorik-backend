@@ -8,6 +8,15 @@ import {
 import { addMethods, comesLaterThan } from '../../../util/methods.js';
 
 /**
+ * @typedef {Object} Character
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * 
+
+/**
  * Takes a lesson (with progress state and length) and the user's progress in the course,
  * and returns the lesson's "status".
  *
@@ -21,7 +30,8 @@ function getLessonStatus(userProgress, lessonProgress, lessonLength) {
 
   return lessonLength === 0
     ? LESSON_NOT_IN_TIER
-    : lessonProgress.comesLaterThan(userProgress)
+    : // @ts-ignore
+    lessonProgress.comesLaterThan(userProgress)
     ? LESSON_LOCKED
     : lessonProgress.tier === userProgress.tier &&
       lessonProgress.lessonNumber === userProgress.lessonNumber

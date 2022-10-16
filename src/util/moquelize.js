@@ -1,3 +1,4 @@
+/*
 const initializeSortStack = (function () {
   function compare(field, descending) {
     let f = (a, b) => (a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0);
@@ -142,6 +143,15 @@ function moquelize(data) {
     max(field, { where }) {
       let sorted = this.findAll({ where, order: [[field]] });
       return sorted[sorted.length - 1];
+    },
+  };
+}
+*/
+
+function moquelize(data) {
+  return {
+    findAll({ where, order }) {
+      return [];
     },
   };
 }

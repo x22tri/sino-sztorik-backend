@@ -7,11 +7,20 @@ import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literal
 import { COURSE_FINISHED_TIER } from '../../../util/config.js';
 
 /**
+ * @typedef {Object} Lesson
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Takes the Lesson database and queries all info about all versions of all lessons,
  * as well as appending lesson status to each lesson version.
  *
  * @param {Progress} userProgress - The user's progress (tier and lesson number) in the course.
- * @returns {Promise<Lesson[][]>} An array of all versions of all lessons, with the statuses appended.
+ * @returns {Promise<Lesson[]>} An array of all versions of all lessons, with the statuses appended.
  */
 async function getAllLessonsWithStatus(userProgress) {
   let lessonArray = [];

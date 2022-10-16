@@ -9,6 +9,16 @@ import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
 
 /**
+ * @typedef {Object} Character
+ * @typedef {Object} OtherUse
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Finds all characters similar to the requested character and returns their latest character object version
  * that the user is eligible to see.
  *
@@ -16,9 +26,7 @@ import { getCharProgress } from './getCharProgress.js';
  * @returns {Promise<{similarAppearance: Character[], similarMeaning: Character[]}>} The character's entry in the "Similars" table.
  */
 async function findSimilars(char) {
-  let similarAppearance = [];
-  let similarMeaning = [];
-  const emptyResponse = [[], []];
+  const emptyResponse = { similarAppearance: [], similarMeaning: [] };
 
   try {
     const foundCharInDB = await findCharInSimilarDB(char);
@@ -32,6 +40,9 @@ async function findSimilars(char) {
     if (!similarChars?.length) {
       return emptyResponse;
     }
+
+    let similarAppearance = [];
+    let similarMeaning = [];
 
     for (const similarChar of similarChars) {
       try {
@@ -63,11 +74,11 @@ async function findSimilars(char) {
         continue;
       }
     }
+
+    return { similarAppearance, similarMeaning };
   } catch (err) {
     throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
   }
-
-  return { similarAppearance, similarMeaning };
 }
 
 /**

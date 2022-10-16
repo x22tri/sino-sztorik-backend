@@ -2,3 +2,5 @@
 .env
 .env.production
 nodemon.json
+out/
+tsconfig.tsbuildinfo

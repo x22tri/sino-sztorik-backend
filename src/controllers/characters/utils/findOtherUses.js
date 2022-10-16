@@ -3,6 +3,16 @@ import HttpError from '../../../models/http-error.js';
 import { OTHER_USES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 
 /**
+ * @typedef {Object} Character
+ * @typedef {Object} OtherUse
+ *
+ * @typedef {Object} Progress
+ * @property {number} tier The tier the user is currently at.
+ * @property {number} lessonNumber The lesson the user is currently at.
+ * @property {number} [indexInLesson] The index of the character the user is currently at.
+ * /
+
+/**
  * Takes a character object and finds all meanings of the character other than its keyword, together with
  * how the character is pronounced when used in that meaning.
  *
@@ -31,7 +41,7 @@ async function findOtherUses(char) {
  *
  * @param {OtherUse[]} otherUseEntries - An array of entries in the OtherUses table. They must have previously been
  * sorted by pinyin in an accent-sensitive way.
- * @returns {Promise<OtherUse[]>} An array of entries in the OtherUses table, with the pinyin removed from certain entries.
+ * @returns {OtherUse[]} An array of entries in the OtherUses table, with the pinyin removed from certain entries.
  */
 function removeDuplicatePinyins(otherUseEntries) {
   if (otherUseEntries?.length < 2) {
@@ -49,6 +59,8 @@ function removeDuplicatePinyins(otherUseEntries) {
       currentPinyin = undefined;
     }
   }
+
+  return otherUseEntries;
 }
 
 export { findOtherUses };

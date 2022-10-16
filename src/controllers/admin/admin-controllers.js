@@ -1,3 +1,4 @@
+/*
 import { Op } from 'sequelize';
 const { and, not, like, notIn } = Op;
 
@@ -492,3 +493,5 @@ export {
   getAllSimilars,
   updateCharacter,
 };
+
+*/

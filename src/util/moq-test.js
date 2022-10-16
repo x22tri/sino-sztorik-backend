@@ -87,6 +87,8 @@ function like(string, valueToTest) {
 /*
  */
 
+/*
+
 function findFilter(operator, property, value, currentQuery = undefined) {
   const operatorDictionary = {
     [Symbol.for('eq')]: item => item[property] === value,
@@ -183,25 +185,22 @@ function gatherQueries(object) {
 
     getParent({ nestingLevel }) {
       let x = object;
-      for (i = 0; i < nestingLevel; i++) {
+      for (let i = 0; i < nestingLevel; i++) {
         x = x[this.getLeft(object)];
       }
       return x;
     },
   };
 
-  return _gatherQueries(
-    object,
-    (state = {
-      currentProperty: undefined,
-      currentQuery: undefined,
-      functions,
-      goingUp: false,
-      nestingLevel: 0,
-      originalObject: { ...object },
-      queryArray: [],
-    })
-  );
+  return _gatherQueries(object, {
+    currentProperty: undefined,
+    currentQuery: undefined,
+    functions,
+    goingUp: false,
+    nestingLevel: 0,
+    originalObject: { ...object },
+    queryArray: [],
+  });
 }
 
 function testGatherQueries() {
@@ -225,3 +224,5 @@ function testGatherQueries() {
 }
 
 export { testGatherQueries };
+
+*/
