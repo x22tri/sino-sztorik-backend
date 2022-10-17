@@ -1,13 +1,14 @@
 import { Op } from 'sequelize';
 const { eq, lte } = Op;
 
-import CharacterOrder from '../../../models/character-orders.js';
+import { CharacterOrder } from '../../../models/character-orders.js';
 import Character from '../../../models/characters.js';
 import HttpError from '../../../models/http-error.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 import { LESSON_PREFACE_TIER_PREFIX } from '../../../util/config.js';
 import lessonsCache from '../lessons-cache.js';
+import { findCharByCharChinese } from '../../characters/utils/findCharByCharChinese.js';
 
 import {
   addMethods,
@@ -17,7 +18,6 @@ import {
 
 /**
  * @typedef {Object} Character
- * @typedef {Object} CharacterOrder
  * @typedef {Object} Lesson
  *
  * @typedef {Object} Progress
@@ -85,9 +85,18 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
       nest: true,
     });
 
-    addMethods(charsInGivenLesson, [filterByField]);
+    // console.log(charsInGivenLesson);
 
-    charsInGivenLesson.filterByField('charChinese');
+    // let carr = [];
+    // for (let c of charsInGivenLesson) {
+    //   let cbare = await findCharByCharChinese(c.charChinese, progress);
+    //   // console.log(cbare);
+    //   carr.push(cbare);
+    // }
+
+    // addMethods(charsInGivenLesson, [filterByField]);
+
+    // charsInGivenLesson.filterByField('charChinese');
 
     return charsInGivenLesson;
   } catch (err) {

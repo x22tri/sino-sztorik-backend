@@ -1,6 +1,7 @@
 import HttpError from '../../../models/http-error.js';
 import { findLessonWithChars } from './findLessonWithChars.js';
 import { addSupplements } from '../../characters/utils/addSupplements.js';
+import { findCharByCharChinese } from '../../characters/utils/findCharByCharChinese.js';
 
 import {
   LESSON_CHARS_NOT_FOUND_ERROR,
@@ -46,7 +47,10 @@ async function getLesson(progress, lessonToView = undefined) {
 
   try {
     for (const charInLesson of lesson.characters) {
-      const characterWithSupplements = await addSupplements(charInLesson);
+      const characterWithSupplements = await findCharByCharChinese(
+        charInLesson.charChinese,
+        progress
+      );
 
       if (characterWithSupplements) {
         charsWithSupplements.push(characterWithSupplements);

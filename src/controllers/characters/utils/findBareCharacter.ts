@@ -1,5 +1,5 @@
 import Character from '../../../models/characters.js';
-import CharacterOrder from '../../../models/character-orders.js';
+import { CharacterOrder } from '../../../models/character-orders.js';
 import HttpError from '../../../models/http-error.js';
 
 import {
@@ -71,6 +71,8 @@ async function findBareCharacter(char, progress) {
     throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
+  // console.log(charToMutate);
+
   return charToMutate;
 }
 
@@ -117,6 +119,7 @@ async function findAllCharVersionsByCharIds(charIds) {
     charVersionsInOrder = await CharacterOrder.findAllAndFlatten({
       where: { charId: charIds },
       include: [Character],
+      //@ts-ignore
       order: [['tier'], ['lessonNumber'], ['indexInLesson']],
       raw: true,
       nest: true,

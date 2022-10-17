@@ -1,12 +1,12 @@
 import HttpError from '../../../models/http-error.js';
-import { findCharacter } from './findCharacter.js';
+import { findCharByCharChinese } from './findCharByCharChinese.js';
 import { SEARCH_NO_ELIGIBLE_MATCH } from '../../../util/string-literals.js';
 
 async function findCharByKeywordOrPrimitive(array, userProgress) {
   let foundSearchCharsArray = [];
 
   for (const keywordOrPrimitive of array) {
-    const foundSearchChar = await findCharacter(
+    const foundSearchChar = await findCharByCharChinese(
       keywordOrPrimitive.charChinese,
       userProgress
     );

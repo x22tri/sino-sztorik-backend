@@ -1,4 +1,4 @@
-import { findCharacter } from './findCharacter.js';
+import { findCharByCharChinese } from './findCharByCharChinese.js';
 import { findTermAsKeywordOrPrimitive } from './findTermAsKeywordOrPrimitive.js';
 import { findCharByKeywordOrPrimitive } from './findCharByKeywordOrPrimitive.js';
 
@@ -24,7 +24,10 @@ async function search(searchTerm, userProgress) {
   userProgress.lessonNumber = userProgress.lessonNumber - 1; // User isn't eligible to the upcoming lesson in a search request.
 
   if (isSearchTermChinese(searchTerm)) {
-    const foundSearchChar = await findCharacter(searchTerm, userProgress);
+    const foundSearchChar = await findCharByCharChinese(
+      searchTerm,
+      userProgress
+    );
 
     return foundSearchChar;
   }

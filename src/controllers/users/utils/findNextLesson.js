@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 const { gt } = Op;
 
-import CharacterOrder from '../../../models/character-orders.js';
+import { CharacterOrder } from '../../../models/character-orders.js';
 import HttpError from '../../../models/http-error.js';
 import { getCharProgress } from '../../characters/utils/getCharProgress.js';
 import { LAST_TIER, COURSE_FINISHED } from '../../../util/config.js';

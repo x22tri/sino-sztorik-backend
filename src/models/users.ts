@@ -1,5 +1,4 @@
 import {
-  Sequelize,
   DataTypes,
   Model,
   CreationOptional,

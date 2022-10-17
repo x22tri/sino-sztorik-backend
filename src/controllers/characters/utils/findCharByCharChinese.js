@@ -22,7 +22,7 @@ import { TIER_OR_LESSON_NOT_NUMBER_ERROR } from '../../../util/string-literals.j
  *
  * @returns {Promise<Character | void>} The character object.
  */
-async function findCharacter(charString, userProgress) {
+async function findCharByCharChinese(charString, userProgress) {
   if (isNaN(userProgress.tier) || isNaN(userProgress.lessonNumber)) {
     throw new HttpError(TIER_OR_LESSON_NOT_NUMBER_ERROR, 400);
   }
@@ -38,4 +38,4 @@ async function findCharacter(charString, userProgress) {
   return characterWithSupplements;
 }
 
-export { findCharacter };
+export { findCharByCharChinese };
