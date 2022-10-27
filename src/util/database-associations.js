@@ -8,7 +8,6 @@ Character.hasOne(CharacterOrder, { foreignKey: 'charId' });
 // Setting up type definitions.
 
 /**
- * @typedef {Object} Character
  *
  * @typedef {Object} Progress
  * @property {number} tier The tier the user is currently at.

@@ -9,11 +9,7 @@ import {
   SEARCH_NO_MATCH,
 } from '../../../util/string-literals.js';
 
-import {
-  addMethods,
-  findAllAndFlatten,
-  comesLaterThan,
-} from '../../../util/methods.js';
+import { addMethods, comesLaterThan } from '../../../util/methods.js';
 
 /**
  * @typedef {Object} Character
@@ -24,6 +20,8 @@ import {
  * @property {number} [indexInLesson] The index of the character the user is currently at.
  * /
 
+
+
 /**
  * Finds the character object for the requested character, without finding supplements.
  *
@@ -33,7 +31,7 @@ import {
  * the tier, lesson and index of a character that serves as a comparison point.
  * @returns {Promise<Character | null>} The character object.
  */
-async function findBareCharacter(char, progress) {
+async function findBareCharacter(char: string, progress) {
   const ids = await findAllCharIdsByChar(char);
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
@@ -113,14 +111,10 @@ async function findAllCharVersionsByCharIds(charIds) {
   let charVersionsInOrder;
 
   try {
-    addMethods(CharacterOrder, [findAllAndFlatten]);
-
-    //@ts-ignore
-    charVersionsInOrder = await CharacterOrder.findAllAndFlatten({
+    charVersionsInOrder = await CharacterOrder.findAllAndHoist({
       where: { charId: charIds },
       include: [Character],
-      //@ts-ignore
-      order: [['tier'], ['lessonNumber'], ['indexInLesson']],
+      order: ['tier', 'lessonNumber', 'indexInLesson'],
       raw: true,
       nest: true,
     });

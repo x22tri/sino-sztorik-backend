@@ -1,6 +1,5 @@
 import HttpError from '../../../models/http-error.js';
 import { findLessonWithChars } from './findLessonWithChars.js';
-import { addSupplements } from '../../characters/utils/addSupplements.js';
 import { findCharByCharChinese } from '../../characters/utils/findCharByCharChinese.js';
 
 import {
@@ -9,8 +8,10 @@ import {
   LESSON_DATABASE_QUERY_FAILED_ERROR,
 } from '../../../util/string-literals.js';
 
+import Character from '../../../models/characters.js';
+
 /**
- * @typedef {Object} Character
+ 
  * @typedef {Object} Lesson
  *
  * @typedef {Object} Progress
@@ -43,30 +44,26 @@ async function getLesson(progress, lessonToView = undefined) {
     throw new HttpError(LESSON_NOT_FOUND_ERROR, 404);
   }
 
-  let charsWithSupplements = [];
+  let fullChars = [];
 
   try {
-    for (const charInLesson of lesson.characters) {
-      const characterWithSupplements = await findCharByCharChinese(
-        charInLesson.charChinese,
-        progress
-      );
+    for (const { charChinese } of lesson.characters) {
+      const fullChar = await findCharByCharChinese(charChinese, progress);
 
-      if (characterWithSupplements) {
-        charsWithSupplements.push(characterWithSupplements);
+      if (fullChar) {
+        fullChars.push(fullChar);
       }
     }
   } catch (err) {
     throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
-  if (charsWithSupplements.length) {
-    lesson.characters = charsWithSupplements;
+  if (fullChars.length) {
+    lesson.characters = fullChars;
+    return lesson;
   } else {
     throw new HttpError(LESSON_CHARS_NOT_FOUND_ERROR, 404);
   }
-
-  return lesson;
 }
 
 export { getLesson };

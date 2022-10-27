@@ -42,7 +42,7 @@ async function getLessonSelect(req, res, next) {
 
     const currentLessonName = lessonArray.find(
       lesson => lesson.lessonNumber === user.currentLesson
-    ).name;
+    )?.name;
 
     res.json({
       lessonArray,

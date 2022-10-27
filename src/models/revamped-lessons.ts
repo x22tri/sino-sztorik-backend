@@ -1,9 +1,10 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import { DataTypes, Model, VIRTUAL } from 'sequelize';
 const { INTEGER, STRING } = DataTypes;
 import sequelize from '../util/database.js';
 
-const RevampedLesson = sequelize.define(
-  'revampedLesson',
+class RevampedLesson extends Model {}
+
+RevampedLesson.init(
   {
     lessonNumber: {
       type: INTEGER,
@@ -26,8 +27,13 @@ const RevampedLesson = sequelize.define(
     prefaceTier4: {
       type: STRING(2500),
     },
+    status: {
+      type: VIRTUAL,
+    },
   },
   {
+    sequelize,
+    modelName: 'revampedLesson',
     timestamps: false,
   }
 );

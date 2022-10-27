@@ -1,9 +1,33 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import {
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 const { INTEGER, STRING, BOOLEAN, VIRTUAL } = DataTypes;
 import sequelize from '../util/database.js';
 
-const Character = sequelize.define(
-  'character',
+class Character extends Model<
+  InferAttributes<Character>,
+  InferCreationAttributes<Character>
+> {
+  declare charId: string;
+  declare charChinese: string;
+  declare keyword: string | null;
+  declare pinyin: string | null;
+  declare story: string | null;
+  declare primitiveMeaning: string | null;
+  declare explanation: string | null;
+  declare notes: string | null;
+  declare productivePhonetic: boolean | null;
+  declare frequency: number | null;
+  declare illustrationAltText: string | null;
+  declare constituents: string | null;
+  declare prequel: string | null;
+  declare reminder: boolean | null;
+}
+
+Character.init(
   {
     charId: {
       type: STRING,
@@ -54,6 +78,8 @@ const Character = sequelize.define(
     },
   },
   {
+    sequelize,
+    modelName: 'character',
     timestamps: false,
   }
 );

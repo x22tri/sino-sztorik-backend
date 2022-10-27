@@ -8,16 +8,9 @@ import { findAllLessonObjects } from './findAllLessonObjects.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 import { LESSON_PREFACE_TIER_PREFIX } from '../../../util/config.js';
 import lessonsCache from '../lessons-cache.js';
-import { findCharByCharChinese } from '../../characters/utils/findCharByCharChinese.js';
-
-import {
-  addMethods,
-  filterByField,
-  findAllAndFlatten,
-} from '../../../util/methods.js';
+import { deduplicate } from '../../../util/methods/deduplicate.js';
 
 /**
- * @typedef {Object} Character
  * @typedef {Object} Lesson
  *
  * @typedef {Object} Progress
@@ -34,7 +27,7 @@ import {
  * @param {boolean} [isReview] - `true` if the request arrives from a lesson review request, `false` otherwise.
  * @returns {Promise<Lesson & Character>} The found lesson.
  */
-async function findLessonWithChars(lessonProgress, isReview) {
+async function findLessonWithChars(lessonProgress, isReview: boolean) {
   try {
     const { tier, lessonNumber } = lessonProgress;
 
@@ -55,7 +48,7 @@ async function findLessonWithChars(lessonProgress, isReview) {
       characters: charsInGivenLesson,
     };
   } catch (err) {
-    return new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 }
 
@@ -65,17 +58,14 @@ async function findLessonWithChars(lessonProgress, isReview) {
  * @param {Progress} progress - The progress state (tier and lesson number) to query.
  * @param {boolean} exactTierOnly - `true` if you want to get a given lesson's chars from only the tier provided in `progress`.
  * `false` if you want all tiers up to (less than or equal to) the provided tier.
- * @returns {Promise<CharacterOrder & Character>} An array of CharacterOrder objects with the corresponding character objects.
+ * @returns {Promise<(CharacterOrder & Character)[]>} An array of CharacterOrder objects with the corresponding character objects.
  */
-async function findAllCharsInLesson(progress, exactTierOnly) {
+async function findAllCharsInLesson(progress, exactTierOnly: boolean) {
   try {
     const tierOperator = exactTierOnly ? eq : lte;
     const { tier, lessonNumber } = progress;
 
-    addMethods(CharacterOrder, [findAllAndFlatten]);
-
-    //@ts-ignore
-    let charsInGivenLesson = await CharacterOrder.findAllAndFlatten({
+    let charsInGivenLesson = (await CharacterOrder.findAllAndHoist({
       where: {
         tier: { [tierOperator]: tier },
         lessonNumber: { [eq]: lessonNumber },
@@ -83,24 +73,15 @@ async function findAllCharsInLesson(progress, exactTierOnly) {
       include: [Character],
       raw: true,
       nest: true,
-    });
+    })) as (CharacterOrder & Character)[];
 
-    // console.log(charsInGivenLesson);
+    // To-Do: attempt to add query.include, ...rest in class method,
+    // for better type checking
 
-    // let carr = [];
-    // for (let c of charsInGivenLesson) {
-    //   let cbare = await findCharByCharChinese(c.charChinese, progress);
-    //   // console.log(cbare);
-    //   carr.push(cbare);
-    // }
-
-    // addMethods(charsInGivenLesson, [filterByField]);
-
-    // charsInGivenLesson.filterByField('charChinese');
+    deduplicate({ array: charsInGivenLesson, byField: 'charChinese' });
 
     return charsInGivenLesson;
   } catch (err) {
-    console.log(err);
     throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 }

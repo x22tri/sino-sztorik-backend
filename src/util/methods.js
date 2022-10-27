@@ -119,25 +119,25 @@ function filterByField(field) {
  *
  * This function extracts the nested object and adds its content to the main object.
  */
-async function findAllAndFlatten(query) {
-  if (!this.findAll || !query?.include || query.include.length !== 1) {
-    throw new Error(
-      `This method can only be called on a Sequelize model instance, in place of findAll.
-        It requires an 'include' parameter with a value of an array containing a single field.`
-    );
-  }
+// async function findAllAndHoist(query) {
+//   if (!this.findAll || !query?.include || query.include.length !== 1) {
+//     throw new Error(
+//       `This method can only be called on a Sequelize model instance, in place of findAll.
+//         It requires an 'include' parameter with a value of an array containing a single field.`
+//     );
+//   }
 
-  const fieldToHoist = query.include[0].options.name.singular;
+//   const fieldToHoist = query.include[0].options.name.singular;
 
-  let queryResults = await this.findAll(query);
+//   let queryResults = await this.findAll(query);
 
-  for (let i = 0; i < queryResults.length; i++) {
-    queryResults[i] = { ...queryResults[i], ...queryResults[i][fieldToHoist] };
+//   for (let i = 0; i < queryResults.length; i++) {
+//     queryResults[i] = { ...queryResults[i], ...queryResults[i][fieldToHoist] };
 
-    delete queryResults[i][fieldToHoist];
-  }
+//     delete queryResults[i][fieldToHoist];
+//   }
 
-  return queryResults;
-}
+//   return queryResults;
+// }
 
-export { addMethods, comesLaterThan, filterByField, findAllAndFlatten };
+export { addMethods, comesLaterThan, filterByField };
