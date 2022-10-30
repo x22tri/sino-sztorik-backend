@@ -66,11 +66,11 @@ async function findBareCharacter(char: string, progress: Progress) {
 /**
  * Takes a Chinese character and returns all the character object ID's associated with the character.
  *
- * @param {string} char - A Chinese character.
- * @returns {Promise<string[]>} An array of character ID's.
+ * @param char - A Chinese character.
+ * @returns An array of character ID's.
  */
-async function findAllCharIdsByChar(char) {
-  let currentCharEntries;
+async function findAllCharIdsByChar(char: string): Promise<string[]> {
+  let currentCharEntries: Character[];
 
   try {
     currentCharEntries = await Character.findAll({
@@ -85,7 +85,6 @@ async function findAllCharIdsByChar(char) {
     throw new HttpError(CHARACTER_NOT_FOUND_ERROR, 404);
   }
 
-  // @ts-ignore
   return currentCharEntries.map(entry => entry.charId);
 }
 
@@ -93,8 +92,8 @@ async function findAllCharIdsByChar(char) {
  * Takes an array of character ID's and returns the corresponding character objects,
  * sorted by the order that the user will see them in the course.
  *
- * @param {string[]} charIds - An array of character ID's.
- * @returns {Promise<(CharacterOrder & Character)[]>} An array of character objects.
+ * @param charIds - An array of character ID's.
+ * @returns An array of character objects.
  */
 async function findAllCharVersionsByCharIds(
   charIds: string[]
@@ -108,7 +107,9 @@ async function findAllCharVersionsByCharIds(
       nest: true,
     });
 
-    // console.log(charVersionsInOrder[0]?.getProgress());
+    console.log(charVersionsInOrder[0]);
+    //@ts-ignore
+    console.log(charVersionsInOrder[0] instanceof CharacterOrder);
 
     // let x = await CharacterOrder.findTest({
     //   where: { charId: 'egy' },

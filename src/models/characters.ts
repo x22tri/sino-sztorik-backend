@@ -12,20 +12,20 @@ class Character extends Model<
   InferAttributes<Character>,
   InferCreationAttributes<Character>
 > {
-  charId!: string;
-  charChinese!: string;
-  keyword?: string | null;
-  pinyin?: string | null;
-  story?: string | null;
-  primitiveMeaning?: string | null;
-  explanation?: string | null;
-  notes?: string | null;
-  productivePhonetic?: boolean | null;
-  frequency?: number | null;
-  illustrationAltText?: string | null;
-  constituents?: string | null;
-  prequel?: string | null;
-  reminder?: boolean | null;
+  declare charId: string;
+  declare charChinese: string;
+  declare keyword?: string | null;
+  declare pinyin?: string | null;
+  declare story?: string | null;
+  declare primitiveMeaning?: string | null;
+  declare explanation?: string | null;
+  declare notes?: string | null;
+  declare productivePhonetic?: boolean | null;
+  declare frequency: number | null;
+  declare illustrationAltText: string | null;
+  declare constituents: string | null;
+  declare prequel: string | null;
+  declare reminder: boolean | null;
 }
 
 Character.init(

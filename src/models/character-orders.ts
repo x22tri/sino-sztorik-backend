@@ -18,29 +18,18 @@ import { INVALID_NUMBERS_PROVIDED } from '../util/string-literals.js';
 
 // }
 
-async function findTest<M extends Model, I extends Model>(
-  model: ModelStatic<M>,
-  query: FindOptions
-) {
-  return await model.findOne(query);
-}
-
 class CharacterOrder extends Model<
   InferAttributes<CharacterOrder>,
   InferCreationAttributes<CharacterOrder>
 > {
-  orderId!: number;
-  charId!: string;
-  tier!: number;
-  lessonNumber!: number;
-  indexInLesson!: number;
+  declare orderId: number;
+  declare charId: string;
+  declare tier: number;
+  declare lessonNumber: number;
+  declare indexInLesson: number;
 
   static async findAllAndHoist(query: FindOptions) {
     return await findAllAndHoist<CharacterOrder, Character>(this, query);
-  }
-
-  static async findTest(query: FindOptions) {
-    return await findTest(this, query);
   }
 
   getProgress(): Progress {

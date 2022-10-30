@@ -40,12 +40,15 @@ async function findAllAndHoist<M extends Model, I extends Model>(
     queryResults[i] = {
       ...queryResults[i],
       ...queryResults[i][fieldToHoist],
+      test() {
+        console.log('test');
+      },
     };
 
     delete queryResults[i][fieldToHoist];
   }
 
-  return queryResults;
+  return queryResults as (M & I)[];
 }
 
 export { findAllAndHoist };

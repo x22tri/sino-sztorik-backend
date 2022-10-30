@@ -12,12 +12,12 @@ import { Progress } from '../util/interfaces.js';
 import { INVALID_NUMBERS_PROVIDED } from '../util/string-literals.js';
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  userId?: CreationOptional<number>;
-  displayName!: string;
-  email!: string;
-  password!: string;
-  currentTier!: number;
-  currentLesson!: number;
+  declare userId: CreationOptional<number>;
+  declare displayName: string;
+  declare email: string;
+  declare password: string;
+  declare currentTier: number;
+  declare currentLesson: number;
 
   getProgress(): Progress {
     return {
