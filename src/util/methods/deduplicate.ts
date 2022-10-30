@@ -26,7 +26,7 @@ function deduplicate<M extends Model>({
   let lookup: Record<PropertyKey, boolean> = {};
 
   for (let i = 0; i < array.length; i++) {
-    const currentValue = array[i][byField];
+    const currentValue = array[i].getDataValue(byField);
 
     if (!isPropertyKey(currentValue)) {
       throw new Error(`This field can't be used to remove duplicates by.`);

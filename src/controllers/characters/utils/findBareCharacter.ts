@@ -27,8 +27,6 @@ async function findBareCharacter(char: string, progress: Progress) {
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
 
-  addMethods(firstCharVersion, [comesLaterThan]);
-
   if (firstCharVersion.comesLaterThan(progress)) {
     return null;
   }
@@ -38,8 +36,6 @@ async function findBareCharacter(char: string, progress: Progress) {
   try {
     for (let i = 1; i < characterVersionsInOrder.length; i++) {
       const currentCharVersion = characterVersionsInOrder[i];
-
-      addMethods(currentCharVersion, [comesLaterThan]);
 
       if (currentCharVersion.comesLaterThan(progress)) {
         break; // If a user is ineligible for one version, they'll be ineligible for all versions after that.
@@ -107,19 +103,6 @@ async function findAllCharVersionsByCharIds(
       nest: true,
     });
 
-    console.log(charVersionsInOrder[0]);
-    //@ts-ignore
-    console.log(charVersionsInOrder[0] instanceof CharacterOrder);
-
-    // let x = await CharacterOrder.findTest({
-    //   where: { charId: 'egy' },
-    //   include: [Character],
-    //   // raw: true,
-    //   nest: true,
-    // });
-
-    // console.log(x?.getProgress());
-
     if (!charVersionsInOrder?.length) {
       throw new HttpError(SEARCH_NO_MATCH, 404);
     }
@@ -133,9 +116,8 @@ async function findAllCharVersionsByCharIds(
 /**
  * Adds all of `currentCharVersion`'s truthy properties to `charToMutate`.
  *
- * @param {Character} currentCharVersion - The object whose properties will be copied.
- * @param {Character} charToMutate - The object that will receive the updated properties.
- * @returns {void}
+ * @param currentCharVersion - The object whose properties will be copied.
+ * @param charToMutate - The object that will receive the updated properties.
  *
  * The function is intended to be used to "patch" a base character (`charToMutate`) with the "diffs" of later versions.
  *
@@ -145,9 +127,13 @@ function replaceNewProperties(
   currentCharVersion: Character,
   charToMutate: Character
 ): void {
-  for (const prop in currentCharVersion) {
-    if (currentCharVersion[prop]) {
-      charToMutate[prop] = currentCharVersion[prop];
+  const currentVersion = currentCharVersion.get({ plain: true });
+
+  for (let i = 0; i < Object.keys(currentVersion).length; i++) {
+    const [key, value] = Object.entries(currentVersion)[i];
+
+    if (value) {
+      charToMutate[key] = value;
     }
   }
 }

@@ -34,19 +34,21 @@ async function findAllAndHoist<M extends Model, I extends Model>(
 ) {
   const fieldToHoist = getFieldToHoist(query.include);
 
-  let queryResults = await model.findAll(query);
+  let x = await model.findAll({ ...query, raw: false, nest: true });
 
-  for (let i = 0; i < queryResults.length; i++) {
-    queryResults[i] = {
-      ...queryResults[i],
-      ...queryResults[i][fieldToHoist],
-      test() {
-        console.log('test');
-      },
-    };
+  let queryResults = x.map(queryResult => {
+    let nestedValue = queryResult
+      .getDataValue(fieldToHoist)
+      .get({ plain: true });
 
-    delete queryResults[i][fieldToHoist];
-  }
+    for (let i = 0; i < Object.keys(nestedValue).length; i++) {
+      let [key, value] = Object.entries(nestedValue)[i];
+      queryResult.setDataValue(key, value);
+      queryResult.setDataValue(fieldToHoist, undefined);
+    }
+
+    return queryResult;
+  });
 
   return queryResults as (M & I)[];
 }

@@ -47,7 +47,9 @@ async function getLesson(progress, lessonToView = undefined) {
   let fullChars = [];
 
   try {
-    for (const { charChinese } of lesson.characters) {
+    for (const char of lesson.characters) {
+      const charChinese = char.getDataValue('charChinese');
+
       const fullChar = await findCharByCharChinese(charChinese, progress);
 
       if (fullChar) {
