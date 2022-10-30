@@ -55,7 +55,7 @@ async function getLesson(progress, lessonToView = undefined) {
       }
     }
   } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+    throw new HttpError(err, 500);
   }
 
   if (fullChars.length) {

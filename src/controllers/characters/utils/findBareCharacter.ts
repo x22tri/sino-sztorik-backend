@@ -11,16 +11,7 @@ import {
 
 import { addMethods, comesLaterThan } from '../../../util/methods.js';
 
-/**
- * @typedef {Object} Character
- *
- * @typedef {Object} Progress
- * @property {number} tier The tier the user is currently at.
- * @property {number} lessonNumber The lesson the user is currently at.
- * @property {number} [indexInLesson] The index of the character the user is currently at.
- * /
-
-
+import { Progress } from '../../../util/interfaces.js';
 
 /**
  * Finds the character object for the requested character, without finding supplements.
@@ -31,7 +22,7 @@ import { addMethods, comesLaterThan } from '../../../util/methods.js';
  * the tier, lesson and index of a character that serves as a comparison point.
  * @returns {Promise<Character | null>} The character object.
  */
-async function findBareCharacter(char: string, progress) {
+async function findBareCharacter(char: string, progress: Progress) {
   const ids = await findAllCharIdsByChar(char);
   const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
@@ -69,8 +60,6 @@ async function findBareCharacter(char: string, progress) {
     throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
   }
 
-  // console.log(charToMutate);
-
   return charToMutate;
 }
 
@@ -105,28 +94,39 @@ async function findAllCharIdsByChar(char) {
  * sorted by the order that the user will see them in the course.
  *
  * @param {string[]} charIds - An array of character ID's.
- * @returns {Promise<Character[]>} An array of character objects.
+ * @returns {Promise<(CharacterOrder & Character)[]>} An array of character objects.
  */
-async function findAllCharVersionsByCharIds(charIds) {
-  let charVersionsInOrder;
-
+async function findAllCharVersionsByCharIds(
+  charIds: string[]
+): Promise<(CharacterOrder & Character)[]> {
   try {
-    charVersionsInOrder = await CharacterOrder.findAllAndHoist({
+    let charVersionsInOrder = await CharacterOrder.findAllAndHoist({
       where: { charId: charIds },
       include: [Character],
       order: ['tier', 'lessonNumber', 'indexInLesson'],
       raw: true,
       nest: true,
     });
+
+    // console.log(charVersionsInOrder[0]?.getProgress());
+
+    // let x = await CharacterOrder.findTest({
+    //   where: { charId: 'egy' },
+    //   include: [Character],
+    //   // raw: true,
+    //   nest: true,
+    // });
+
+    // console.log(x?.getProgress());
+
+    if (!charVersionsInOrder?.length) {
+      throw new HttpError(SEARCH_NO_MATCH, 404);
+    }
+
+    return charVersionsInOrder as (CharacterOrder & Character)[];
   } catch (err) {
     throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
   }
-
-  if (!charVersionsInOrder?.length) {
-    throw new HttpError(SEARCH_NO_MATCH, 404);
-  }
-
-  return charVersionsInOrder;
 }
 
 /**
@@ -140,7 +140,10 @@ async function findAllCharVersionsByCharIds(charIds) {
  *
  * As such, it is supposed to be used with two character objects (who have the same model, and therefore, the same property keys).
  */
-function replaceNewProperties(currentCharVersion, charToMutate) {
+function replaceNewProperties(
+  currentCharVersion: Character,
+  charToMutate: Character
+): void {
   for (const prop in currentCharVersion) {
     if (currentCharVersion[prop]) {
       charToMutate[prop] = currentCharVersion[prop];

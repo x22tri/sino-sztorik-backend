@@ -48,7 +48,7 @@ async function findLessonWithChars(lessonProgress, isReview: boolean) {
       characters: charsInGivenLesson,
     };
   } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+    throw new HttpError(err, 500);
   }
 }
 
@@ -82,7 +82,7 @@ async function findAllCharsInLesson(progress, exactTierOnly: boolean) {
 
     return charsInGivenLesson;
   } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+    throw new HttpError(err, 500);
   }
 }
 

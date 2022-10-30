@@ -28,7 +28,10 @@ function getFieldToHoist(
   throw new Error(`An error occurred while hoisting field.`);
 }
 
-async function findAllAndHoist(model: ModelStatic<Model>, query: FindOptions) {
+async function findAllAndHoist<M extends Model, I extends Model>(
+  model: ModelStatic<M>,
+  query: FindOptions
+) {
   const fieldToHoist = getFieldToHoist(query.include);
 
   let queryResults = await model.findAll(query);
