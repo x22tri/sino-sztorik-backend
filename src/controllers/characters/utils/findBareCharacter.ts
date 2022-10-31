@@ -9,8 +9,6 @@ import {
   SEARCH_NO_MATCH,
 } from '../../../util/string-literals.js';
 
-import { addMethods, comesLaterThan } from '../../../util/methods.js';
-
 import { Progress } from '../../../util/interfaces.js';
 
 /**
@@ -115,6 +113,8 @@ async function findAllCharVersionsByCharIds(
 
 /**
  * Adds all of `currentCharVersion`'s truthy properties to `charToMutate`.
+ *
+ * Falsy values, such as null, undefined, or empty string, do not overwrite `charToMutate`.
  *
  * @param currentCharVersion - The object whose properties will be copied.
  * @param charToMutate - The object that will receive the updated properties.

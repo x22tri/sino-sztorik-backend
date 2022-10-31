@@ -11,12 +11,8 @@ const { INTEGER, STRING, FLOAT } = DataTypes;
 import sequelize from '../util/database.js';
 import Character from './characters.js';
 import { findAllAndHoist } from '../util/methods/findAllAndHoist.js';
-import { Progress } from '../util/interfaces.js';
+import { Progress, HasProgress } from '../util/interfaces.js';
 import { INVALID_NUMBERS_PROVIDED } from '../util/string-literals.js';
-
-// class HasProgress {
-
-// }
 
 class CharacterOrder extends Model<
   InferAttributes<CharacterOrder>,

@@ -3,7 +3,10 @@ import HttpError from '../../../models/http-error.js';
 import { findLessonWithChars } from './findLessonWithChars.js';
 import { getLessonStatus } from './getLessonStatus.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
-import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import {
+  INVALID_NUMBERS_PROVIDED,
+  LESSON_DATABASE_QUERY_FAILED_ERROR,
+} from '../../../util/string-literals.js';
 import { COURSE_FINISHED_TIER } from '../../../util/config.js';
 
 import RevampedLesson from '../../../models/revamped-lessons.js';
@@ -16,15 +19,20 @@ import {
 } from '../../../util/string-literals.js';
 import Character from '../../../models/characters.js';
 import { CharacterOrder } from '../../../models/character-orders.js';
+import {
+  Progress,
+  HasProgress,
+  AssembledLesson,
+} from '../../../util/interfaces.js';
 
-interface AssembledLesson {
-  tier: number;
-  lessonNumber: number;
-  name: string;
-  preface: string;
-  characters: (CharacterOrder & Character)[];
-  status?: string;
-}
+// interface AssembledLesson {
+//   tier: number;
+//   lessonNumber: number;
+//   name: string;
+//   preface: string;
+//   characters: (CharacterOrder & Character)[];
+//   status?: string;
+// }
 
 interface AssembledLessonAllTiers {
   lessonNumber: number;
@@ -92,19 +100,14 @@ async function findAllTiersOfLesson(
   for (let tier = 1; tier < COURSE_FINISHED_TIER; tier++) {
     const lessonProgress = { tier, lessonNumber };
 
-    let foundLesson = await findLessonWithChars(lessonProgress, false);
+    let foundLesson = new AssembledLesson(
+      await findLessonWithChars(lessonProgress, false)
+    );
 
     if (foundLesson) {
-      const lessonStatus = getLessonStatus(
-        userProgress,
-        lessonProgress,
-        foundLesson.characters.length
-      );
+      const lessonStatus = getLessonStatus(userProgress, foundLesson);
 
-      foundLesson = {
-        ...foundLesson,
-        status: lessonStatus,
-      } as AssembledLesson;
+      foundLesson.status = lessonStatus;
 
       tierArray.push(foundLesson);
     }
