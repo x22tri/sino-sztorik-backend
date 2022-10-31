@@ -4,15 +4,14 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
-  ModelStatic,
 } from 'sequelize';
 const { INTEGER, STRING, FLOAT } = DataTypes;
 
 import sequelize from '../util/database.js';
 import Character from './characters.js';
 import { findAllAndHoist } from '../util/methods/findAllAndHoist.js';
-import { Progress, HasProgress } from '../util/interfaces.js';
-import { INVALID_NUMBERS_PROVIDED } from '../util/string-literals.js';
+import { Progress } from '../util/interfaces.js';
+import { HasProgress } from '../util/classes/HasProgress.js';
 
 class CharacterOrder extends Model<
   InferAttributes<CharacterOrder>,
@@ -24,52 +23,19 @@ class CharacterOrder extends Model<
   declare lessonNumber: number;
   declare indexInLesson: number;
 
+  getProgress: () => Progress;
+  comesLaterThan: (secondState: Progress) => boolean;
+
+  constructor(...args: any[]) {
+    super(...args);
+
+    const { comesLaterThan, getProgress } = new HasProgress(this);
+    this.comesLaterThan = comesLaterThan;
+    this.getProgress = getProgress;
+  }
+
   static async findAllAndHoist(query: FindOptions) {
     return await findAllAndHoist<CharacterOrder, Character>(this, query);
-  }
-
-  getProgress(): Progress {
-    return {
-      tier: this.tier,
-      lessonNumber: this.lessonNumber,
-      indexInLesson: this.indexInLesson,
-    };
-  }
-
-  comesLaterThan(secondState: Progress) {
-    const firstState = this.getProgress();
-
-    if (
-      (firstState.indexInLesson &&
-        !Number.isInteger(firstState.indexInLesson)) ||
-      (secondState.indexInLesson &&
-        !Number.isInteger(secondState.indexInLesson))
-    ) {
-      throw new Error(INVALID_NUMBERS_PROVIDED);
-    }
-
-    if (firstState.tier > secondState.tier) {
-      return true;
-    }
-
-    if (
-      firstState.tier === secondState.tier &&
-      firstState.lessonNumber > secondState.lessonNumber
-    ) {
-      return true;
-    }
-
-    if (
-      firstState.tier === secondState.tier &&
-      firstState.lessonNumber === secondState.lessonNumber &&
-      firstState.indexInLesson &&
-      secondState.indexInLesson &&
-      firstState.indexInLesson > secondState.indexInLesson
-    ) {
-      return true;
-    }
-
-    return false;
   }
 }
 

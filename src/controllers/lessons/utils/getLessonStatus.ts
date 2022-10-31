@@ -1,4 +1,5 @@
-import { Progress, AssembledLesson } from '../../../util/interfaces.js';
+import { Progress } from '../../../util/interfaces.js';
+import { AssembledLesson } from '../../../util/classes/AssembledLesson.js';
 import { LessonStatuses } from '../../../util/enums.js';
 const { NOT_IN_TIER, LOCKED, UPCOMING, COMPLETED } = LessonStatuses;
 
@@ -9,7 +10,7 @@ type LessonStatus = typeof LessonStatuses[keyof typeof LessonStatuses];
  * and returns the lesson's "status".
  *
  * @param userProgress - The user's progress state (tier and lesson number).
- * @param lessonProgress - The lesson's progress state (tier and lesson number).
+ * @param lesson - The lesson's progress state (tier and lesson number).
  * @returns The lesson's status.
  */
 function getLessonStatus(

@@ -3,42 +3,10 @@ import HttpError from '../../../models/http-error.js';
 import { findLessonWithChars } from './findLessonWithChars.js';
 import { getLessonStatus } from './getLessonStatus.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
-import {
-  INVALID_NUMBERS_PROVIDED,
-  LESSON_DATABASE_QUERY_FAILED_ERROR,
-} from '../../../util/string-literals.js';
 import { COURSE_FINISHED_TIER } from '../../../util/config.js';
 
-import RevampedLesson from '../../../models/revamped-lessons.js';
-
-import {
-  LESSON_LOCKED,
-  LESSON_COMPLETED,
-  LESSON_UPCOMING,
-  LESSON_NOT_IN_TIER,
-} from '../../../util/string-literals.js';
-import Character from '../../../models/characters.js';
-import { CharacterOrder } from '../../../models/character-orders.js';
-import {
-  Progress,
-  HasProgress,
-  AssembledLesson,
-} from '../../../util/interfaces.js';
-
-// interface AssembledLesson {
-//   tier: number;
-//   lessonNumber: number;
-//   name: string;
-//   preface: string;
-//   characters: (CharacterOrder & Character)[];
-//   status?: string;
-// }
-
-interface AssembledLessonAllTiers {
-  lessonNumber: number;
-  name: any;
-  tiers: AssembledLesson[];
-}
+import { AssembledLesson } from '../../../util/classes/AssembledLesson.js';
+import { AssembledLessonAllTiers } from '../../../util/interfaces.js';
 
 /**
  *  @typedef {Object} Lesson

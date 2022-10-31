@@ -9,7 +9,7 @@ const { INTEGER, STRING } = DataTypes;
 
 import sequelize from '../util/database.js';
 import { Progress } from '../util/interfaces.js';
-import { INVALID_NUMBERS_PROVIDED } from '../util/string-literals.js';
+import { HasProgress } from '../util/classes/HasProgress.js';
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare userId: CreationOptional<number>;
@@ -19,47 +19,19 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare currentTier: number;
   declare currentLesson: number;
 
-  getProgress(): Progress {
-    return {
+  getProgress: () => Progress;
+  comesLaterThan: (secondState: Progress) => boolean;
+
+  constructor(...args: any[]) {
+    super(...args);
+
+    const { comesLaterThan, getProgress } = new HasProgress({
       tier: this.currentTier,
       lessonNumber: this.currentLesson,
-    };
-  }
+    });
 
-  comesLaterThan(secondState: Progress) {
-    const firstState = this.getProgress();
-
-    if (
-      (firstState.indexInLesson &&
-        !Number.isInteger(firstState.indexInLesson)) ||
-      (secondState.indexInLesson &&
-        !Number.isInteger(secondState.indexInLesson))
-    ) {
-      throw new Error(INVALID_NUMBERS_PROVIDED);
-    }
-
-    if (firstState.tier > secondState.tier) {
-      return true;
-    }
-
-    if (
-      firstState.tier === secondState.tier &&
-      firstState.lessonNumber > secondState.lessonNumber
-    ) {
-      return true;
-    }
-
-    if (
-      firstState.tier === secondState.tier &&
-      firstState.lessonNumber === secondState.lessonNumber &&
-      firstState.indexInLesson &&
-      secondState.indexInLesson &&
-      firstState.indexInLesson > secondState.indexInLesson
-    ) {
-      return true;
-    }
-
-    return false;
+    this.comesLaterThan = comesLaterThan;
+    this.getProgress = getProgress;
   }
 }
 
