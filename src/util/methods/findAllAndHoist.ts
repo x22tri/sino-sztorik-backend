@@ -1,38 +1,15 @@
-import { FindOptions, Includeable, Model, ModelStatic } from 'sequelize';
-
-function isModel(field: Includeable): field is ModelStatic<Model> {
-  return (field as ModelStatic<Model>).options !== undefined;
-}
-
-function getFieldToHoist(
-  include: Includeable | Includeable[] | undefined
-): string {
-  if (include === undefined) {
-    throw new Error(`The query does not have an 'include' parameter.`);
-  }
-
-  if (typeof include === 'string') {
-    return include;
-  }
-
-  if (Array.isArray(include) && include.length !== 1) {
-    throw new Error(`No more than one 'include' parameter can be provided.`);
-  }
-
-  let fieldToCheck = Array.isArray(include) ? include[0] : include;
-
-  if (isModel(fieldToCheck) && fieldToCheck.options.name?.singular) {
-    return fieldToCheck.options.name.singular;
-  }
-
-  throw new Error(`An error occurred while hoisting field.`);
-}
+import { Model, ModelStatic } from 'sequelize';
+import { FindOptionsSingleInclude } from '../interfaces.js';
 
 async function findAllAndHoist<M extends Model, I extends Model>(
   model: ModelStatic<M>,
-  query: FindOptions
+  query: FindOptionsSingleInclude<I>
 ) {
-  const fieldToHoist = getFieldToHoist(query.include);
+  const fieldToHoist = query.include.options.name?.singular;
+
+  if (!fieldToHoist) {
+    throw new Error(`The field to hoist could not be found.`);
+  }
 
   let x = await model.findAll({ ...query, raw: false, nest: true });
 

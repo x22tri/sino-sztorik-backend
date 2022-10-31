@@ -95,10 +95,8 @@ async function findAllCharVersionsByCharIds(
   try {
     let charVersionsInOrder = await CharacterOrder.findAllAndHoist({
       where: { charId: charIds },
-      include: [Character],
+      include: Character,
       order: ['tier', 'lessonNumber', 'indexInLesson'],
-      raw: true,
-      nest: true,
     });
 
     if (!charVersionsInOrder?.length) {

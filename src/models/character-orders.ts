@@ -1,16 +1,19 @@
 import {
   DataTypes,
   FindOptions,
+  Includeable,
   InferAttributes,
   InferCreationAttributes,
   Model,
+  ModelStatic,
+  ModelType,
 } from 'sequelize';
 const { INTEGER, STRING, FLOAT } = DataTypes;
 
 import sequelize from '../util/database.js';
 import Character from './characters.js';
 import { findAllAndHoist } from '../util/methods/findAllAndHoist.js';
-import { Progress } from '../util/interfaces.js';
+import { Progress, FindOptionsSingleInclude } from '../util/interfaces.js';
 import { HasProgress } from '../util/classes/HasProgress.js';
 
 class CharacterOrder extends Model<
@@ -34,8 +37,10 @@ class CharacterOrder extends Model<
     this.getProgress = getProgress;
   }
 
-  static async findAllAndHoist(query: FindOptions) {
-    return await findAllAndHoist<CharacterOrder, Character>(this, query);
+  static async findAllAndHoist<I extends Model>(
+    query: FindOptionsSingleInclude<I>
+  ) {
+    return await findAllAndHoist(this, query);
   }
 }
 

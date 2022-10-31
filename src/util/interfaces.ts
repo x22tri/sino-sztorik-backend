@@ -1,6 +1,4 @@
-import { CharacterOrder } from '../models/character-orders.js';
-import Character from '../models/characters.js';
-import { INVALID_NUMBERS_PROVIDED } from './string-literals.js';
+import { Model, FindOptions, ModelStatic } from 'sequelize';
 import { AssembledLesson } from './classes/AssembledLesson.js';
 
 interface Progress {
@@ -15,4 +13,8 @@ interface AssembledLessonAllTiers {
   tiers: AssembledLesson[];
 }
 
-export { Progress, AssembledLessonAllTiers };
+interface FindOptionsSingleInclude<I extends Model> extends FindOptions {
+  include: ModelStatic<I>;
+}
+
+export { Progress, AssembledLessonAllTiers, FindOptionsSingleInclude };

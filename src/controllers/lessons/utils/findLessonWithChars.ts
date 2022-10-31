@@ -48,7 +48,7 @@ async function findLessonWithChars(lessonProgress, isReview: boolean) {
       characters: charsInGivenLesson,
     };
   } catch (err) {
-    throw new HttpError(err, 500);
+    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 }
 
@@ -65,24 +65,19 @@ async function findAllCharsInLesson(progress, exactTierOnly: boolean) {
     const tierOperator = exactTierOnly ? eq : lte;
     const { tier, lessonNumber } = progress;
 
-    let charsInGivenLesson = (await CharacterOrder.findAllAndHoist({
+    let charsInGivenLesson = await CharacterOrder.findAllAndHoist({
       where: {
         tier: { [tierOperator]: tier },
         lessonNumber: { [eq]: lessonNumber },
       },
-      include: [Character],
-      raw: true,
-      nest: true,
-    })) as (CharacterOrder & Character)[];
-
-    // To-Do: attempt to add query.include, ...rest in class method,
-    // for better type checking
+      include: Character,
+    });
 
     deduplicate({ array: charsInGivenLesson, byField: 'charChinese' });
 
     return charsInGivenLesson;
   } catch (err) {
-    throw new HttpError(err, 500);
+    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
   }
 }
 
