@@ -25,7 +25,8 @@ class Character extends Model<
   declare illustrationAltText: string | null;
   declare constituents: string | null;
   declare prequel: string | null;
-  declare reminder: boolean | null;
+  declare reminder?: boolean | null;
+  declare newPrimitive?: boolean | null;
 }
 
 Character.init(
@@ -67,7 +68,7 @@ Character.init(
       type: STRING,
     },
     constituents: {
-      // Comma-separated values
+      // Comma-separated values.
       type: STRING,
     },
     prequel: {
@@ -75,6 +76,10 @@ Character.init(
     },
     reminder: {
       // Bool value set when it's not the first occurrence of a character.
+      type: VIRTUAL,
+    },
+    newPrimitive: {
+      // Bool value set when a character was introduced in a previous tier with only its keyword, and now its primitive is introduced.
       type: VIRTUAL,
     },
   },

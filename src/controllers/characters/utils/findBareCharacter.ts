@@ -10,15 +10,16 @@ import {
 } from '../../../util/string-literals.js';
 
 import { Progress } from '../../../util/interfaces.js';
+import { deepCopy } from '../../../util/functions/deepCopy.js';
 
 /**
  * Finds the character object for the requested character, without finding supplements.
  *
- * @param {string} char - The character string we're querying.
- * @param {Progress} progress - The tier and lesson that the user is currently at.
- * Alternatively, when called by a supplement-gathering function like findSimilars,
+ * @param char - The character string we're querying.
+ * @param progress - The tier and lesson that the user is currently at.
+ * Alternatively, when called by a supplement-gathering function like findSimilars:
  * the tier, lesson and index of a character that serves as a comparison point.
- * @returns {Promise<Character | null>} The character object.
+ * @returns The character object.
  */
 async function findBareCharacter(char: string, progress: Progress) {
   const ids = await findAllCharIdsByChar(char);
@@ -29,7 +30,7 @@ async function findBareCharacter(char: string, progress: Progress) {
     return null;
   }
 
-  let charToMutate = await JSON.parse(JSON.stringify(firstCharVersion));
+  let charToMutate = await deepCopy(firstCharVersion);
 
   try {
     for (let i = 1; i < characterVersionsInOrder.length; i++) {
@@ -89,9 +90,7 @@ async function findAllCharIdsByChar(char: string): Promise<string[]> {
  * @param charIds - An array of character ID's.
  * @returns An array of character objects.
  */
-async function findAllCharVersionsByCharIds(
-  charIds: string[]
-): Promise<(CharacterOrder & Character)[]> {
+async function findAllCharVersionsByCharIds(charIds: string[]) {
   try {
     let charVersionsInOrder = await CharacterOrder.findAllAndHoist({
       where: { charId: charIds },
@@ -103,7 +102,7 @@ async function findAllCharVersionsByCharIds(
       throw new HttpError(SEARCH_NO_MATCH, 404);
     }
 
-    return charVersionsInOrder as (CharacterOrder & Character)[];
+    return charVersionsInOrder;
   } catch (err) {
     throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
   }

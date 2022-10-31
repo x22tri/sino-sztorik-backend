@@ -12,7 +12,7 @@ const { INTEGER, STRING, FLOAT } = DataTypes;
 
 import sequelize from '../util/database.js';
 import Character from './characters.js';
-import { findAllAndHoist } from '../util/methods/findAllAndHoist.js';
+import { findAllAndHoist } from '../util/functions/findAllAndHoist.js';
 import { Progress, FindOptionsSingleInclude } from '../util/interfaces.js';
 import { HasProgress } from '../util/classes/HasProgress.js';
 
