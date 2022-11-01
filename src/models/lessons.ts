@@ -2,9 +2,17 @@ import { DataTypes, Model, VIRTUAL } from 'sequelize';
 const { INTEGER, STRING } = DataTypes;
 import sequelize from '../util/database.js';
 
-class RevampedLesson extends Model {}
+class Lesson extends Model {
+  declare lessonNumber: number;
+  declare name: string;
+  declare prefaceTier1?: string | null;
+  declare prefaceTier2?: string | null;
+  declare prefaceTier3?: string | null;
+  declare prefaceTier4?: string | null;
+  declare status?: string;
+}
 
-RevampedLesson.init(
+Lesson.init(
   {
     lessonNumber: {
       type: INTEGER,
@@ -33,9 +41,9 @@ RevampedLesson.init(
   },
   {
     sequelize,
-    modelName: 'revampedLesson',
+    modelName: 'Lesson',
     timestamps: false,
   }
 );
 
-export default RevampedLesson;
+export default Lesson;

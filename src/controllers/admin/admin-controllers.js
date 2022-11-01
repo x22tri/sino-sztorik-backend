@@ -2,7 +2,7 @@
 import { Op } from 'sequelize';
 const { and, not, like, notIn } = Op;
 
-import RevampedLesson from '../../models/revamped-lessons.js';
+import Lesson from '../../models/lessons.js';
 import Character from '../../models/characters.js';
 import Similar from '../../models/similars.js';
 import Phrase from '../../models/phrases.js';
@@ -31,7 +31,7 @@ const getAllLessons = async (req, res, next) => {
 
   let lessonArray = [];
   try {
-    let lessonDatabase = await RevampedLesson.findAll();
+    let lessonDatabase = await Lesson.findAll();
 
     // Iterates over all lessonNumbers and tiers to get all lessons.
     for (
@@ -86,7 +86,7 @@ const getAdditionalInfoAdmin = async (req, res, next) => {
 const updateLesson = async (req, res, next) => {
   let updatedLesson;
   try {
-    updatedLesson = await RevampedLesson.findOne({
+    updatedLesson = await Lesson.findOne({
       where: { lessonNumber: req.params.lessonId },
     });
     if (!updatedLesson) return next(new HttpError(LESSON_NOT_FOUND_ERROR, 404));
