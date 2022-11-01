@@ -1,14 +1,11 @@
 import { findLessonWithChars } from './findLessonWithChars.js';
 import { findCharByCharChinese } from '../../characters/utils/findCharByCharChinese.js';
-
 import {
   LESSON_CHARS_NOT_FOUND_ERROR,
   LESSON_NOT_FOUND_ERROR,
   LESSON_DATABASE_QUERY_FAILED_ERROR,
 } from '../../../util/string-literals.js';
-
-import Character from '../../../models/characters.js';
-import { FullChar, Progress } from '../../../util/interfaces.js';
+import { FullCharacter, Progress } from '../../../util/interfaces.js';
 import { throwError } from '../../../util/functions/throwError.js';
 
 /**
@@ -38,16 +35,16 @@ async function getLesson(progress: Progress, lessonToView?: number) {
     });
   }
 
-  let fullChars: FullChar[] = [];
+  let fullCharacters: FullCharacter[] = [];
 
   try {
     for (const char of lesson.characters) {
       const charChinese = char.getDataValue('charChinese');
 
-      const fullChar = await findCharByCharChinese(charChinese, progress);
+      const fullCharacter = await findCharByCharChinese(charChinese, progress);
 
-      if (fullChar) {
-        fullChars.push(fullChar);
+      if (fullCharacter) {
+        fullCharacters.push(fullCharacter);
       }
     }
   } catch (error) {
@@ -57,8 +54,8 @@ async function getLesson(progress: Progress, lessonToView?: number) {
     });
   }
 
-  if (fullChars.length) {
-    lesson.characters = fullChars;
+  if (fullCharacters.length) {
+    lesson.characters = fullCharacters;
     return lesson;
   } else {
     throwError({

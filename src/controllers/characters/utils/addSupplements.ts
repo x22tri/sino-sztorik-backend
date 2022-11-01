@@ -3,7 +3,7 @@ import { findPhrases } from './findPhrases.js';
 import { findOtherUses } from './findOtherUses.js';
 import { findConstituents } from './findConstituents.js';
 import Character from '../../../models/characters.js';
-import { FullChar } from '../../../util/interfaces.js';
+import { FullCharacter } from '../../../util/interfaces.js';
 import { CharacterOrder } from '../../../models/character-orders.js';
 
 /**
@@ -17,7 +17,7 @@ import { CharacterOrder } from '../../../models/character-orders.js';
  */
 async function addSupplements(
   char: CharacterOrder & Character
-): Promise<FullChar> {
+): Promise<FullCharacter> {
   const similars = await findSimilars(char);
   const phrases = await findPhrases(char);
   const otherUses = await findOtherUses(char);
@@ -29,7 +29,7 @@ async function addSupplements(
     phrases,
     otherUses,
     constituents,
-  } as FullChar;
+  } as FullCharacter;
 }
 
 export { addSupplements };

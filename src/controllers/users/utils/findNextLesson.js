@@ -2,7 +2,6 @@ import { Op } from 'sequelize';
 const { gt } = Op;
 
 import { CharacterOrder } from '../../../models/character-orders.js';
-import { getCharProgress } from '../../characters/utils/getCharProgress.js';
 import { LAST_TIER, COURSE_FINISHED } from '../../../util/config.js';
 import { NEXT_LESSON_NOT_FOUND_ERROR } from '../../../util/string-literals.js';
 import { throwError } from '../../../util/functions/throwError.js';
@@ -43,7 +42,7 @@ async function lookForLessonInSameTier(currentTier, currentLesson) {
     return null;
   }
 
-  const nextLessonInSameTier = getCharProgress(nextLessonInSameTierChar);
+  const nextLessonInSameTier = nextLessonInSameTierChar.getProgress();
 
   if (!isValidProgress(nextLessonInSameTier)) {
     return null;
@@ -67,7 +66,7 @@ async function lookForLessonInNextTier(currentTier) {
     return null;
   }
 
-  const firstLessonInNextTier = getCharProgress(firstLessonInNextTierChar);
+  const firstLessonInNextTier = firstLessonInNextTierChar.getProgress();
 
   if (!isValidProgress(firstLessonInNextTier)) {
     return null;

@@ -15,7 +15,8 @@ interface AssembledLessonAllTiers {
   tiers: AssembledLesson[];
 }
 
-interface FullChar extends Omit<CharacterOrder & Character, 'constituents'> {
+interface FullCharacter
+  extends Omit<CharacterOrder & Character, 'constituents'> {
   similars: { similarAppearance: Character[]; similarMeaning: Character[] };
   phrases: any[];
   otherUses: any[];
@@ -29,6 +30,6 @@ interface FindOptionsSingleInclude<I extends Model> extends FindOptions {
 export {
   Progress,
   AssembledLessonAllTiers,
-  FullChar,
+  FullCharacter,
   FindOptionsSingleInclude,
 };
