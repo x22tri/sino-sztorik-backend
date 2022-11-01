@@ -6,8 +6,8 @@ import { LAST_TIER, COURSE_FINISHED } from '../../../util/config.js';
 import { NEXT_LESSON_NOT_FOUND_ERROR } from '../../../util/string-literals.js';
 import { throwError } from '../../../util/functions/throwError.js';
 
-async function findNextLesson(currentTier, currentLesson) {
-  const nextLessonInTier = await lookForLessonInSameTier(
+async function findNextLesson(currentTier: number, currentLesson: number) {
+  const nextLessonInTier = await _lookForLessonInSameTier(
     currentTier,
     currentLesson
   );
@@ -16,7 +16,7 @@ async function findNextLesson(currentTier, currentLesson) {
     return nextLessonInTier;
   }
 
-  const firstLessonInNextTier = await lookForLessonInNextTier(currentTier);
+  const firstLessonInNextTier = await _lookForLessonInNextTier(currentTier);
 
   if (firstLessonInNextTier) {
     return firstLessonInNextTier;
@@ -29,7 +29,10 @@ async function findNextLesson(currentTier, currentLesson) {
   throwError({ message: NEXT_LESSON_NOT_FOUND_ERROR, code: 404 });
 }
 
-async function lookForLessonInSameTier(currentTier, currentLesson) {
+async function _lookForLessonInSameTier(
+  currentTier: number,
+  currentLesson: number
+) {
   const remainingLessonsInTier = await CharacterOrder.findAll({
     where: { tier: currentTier, lessonNumber: { [gt]: currentLesson } },
     order: ['lessonNumber'],
@@ -54,7 +57,7 @@ async function lookForLessonInSameTier(currentTier, currentLesson) {
   };
 }
 
-async function lookForLessonInNextTier(currentTier) {
+async function _lookForLessonInNextTier(currentTier: number) {
   const lessonsInNextTier = await CharacterOrder.findAll({
     where: { tier: currentTier + 1 },
     order: ['lessonNumber'],

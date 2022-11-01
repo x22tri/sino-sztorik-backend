@@ -16,8 +16,9 @@ import {
   ADVANCE_USER_FAILED_ERROR,
 } from '../../util/string-literals.js';
 import { passError, throwError } from '../../util/functions/throwError.js';
+import { Request, Response, NextFunction } from 'express';
 
-async function signup(req, res, next) {
+async function signup(req: Request, res: Response, next: NextFunction) {
   try {
     if (!validationResult(req).isEmpty()) {
       throwError({ message: VALIDATION_FAILED_ERROR, code: 422 });
@@ -57,7 +58,7 @@ async function signup(req, res, next) {
   }
 }
 
-async function login(req, res, next) {
+async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;
 
@@ -94,7 +95,7 @@ async function login(req, res, next) {
   }
 }
 
-async function advanceUser(req, res, next) {
+async function advanceUser(req: Request, res: Response, next: NextFunction) {
   try {
     const user = await getUser(req.headers.authorization);
 

@@ -25,13 +25,13 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   constructor(...args: any[]) {
     super(...args);
 
-    const { comesLaterThan, getProgress } = new HasProgress({
+    const progressMethods = new HasProgress({
       tier: this.currentTier,
       lessonNumber: this.currentLesson,
     });
 
-    this.comesLaterThan = comesLaterThan;
-    this.getProgress = getProgress;
+    this.comesLaterThan = progressMethods.comesLaterThan;
+    this.getProgress = () => progressMethods.getProgress();
   }
 }
 

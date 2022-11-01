@@ -7,8 +7,12 @@ import {
 } from '../../../util/string-literals.js';
 import { throwError } from '../../../util/functions/throwError.js';
 
-async function getUser(authHeader) {
+async function getUser(authHeader: string | undefined) {
   try {
+    if (!authHeader) {
+      throwError({ message: UNAUTHENTICATED_ERROR, code: 403 });
+    }
+
     const token = authHeader.split(' ')[1];
 
     if (!token) {

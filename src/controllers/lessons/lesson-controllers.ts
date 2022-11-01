@@ -1,7 +1,6 @@
 import { getAllLessonsWithStatus } from './utils/getAllLessonsWithStatus.js';
 import { getLesson } from './utils/getLesson.js';
 import { getUser } from '../users/utils/getUser.js';
-import { getUserProgress } from '../users/utils/getUserProgress.js';
 import { passError, throwError } from '../../util/functions/throwError.js';
 import {
   INVALID_NUMBERS_PROVIDED,
@@ -12,7 +11,11 @@ import { Request, Response, NextFunction } from 'express';
 
 async function getLearn(req: Request, res: Response, next: NextFunction) {
   try {
-    const progress = await getUserProgress(req);
+    const authHeader = req.headers.authorization;
+
+    const user = await getUser(authHeader);
+
+    const progress = user.getProgress();
 
     const foundLesson = await getLesson(progress);
 
@@ -27,7 +30,11 @@ async function getLearn(req: Request, res: Response, next: NextFunction) {
 
 async function getReview(req: Request, res: Response, next: NextFunction) {
   try {
-    const progress = await getUserProgress(req);
+    const authHeader = req.headers.authorization;
+
+    const user = await getUser(authHeader);
+
+    const progress = user.getProgress();
 
     const { lessonToReview } = req.params;
 
