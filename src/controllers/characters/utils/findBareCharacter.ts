@@ -1,6 +1,5 @@
 import Character from '../../../models/characters.js';
 import { CharacterOrder } from '../../../models/character-orders.js';
-import HttpError from '../../../models/http-error.js';
 
 import {
   CHARACTER_NOT_FOUND_ERROR,
@@ -9,8 +8,12 @@ import {
   SEARCH_NO_MATCH,
 } from '../../../util/string-literals.js';
 
+import { ERROR_HANDLING_CONFIGURATION } from '../../../util/config.js';
+const { logGapsInCharacterDatabase } = ERROR_HANDLING_CONFIGURATION;
+
 import { Progress } from '../../../util/interfaces.js';
 import { deepCopy } from '../../../util/functions/deepCopy.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * Finds the character object for the requested character, without finding supplements.
@@ -22,8 +25,8 @@ import { deepCopy } from '../../../util/functions/deepCopy.js';
  * @returns The character object.
  */
 async function findBareCharacter(char: string, progress: Progress) {
-  const ids = await findAllCharIdsByChar(char);
-  const characterVersionsInOrder = await findAllCharVersionsByCharIds(ids);
+  const ids = await _findAllCharIdsByChar(char);
+  const characterVersionsInOrder = await _findAllCharVersionsByCharIds(ids);
   const firstCharVersion = characterVersionsInOrder[0];
 
   if (firstCharVersion.comesLaterThan(progress)) {
@@ -49,10 +52,10 @@ async function findBareCharacter(char: string, progress: Progress) {
         charToMutate.newPrimitive = true;
       }
 
-      replaceNewProperties(currentCharVersion, charToMutate);
+      _replaceNewProperties(currentCharVersion, charToMutate);
     }
-  } catch (err) {
-    throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({ error, message: DATABASE_QUERY_FAILED_ERROR, code: 500 });
   }
 
   return charToMutate;
@@ -64,7 +67,7 @@ async function findBareCharacter(char: string, progress: Progress) {
  * @param char - A Chinese character.
  * @returns An array of character ID's.
  */
-async function findAllCharIdsByChar(char: string): Promise<string[]> {
+async function _findAllCharIdsByChar(char: string): Promise<string[]> {
   let currentCharEntries: Character[];
 
   try {
@@ -72,12 +75,12 @@ async function findAllCharIdsByChar(char: string): Promise<string[]> {
       where: { charChinese: char },
       attributes: ['charId'],
     });
-  } catch (err) {
-    throw new HttpError(CHARACTER_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({ error, message: CHARACTER_QUERY_FAILED_ERROR, code: 500 });
   }
 
   if (!currentCharEntries?.length) {
-    throw new HttpError(CHARACTER_NOT_FOUND_ERROR, 404);
+    throwError({ message: CHARACTER_NOT_FOUND_ERROR, code: 404 });
   }
 
   return currentCharEntries.map(entry => entry.charId);
@@ -90,21 +93,29 @@ async function findAllCharIdsByChar(char: string): Promise<string[]> {
  * @param charIds - An array of character ID's.
  * @returns An array of character objects.
  */
-async function findAllCharVersionsByCharIds(charIds: string[]) {
+async function _findAllCharVersionsByCharIds(charIds: string[]) {
   try {
-    let charVersionsInOrder = await CharacterOrder.findAllAndHoist({
+    const charVersionsInOrder = await CharacterOrder.findAllAndHoist({
       where: { charId: charIds },
       include: Character,
       order: ['tier', 'lessonNumber', 'indexInLesson'],
     });
 
-    if (!charVersionsInOrder?.length) {
-      throw new HttpError(SEARCH_NO_MATCH, 404);
+    if (!charVersionsInOrder?.length && logGapsInCharacterDatabase) {
+      throwError({
+        error: new Error(
+          `No character entries can be found for the following character order ID's: ${String(
+            charIds
+          )}`
+        ),
+        message: SEARCH_NO_MATCH,
+        code: 404,
+      });
     }
 
     return charVersionsInOrder;
-  } catch (err) {
-    throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({ error, message: DATABASE_QUERY_FAILED_ERROR, code: 500 });
   }
 }
 
@@ -120,7 +131,7 @@ async function findAllCharVersionsByCharIds(charIds: string[]) {
  *
  * As such, it is supposed to be used with two character objects (who have the same model, and therefore, the same property keys).
  */
-function replaceNewProperties(
+function _replaceNewProperties(
   currentCharVersion: Character,
   charToMutate: Character
 ): void {

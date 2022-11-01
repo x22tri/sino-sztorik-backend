@@ -1,5 +1,4 @@
 import User from '../../models/users.js';
-import HttpError from '../../models/http-error.js';
 import { getUser } from './utils/getUser.js';
 import { updateUserInDatabase } from './utils/updateUserInDatabase.js';
 import { findNextLesson } from './utils/findNextLesson.js';
@@ -14,12 +13,14 @@ import {
   SIGNUP_FAILED_ERROR,
   WRONG_CREDENTIALS_ERROR,
   LOGIN_FAILED_ERROR,
+  ADVANCE_USER_FAILED_ERROR,
 } from '../../util/string-literals.js';
+import { passError, throwError } from '../../util/functions/throwError.js';
 
 async function signup(req, res, next) {
   try {
     if (!validationResult(req).isEmpty()) {
-      throw new HttpError(VALIDATION_FAILED_ERROR, 422);
+      throwError({ message: VALIDATION_FAILED_ERROR, code: 422 });
     }
 
     const { displayName, email, password } = req.body;
@@ -27,7 +28,7 @@ async function signup(req, res, next) {
     const existingUser = await User.findOne({ where: { email: email } });
 
     if (existingUser) {
-      throw new HttpError(EMAIL_TAKEN_ERROR, 422);
+      throwError({ message: EMAIL_TAKEN_ERROR, code: 422 });
     }
 
     const hashedPassword = await bcrypt.hash(password, PW_SALT_ROUNDS);
@@ -48,8 +49,11 @@ async function signup(req, res, next) {
     const token = jwt.sign({ userId: createdUser.userId }, process.env.JWT_KEY);
 
     res.status(201).json({ userId: createdUser.userId, token: token });
-  } catch (err) {
-    next(err || new HttpError(SIGNUP_FAILED_ERROR, 500));
+  } catch (error) {
+    passError(
+      { error, fallbackMessage: SIGNUP_FAILED_ERROR, fallbackCode: 500 },
+      next
+    );
   }
 }
 
@@ -60,7 +64,7 @@ async function login(req, res, next) {
     const identifiedUser = await User.findOne({ where: { email: email } });
 
     if (!identifiedUser) {
-      throw new HttpError(WRONG_CREDENTIALS_ERROR, 401);
+      throwError({ message: WRONG_CREDENTIALS_ERROR, code: 401 });
     }
 
     const isValidPassword = await bcrypt.compare(
@@ -69,7 +73,7 @@ async function login(req, res, next) {
     );
 
     if (isValidPassword === false) {
-      throw new HttpError(WRONG_CREDENTIALS_ERROR, 401);
+      throwError({ message: WRONG_CREDENTIALS_ERROR, code: 401 });
     }
 
     if (process.env.JWT_KEY === undefined) {
@@ -82,8 +86,11 @@ async function login(req, res, next) {
     );
 
     res.status(200).json({ userId: identifiedUser.userId, token: token });
-  } catch (err) {
-    next(err || new HttpError(LOGIN_FAILED_ERROR, 500));
+  } catch (error) {
+    passError(
+      { error, fallbackMessage: LOGIN_FAILED_ERROR, fallbackCode: 500 },
+      next
+    );
   }
 }
 
@@ -98,8 +105,11 @@ async function advanceUser(req, res, next) {
     const updateSuccessful = await updateUserInDatabase(user, nextLesson);
 
     res.json(updateSuccessful);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    passError(
+      { error, fallbackMessage: ADVANCE_USER_FAILED_ERROR, fallbackCode: 500 },
+      next
+    );
   }
 }
 

@@ -2,10 +2,10 @@ import { Op } from 'sequelize';
 const { gt } = Op;
 
 import { CharacterOrder } from '../../../models/character-orders.js';
-import HttpError from '../../../models/http-error.js';
 import { getCharProgress } from '../../characters/utils/getCharProgress.js';
 import { LAST_TIER, COURSE_FINISHED } from '../../../util/config.js';
 import { NEXT_LESSON_NOT_FOUND_ERROR } from '../../../util/string-literals.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 async function findNextLesson(currentTier, currentLesson) {
   const nextLessonInTier = await lookForLessonInSameTier(
@@ -27,7 +27,7 @@ async function findNextLesson(currentTier, currentLesson) {
     return COURSE_FINISHED;
   }
 
-  throw new HttpError(NEXT_LESSON_NOT_FOUND_ERROR, 404);
+  throwError({ message: NEXT_LESSON_NOT_FOUND_ERROR, code: 404 });
 }
 
 async function lookForLessonInSameTier(currentTier, currentLesson) {

@@ -1,4 +1,3 @@
-import HttpError from '../../../models/http-error.js';
 import { findLessonWithChars } from './findLessonWithChars.js';
 import { findCharByCharChinese } from '../../characters/utils/findCharByCharChinese.js';
 
@@ -9,6 +8,7 @@ import {
 } from '../../../util/string-literals.js';
 
 import Character from '../../../models/characters.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  
@@ -41,7 +41,10 @@ async function getLesson(progress, lessonToView = undefined) {
   );
 
   if (!lesson) {
-    throw new HttpError(LESSON_NOT_FOUND_ERROR, 404);
+    throwError({
+      message: LESSON_NOT_FOUND_ERROR,
+      code: 404,
+    });
   }
 
   let fullChars = [];
@@ -56,15 +59,21 @@ async function getLesson(progress, lessonToView = undefined) {
         fullChars.push(fullChar);
       }
     }
-  } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({
+      message: LESSON_DATABASE_QUERY_FAILED_ERROR,
+      code: 500,
+    });
   }
 
   if (fullChars.length) {
     lesson.characters = fullChars;
     return lesson;
   } else {
-    throw new HttpError(LESSON_CHARS_NOT_FOUND_ERROR, 404);
+    throwError({
+      message: LESSON_CHARS_NOT_FOUND_ERROR,
+      code: 404,
+    });
   }
 }
 

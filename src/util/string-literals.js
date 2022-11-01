@@ -29,6 +29,8 @@ const LESSON_CHARS_NOT_FOUND_ERROR = 'A lecke karakterei nem találhatók.';
 
 const LESSON_DATABASE_QUERY_FAILED_ERROR = 'Nem sikerült lekérni a leckéket.';
 
+const LESSON_QUERY_FAILED_ERROR = 'Nem sikerült lekérni a leckét.';
+
 const DATABASE_QUERY_FAILED_ERROR = 'Nem sikerült lekérni az adatbázist.';
 
 const LESSON_LOCKED = 'Még nincs feloldva';
@@ -72,6 +74,8 @@ const SEARCH_NO_MATCH = 'Nincs a keresésnek megfelelő elem.';
 const SEARCH_NO_ELIGIBLE_MATCH =
   'Nincs a keresésnek megfelelő elem, amelyet jogosult lennél megnézni.';
 
+const SEARCH_QUERY_FAILED_ERROR = 'Hiba történt a kereséskor.';
+
 const INVALID_NUMBERS_PROVIDED = 'Érvénytelen számértékek megadva.';
 
 const UNAUTHENTICATED_ERROR = 'Nincs jogosultságod.';
@@ -93,6 +97,7 @@ export {
   LESSON_NOT_FOUND_ERROR,
   LESSON_CHARS_NOT_FOUND_ERROR,
   LESSON_DATABASE_QUERY_FAILED_ERROR,
+  LESSON_QUERY_FAILED_ERROR,
   LESSON_LOCKED,
   LESSON_COMPLETED,
   LESSON_UPCOMING,
@@ -111,6 +116,7 @@ export {
   CONSTITUENTS_QUERY_FAILED_ERROR,
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
   SEARCH_NO_ELIGIBLE_MATCH,
+  SEARCH_QUERY_FAILED_ERROR,
   INVALID_NUMBERS_PROVIDED,
   UNAUTHENTICATED_ERROR,
   AUTHENTICATION_FAILED_ERROR,

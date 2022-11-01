@@ -1,4 +1,3 @@
-import HttpError from '../../../models/http-error.js';
 import {
   CONSTITUENTS_QUERY_FAILED_ERROR,
   CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
@@ -12,6 +11,7 @@ import {
 
 import { InteractiveWordType } from '../../../util/enums.js';
 import { findBareCharacter } from './findBareCharacter.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * @typedef {Object} Character
@@ -38,8 +38,12 @@ async function findConstituents(char) {
     constituentStringArray = constituents
       ? constituents.split(CONSTITUENT_SEPARATOR)
       : findConstituentsInStory(story);
-  } catch (err) {
-    throw new HttpError(CONSTITUENTS_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({
+      error,
+      message: CONSTITUENTS_QUERY_FAILED_ERROR,
+      code: 500,
+    });
   }
 
   try {
@@ -57,8 +61,12 @@ async function findConstituents(char) {
     }
 
     return constituentCharacterObjects;
-  } catch (err) {
-    throw new HttpError(CONSTITUENT_ENTRY_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({
+      error,
+      message: CONSTITUENT_ENTRY_QUERY_FAILED_ERROR,
+      code: 500,
+    });
   }
 }
 

@@ -1,4 +1,4 @@
-import HttpError from '../../../models/http-error.js';
+import { throwError } from '../../../util/functions/throwError.js';
 import { ADVANCE_USER_FAILED_ERROR } from '../../../util/string-literals.js';
 
 async function updateUserInDatabase(user, nextLesson) {
@@ -9,8 +9,12 @@ async function updateUserInDatabase(user, nextLesson) {
     });
 
     return nextLesson;
-  } catch (err) {
-    throw new HttpError(ADVANCE_USER_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({
+      error,
+      message: ADVANCE_USER_FAILED_ERROR,
+      code: 500,
+    });
   }
 }
 

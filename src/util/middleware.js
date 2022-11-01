@@ -1,8 +1,11 @@
-import HttpError from '../models/http-error.js';
+import { throwError } from './functions/throwError.js';
 import { UNSUPPORTED_ROUTE_ERROR, UNKNOWN_ERROR } from './string-literals.js';
 
 const unsupportedRouteHandler = () => {
-  throw new HttpError(UNSUPPORTED_ROUTE_ERROR, 404);
+  throwError({
+    message: UNSUPPORTED_ROUTE_ERROR,
+    code: 404,
+  });
 };
 
 const errorHandler = (error, _, res, next) => {

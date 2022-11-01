@@ -1,6 +1,6 @@
-import HttpError from '../../../models/http-error.js';
 import { findCharByCharChinese } from './findCharByCharChinese.js';
 import { SEARCH_NO_ELIGIBLE_MATCH } from '../../../util/string-literals.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 async function findCharByKeywordOrPrimitive(array, userProgress) {
   let foundSearchCharsArray = [];
@@ -17,7 +17,7 @@ async function findCharByKeywordOrPrimitive(array, userProgress) {
   }
 
   if (!foundSearchCharsArray.length) {
-    throw new HttpError(SEARCH_NO_ELIGIBLE_MATCH, 401);
+    throwError({ message: SEARCH_NO_ELIGIBLE_MATCH, code: 401 });
   } else {
     return foundSearchCharsArray;
   }

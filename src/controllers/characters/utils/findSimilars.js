@@ -2,11 +2,17 @@ import { Op } from 'sequelize';
 const { and, not } = Op;
 
 import Similar from '../../../models/similars.js';
-import HttpError from '../../../models/http-error.js';
-import { SIMILARS_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import {
+  SEARCH_NO_MATCH,
+  SIMILARS_DATABASE_QUERY_FAILED_ERROR,
+} from '../../../util/string-literals.js';
+import { ERROR_HANDLING_CONFIGURATION } from '../../../util/config.js';
+const { allowGapsInCharacterDatabase } = ERROR_HANDLING_CONFIGURATION;
+
 import { SimilarType } from '../../../util/enums.js';
 import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * @typedef {Object} Character
@@ -71,17 +77,22 @@ async function findSimilars(char) {
             similarToPrimitiveMeaning: !!similarToPrimitiveMeaning,
           });
         }
-        // An error returned from findBareCharacter should only skip the character in question, not crash the application.
-        // To-Do: Change this behavior (remove the inner try-catch) testing with a finished database
-        // as it points to gaps in the CharacterOrder database.
-      } catch (err) {
-        continue;
+      } catch (error) {
+        if (error.message === SEARCH_NO_MATCH && allowGapsInCharacterDatabase) {
+          continue;
+        } else {
+          throwError({
+            error,
+            message: SIMILARS_DATABASE_QUERY_FAILED_ERROR,
+            code: 500,
+          });
+        }
       }
     }
 
     return { similarAppearance, similarMeaning };
   } catch (err) {
-    throw new HttpError(SIMILARS_DATABASE_QUERY_FAILED_ERROR, 500);
+    throwError({ message: SIMILARS_DATABASE_QUERY_FAILED_ERROR, code: 500 });
   }
 }
 

@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 const { or } = Op;
 
 import Character from '../../../models/characters.js';
-import HttpError from '../../../models/http-error.js';
+import { throwError } from '../../../util/functions/throwError.js';
 import {
   DATABASE_QUERY_FAILED_ERROR,
   SEARCH_NO_MATCH,
@@ -18,12 +18,12 @@ async function findTermAsKeywordOrPrimitive(searchTerm) {
     });
 
     if (!keywordsOrPrimitives?.length) {
-      throw new HttpError(SEARCH_NO_MATCH, 404);
+      throwError({ message: SEARCH_NO_MATCH, code: 404 });
     } else {
       return keywordsOrPrimitives;
     }
   } catch (err) {
-    throw new HttpError(DATABASE_QUERY_FAILED_ERROR, 500);
+    throwError({ message: DATABASE_QUERY_FAILED_ERROR, code: 500 });
   }
 }
 

@@ -15,6 +15,11 @@ const INTERACTIVE_WORD_SEPARATOR = '|';
 const FORCE_SEARCH_QUERY_PARAM = 'force';
 const LESSON_PREFACE_TIER_PREFIX = 'prefaceTier';
 
+const ERROR_HANDLING_CONFIGURATION = {
+  logGapsInCharacterDatabase: false, // If true, references to characters that don't exist in the Characters table will be logged.
+  allowGapsInCharacterDatabase: true, // If true, references to characters that don't exist in the Characters table will throw an error.
+};
+
 export {
   LAST_TIER,
   COURSE_FINISHED_TIER,
@@ -26,4 +31,5 @@ export {
   INTERACTIVE_WORD_SEPARATOR,
   FORCE_SEARCH_QUERY_PARAM,
   LESSON_PREFACE_TIER_PREFIX,
+  ERROR_HANDLING_CONFIGURATION,
 };

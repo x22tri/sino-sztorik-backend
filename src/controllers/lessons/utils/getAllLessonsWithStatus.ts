@@ -1,5 +1,3 @@
-import HttpError from '../../../models/http-error.js';
-
 import { findLessonWithChars } from './findLessonWithChars.js';
 import { getLessonStatus } from './getLessonStatus.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
@@ -9,6 +7,7 @@ import { AssembledLesson } from '../../../util/classes/AssembledLesson.js';
 import { AssembledLessonAllTiers } from '../../../util/interfaces.js';
 import { Progress } from '../../../util/interfaces.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * Takes the Lesson database and queries all info about all versions of all lessons,
@@ -19,13 +18,14 @@ import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literal
  */
 async function getAllLessonsWithStatus(userProgress: Progress) {
   let lessonArray: AssembledLessonAllTiers[] = [];
+
   const lessonDb = await findAllLessonObjects();
 
   try {
     for (let lessonIndex = 0; lessonIndex < lessonDb.length; lessonIndex++) {
       const lessonNumber = lessonIndex + 1;
 
-      const tiers = await findAllTiersOfLesson(lessonNumber, userProgress);
+      const tiers = await _findAllTiersOfLesson(lessonNumber, userProgress);
 
       const lessonObject: AssembledLessonAllTiers = {
         lessonNumber,
@@ -35,8 +35,12 @@ async function getAllLessonsWithStatus(userProgress: Progress) {
 
       lessonArray.push(lessonObject);
     }
-  } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({
+      error,
+      message: LESSON_DATABASE_QUERY_FAILED_ERROR,
+      code: 500,
+    });
   }
 
   return lessonArray;
@@ -50,7 +54,7 @@ async function getAllLessonsWithStatus(userProgress: Progress) {
  * @param userProgress - The user's progress (tier and lesson number) in the course.
  * @returns An array of lesson versions, with the status appended.
  */
-async function findAllTiersOfLesson(
+async function _findAllTiersOfLesson(
   lessonNumber: number,
   userProgress: Progress
 ) {

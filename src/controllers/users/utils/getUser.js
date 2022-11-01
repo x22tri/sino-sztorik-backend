@@ -1,17 +1,19 @@
 import User from '../../../models/users.js';
-import HttpError from '../../../models/http-error.js';
 import jwt from 'jsonwebtoken';
 import {
   UNAUTHENTICATED_ERROR,
   AUTHENTICATION_FAILED_ERROR,
   USER_NOT_FOUND_ERROR,
 } from '../../../util/string-literals.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 async function getUser(authHeader) {
   try {
     const token = authHeader.split(' ')[1];
 
-    if (!token) throw new HttpError(UNAUTHENTICATED_ERROR, 403);
+    if (!token) {
+      throwError({ message: UNAUTHENTICATED_ERROR, code: 403 });
+    }
 
     if (process.env.JWT_KEY === undefined) {
       throw new Error();
@@ -29,9 +31,9 @@ async function getUser(authHeader) {
       return user;
     }
 
-    throw new HttpError(USER_NOT_FOUND_ERROR, 404);
-  } catch (err) {
-    throw new HttpError(AUTHENTICATION_FAILED_ERROR, 500);
+    throwError({ message: USER_NOT_FOUND_ERROR, code: 404 });
+  } catch (error) {
+    throwError({ error, message: AUTHENTICATION_FAILED_ERROR, code: 500 });
   }
 }
 

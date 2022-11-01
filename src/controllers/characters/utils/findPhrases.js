@@ -2,10 +2,17 @@ import { Op } from 'sequelize';
 const { like } = Op;
 
 import Phrase from '../../../models/phrases.js';
-import HttpError from '../../../models/http-error.js';
-import { PHRASES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import {
+  DATABASE_QUERY_FAILED_ERROR,
+  PHRASES_DATABASE_QUERY_FAILED_ERROR,
+  SEARCH_NO_MATCH,
+} from '../../../util/string-literals.js';
+import { ERROR_HANDLING_CONFIGURATION } from '../../../util/config.js';
+const { allowGapsInCharacterDatabase } = ERROR_HANDLING_CONFIGURATION;
+
 import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * @typedef {Object} Lesson
@@ -28,13 +35,13 @@ async function findPhrases(char) {
   let phrasesWithAllCharObjects = [];
 
   try {
-    const phrasesWithchar = await findAllPhrasesWithChar(char);
+    const phrasesWithchar = await _findAllPhrasesWithChar(char);
 
     // Go through each character in each phrase.
     // If user is not eligible for at least one of the characters, don't show the phrase altogether.
     for (const phraseObject of phrasesWithchar) {
       const allCharObjectsInPhrase =
-        await findLastEligibleVersionOfCharsInPhrase(
+        await _findLastEligibleVersionOfCharsInPhrase(
           getCharProgress(char),
           //@ts-ignore
           phraseObject.phraseChinese
@@ -50,7 +57,7 @@ async function findPhrases(char) {
       });
     }
   } catch (err) {
-    throw new HttpError(PHRASES_DATABASE_QUERY_FAILED_ERROR, 500);
+    throwError({ message: PHRASES_DATABASE_QUERY_FAILED_ERROR, code: 500 });
   }
 
   //@ts-ignore
@@ -63,7 +70,7 @@ async function findPhrases(char) {
  * @param {Character} char - A character object.
  * @returns {Promise<Phrase[]>} All entries in the "Phrases" table that contains the character.
  */
-async function findAllPhrasesWithChar(char) {
+async function _findAllPhrasesWithChar(char) {
   const foundCharInDB = await Phrase.findAll({
     where: {
       phraseChinese: {
@@ -84,7 +91,7 @@ async function findAllPhrasesWithChar(char) {
  * @param {string} phrase - The phrase (the actual string, not the database entry) to analyze.
  * @returns {Promise<Character[] | null>} The character objects of all characters that make up the phrase.
  */
-async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
+async function _findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
   let charObjectsInPhrase = [];
 
   for (const phraseChar of phrase) {
@@ -103,14 +110,16 @@ async function findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
       if (charObjectsInPhrase.length === phrase.length) {
         return charObjectsInPhrase;
       }
-
-      // An error returned from findBareCharacter should only skip the phrase, not crash the application.
-      // To-Do: Change this behavior while testing with a finished database
-      // as it points to gaps in the database or errors in the findBareCharacter function.
-      // Potentially separate a "forbidden" response (which is normal and indicates the phrase is to be skipped)
-      // from any other response (which indicates a bug).
-    } catch (err) {
-      break;
+    } catch (error) {
+      if (error.message === SEARCH_NO_MATCH && allowGapsInCharacterDatabase) {
+        break;
+      } else {
+        throwError({
+          error,
+          message: PHRASES_DATABASE_QUERY_FAILED_ERROR,
+          code: 500,
+        });
+      }
     }
   }
 

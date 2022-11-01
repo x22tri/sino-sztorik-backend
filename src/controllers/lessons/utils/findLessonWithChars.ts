@@ -3,7 +3,6 @@ const { eq, lte } = Op;
 
 import { CharacterOrder } from '../../../models/character-orders.js';
 import Character from '../../../models/characters.js';
-import HttpError from '../../../models/http-error.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 import { LESSON_PREFACE_TIER_PREFIX } from '../../../util/config.js';
@@ -11,6 +10,7 @@ import lessonsCache from '../lessons-cache.js';
 import { deduplicate } from '../../../util/functions/deduplicate.js';
 import { Progress } from '../../../util/interfaces.js';
 import { AssembledLesson } from '../../../util/classes/AssembledLesson.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * Based on a lesson's progress state (tier and lesson number), finds the lesson object
@@ -31,7 +31,7 @@ async function findLessonWithChars(
 
     const givenLesson = lessonDatabase[lessonNumber - 1];
 
-    const charsInGivenLesson = await findAllCharsInLesson(
+    const charsInGivenLesson = await _findAllCharsInLesson(
       { tier, lessonNumber },
       !isReview
     );
@@ -43,8 +43,12 @@ async function findLessonWithChars(
       preface: givenLesson[LESSON_PREFACE_TIER_PREFIX + tier],
       characters: charsInGivenLesson,
     });
-  } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({
+      error,
+      message: LESSON_DATABASE_QUERY_FAILED_ERROR,
+      code: 500,
+    });
   }
 }
 
@@ -56,7 +60,7 @@ async function findLessonWithChars(
  * `false` if you want all tiers up to (less than or equal to) the provided tier.
  * @returns An array of CharacterOrder objects with the corresponding character objects.
  */
-async function findAllCharsInLesson(
+async function _findAllCharsInLesson(
   progress: Progress,
   exactTierOnly: boolean
 ) {
@@ -75,8 +79,12 @@ async function findAllCharsInLesson(
     deduplicate({ array: charsInGivenLesson, byField: 'charChinese' });
 
     return charsInGivenLesson;
-  } catch (err) {
-    throw new HttpError(LESSON_DATABASE_QUERY_FAILED_ERROR, 500);
+  } catch (error) {
+    throwError({
+      error,
+      message: LESSON_DATABASE_QUERY_FAILED_ERROR,
+      code: 500,
+    });
   }
 }
 

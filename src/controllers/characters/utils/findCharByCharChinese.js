@@ -1,7 +1,7 @@
-import HttpError from '../../../models/http-error.js';
 import { findBareCharacter } from './findBareCharacter.js';
 import { addSupplements } from './addSupplements.js';
 import { TIER_OR_LESSON_NOT_NUMBER_ERROR } from '../../../util/string-literals.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * @typedef {Object} Character
@@ -24,7 +24,7 @@ import { TIER_OR_LESSON_NOT_NUMBER_ERROR } from '../../../util/string-literals.j
  */
 async function findCharByCharChinese(charString, userProgress) {
   if (isNaN(userProgress.tier) || isNaN(userProgress.lessonNumber)) {
-    throw new HttpError(TIER_OR_LESSON_NOT_NUMBER_ERROR, 400);
+    throwError({ message: TIER_OR_LESSON_NOT_NUMBER_ERROR, code: 400 });
   }
 
   const bareCharacter = await findBareCharacter(charString, userProgress);

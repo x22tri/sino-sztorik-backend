@@ -21,7 +21,12 @@ import { handleSearchRequest } from '../controllers/characters/characters-contro
 //   updateCharacter,
 // } from '../controllers/admin/admin-controllers.js';
 
-import { signupValidators } from './router-utils.js';
+import { check } from 'express-validator';
+const signupValidators = [
+  check('displayName').not().isEmpty(),
+  check('email').not().isEmpty(),
+  check('password').isLength({ min: 6 }),
+];
 
 import express from 'express';
 const router = express.Router();

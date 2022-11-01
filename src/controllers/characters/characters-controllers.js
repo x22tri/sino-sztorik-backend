@@ -2,6 +2,8 @@ import {
   COURSE_FINISHED,
   FORCE_SEARCH_QUERY_PARAM,
 } from '../../util/config.js';
+import { passError } from '../../util/functions/throwError.js';
+import { SEARCH_QUERY_FAILED_ERROR } from '../../util/string-literals.js';
 import { getUserProgress } from '../users/utils/getUserProgress.js';
 import { search } from './utils/search.js';
 
@@ -16,8 +18,11 @@ async function handleSearchRequest(req, res, next) {
     const searchResult = await search(searchTerm, progress);
 
     res.json(searchResult);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    passError(
+      { error, fallbackMessage: SEARCH_QUERY_FAILED_ERROR, fallbackCode: 500 },
+      next
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 import OtherUse from '../../../models/other-uses.js';
-import HttpError from '../../../models/http-error.js';
 import { OTHER_USES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
+import { throwError } from '../../../util/functions/throwError.js';
 
 /**
  * @typedef {Object} Character
@@ -31,7 +31,7 @@ async function findOtherUses(char) {
 
     return foundCharInDB;
   } catch (err) {
-    throw new HttpError(OTHER_USES_DATABASE_QUERY_FAILED_ERROR, 500);
+    throwError({ message: OTHER_USES_DATABASE_QUERY_FAILED_ERROR, code: 500 });
   }
 }
 
