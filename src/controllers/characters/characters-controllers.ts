@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from 'express';
 import {
   COURSE_FINISHED,
   FORCE_SEARCH_QUERY_PARAM,
@@ -7,7 +8,11 @@ import { SEARCH_QUERY_FAILED_ERROR } from '../../util/string-literals.js';
 import { getUserProgress } from '../users/utils/getUserProgress.js';
 import { search } from './utils/search.js';
 
-async function handleSearchRequest(req, res, next) {
+async function handleSearchRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const searchTerm = req.params.searchTerm;
 

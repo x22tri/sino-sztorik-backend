@@ -2,13 +2,15 @@ import { getAllLessonsWithStatus } from './utils/getAllLessonsWithStatus.js';
 import { getLesson } from './utils/getLesson.js';
 import { getUser } from '../users/utils/getUser.js';
 import { getUserProgress } from '../users/utils/getUserProgress.js';
-import { passError } from '../../util/functions/throwError.js';
+import { passError, throwError } from '../../util/functions/throwError.js';
 import {
+  INVALID_NUMBERS_PROVIDED,
   LESSON_DATABASE_QUERY_FAILED_ERROR,
   LESSON_QUERY_FAILED_ERROR,
 } from '../../util/string-literals.js';
+import { Request, Response, NextFunction } from 'express';
 
-async function getLearn(req, res, next) {
+async function getLearn(req: Request, res: Response, next: NextFunction) {
   try {
     const progress = await getUserProgress(req);
 
@@ -23,13 +25,19 @@ async function getLearn(req, res, next) {
   }
 }
 
-async function getReview(req, res, next) {
+async function getReview(req: Request, res: Response, next: NextFunction) {
   try {
     const progress = await getUserProgress(req);
 
     const { lessonToReview } = req.params;
 
-    const foundLesson = await getLesson(progress, lessonToReview);
+    const lessonNumberToReview = Number(lessonToReview);
+
+    if (Number.isNaN(lessonNumberToReview)) {
+      throwError({ message: INVALID_NUMBERS_PROVIDED, code: 400 });
+    }
+
+    const foundLesson = await getLesson(progress, lessonNumberToReview);
 
     res.json(foundLesson);
   } catch (error) {
@@ -40,7 +48,11 @@ async function getReview(req, res, next) {
   }
 }
 
-async function getLessonSelect(req, res, next) {
+async function getLessonSelect(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const user = await getUser(req.headers.authorization);
 

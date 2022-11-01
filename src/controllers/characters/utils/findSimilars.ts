@@ -43,8 +43,8 @@ async function findSimilars(char: Character) {
       return emptyResponse;
     }
 
-    let similarAppearance: CharWithOrder[] = [];
-    let similarMeaning: CharWithOrder[] = [];
+    let similarAppearance: (CharacterOrder & Character)[] = [];
+    let similarMeaning: (CharacterOrder & Character)[] = [];
 
     for (const similarChar of similarChars) {
       try {

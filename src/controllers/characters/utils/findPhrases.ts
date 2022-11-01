@@ -1,32 +1,30 @@
 import { Op } from 'sequelize';
 const { like } = Op;
 
+import Lesson from '../../../models/lessons.js';
+import Character from '../../../models/characters.js';
 import Phrase from '../../../models/phrases.js';
+import { Progress } from '../../../util/interfaces.js';
 import { PHRASES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 
 import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
 import { throwError } from '../../../util/functions/throwError.js';
+import { CharacterOrder } from '../../../models/character-orders.js';
 
-/**
- * @typedef {Object} Lesson
- * @typedef {Object} Character
- *
- * @typedef {Object} Progress
- * @property {number} tier The tier the user is currently at.
- * @property {number} lessonNumber The lesson the user is currently at.
- * @property {number} [indexInLesson] The index of the character the user is currently at.
- * /
+interface PhraseWithChars extends Phrase {
+  characters: Character[];
+}
 
 /**
  * Takes a character object and finds all the phrases containing the character that the user is eligible to see,
  * with the last eligible version of each character's character object.
- * @param {Character} char - The character object whose phrases we're querying.
+ * @param char - The character object whose phrases we're querying.
  
- * @returns {Promise<Phrase[]>} The character objects of all characters that make up the phrase.
+ * @returns The character objects of all characters that make up the phrase.
  */
-async function findPhrases(char) {
-  let phrasesWithAllCharObjects = [];
+async function findPhrases(char: Character): Promise<Phrase[]> {
+  let phrasesWithAllCharObjects: PhraseWithChars[] = [];
 
   try {
     const phrasesWithchar = await _findAllPhrasesWithChar(char);
@@ -37,7 +35,6 @@ async function findPhrases(char) {
       const allCharObjectsInPhrase =
         await _findLastEligibleVersionOfCharsInPhrase(
           getCharProgress(char),
-          //@ts-ignore
           phraseObject.phraseChinese
         );
 
@@ -48,23 +45,22 @@ async function findPhrases(char) {
       phrasesWithAllCharObjects.push({
         ...phraseObject,
         characters: allCharObjectsInPhrase,
-      });
+      } as PhraseWithChars);
     }
   } catch (err) {
     throwError({ message: PHRASES_DATABASE_QUERY_FAILED_ERROR, code: 500 });
   }
 
-  //@ts-ignore
   return phrasesWithAllCharObjects;
 }
 
 /**
  * Takes a character object and finds all entries in the "Phrases" table that contains the Chinese character.
  *
- * @param {Character} char - A character object.
- * @returns {Promise<Phrase[]>} All entries in the "Phrases" table that contains the character.
+ * @param char - A character object.
+ * @returns All entries in the "Phrases" table that contains the character.
  */
-async function _findAllPhrasesWithChar(char) {
+async function _findAllPhrasesWithChar(char: Character): Promise<Phrase[]> {
   const foundCharInDB = await Phrase.findAll({
     where: {
       phraseChinese: {
@@ -74,32 +70,31 @@ async function _findAllPhrasesWithChar(char) {
     raw: true,
   });
 
-  //@ts-ignore
   return foundCharInDB;
 }
 
 /**
  * Takes a phrase string and returns the last version of all its characters that the user is eligible to see.
  *
- * @param {Progress} progress - The tier, lesson and index that the user is currently at.
- * @param {string} phrase - The phrase (the actual string, not the database entry) to analyze.
- * @returns {Promise<Character[] | null>} The character objects of all characters that make up the phrase.
+ * @param progress - The tier, lesson and index that the user is currently at.
+ * @param phrase - The phrase (the actual string, not the database entry) to analyze.
+ * @returns The character objects of all characters that make up the phrase.
  */
-async function _findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
-  let charObjectsInPhrase = [];
+async function _findLastEligibleVersionOfCharsInPhrase(
+  progress: Progress,
+  phrase: string
+): Promise<Character[] | null> {
+  let charObjectsInPhrase: (CharacterOrder & Character)[] = [];
 
   for (const phraseChar of phrase) {
     try {
-      const latestEligibleVersion = await findBareCharacter(
-        phraseChar,
-        progress
-      );
+      const lastEligibleVersion = await findBareCharacter(phraseChar, progress);
 
-      if (!latestEligibleVersion) {
+      if (!lastEligibleVersion) {
         break; // If the user is ineligible for even one character in the phrase, they are ineligible for the phrase altogether.
       }
 
-      charObjectsInPhrase.push(latestEligibleVersion);
+      charObjectsInPhrase.push(lastEligibleVersion);
 
       if (charObjectsInPhrase.length === phrase.length) {
         return charObjectsInPhrase;

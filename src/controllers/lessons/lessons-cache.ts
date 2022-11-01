@@ -1,4 +1,11 @@
-const lessonsCache = {
+import Lesson from '../../models/lessons.js';
+
+const lessonsCache: {
+  data: Lesson[] | undefined;
+  save(data: Lesson[]): void;
+  get(): Lesson[] | undefined;
+  clear(): void;
+} = {
   data: undefined,
 
   save(data) {

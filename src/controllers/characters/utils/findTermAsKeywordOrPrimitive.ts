@@ -8,7 +8,7 @@ import {
   SEARCH_NO_MATCH,
 } from '../../../util/string-literals.js';
 
-async function findTermAsKeywordOrPrimitive(searchTerm) {
+async function findTermAsKeywordOrPrimitive(searchTerm: string) {
   try {
     const keywordsOrPrimitives = await Character.findAll({
       where: {
