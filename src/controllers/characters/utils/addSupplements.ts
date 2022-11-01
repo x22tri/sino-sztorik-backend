@@ -2,15 +2,9 @@ import { findSimilars } from './findSimilars.js';
 import { findPhrases } from './findPhrases.js';
 import { findOtherUses } from './findOtherUses.js';
 import { findConstituents } from './findConstituents.js';
-
-/**
- * @typedef {Object} Character
- *
- * @typedef {Object} Progress
- * @property {number} tier The tier the user is currently at.
- * @property {number} lessonNumber The lesson the user is currently at.
- * @property {number} [indexInLesson] The index of the character the user is currently at.
- * /
+import Character from '../../../models/characters.js';
+import { FullChar } from '../../../util/interfaces.js';
+import { CharacterOrder } from '../../../models/character-orders.js';
 
 /**
  * Takes a character object and finds all supplemental information about it:
@@ -18,10 +12,12 @@ import { findConstituents } from './findConstituents.js';
  * phrases with the character, the character's other uses,
  * and the character objects of all its constituents.
  *
- * @param {Character} char - The character object whose supplements we're querying.
- * @returns {Promise<Character>} The character object, complete with supplemental information.
+ * @param char - The character object whose supplements we're querying.
+ * @returns The character object, complete with supplemental information.
  */
-async function addSupplements(char) {
+async function addSupplements(
+  char: CharacterOrder & Character
+): Promise<FullChar> {
   const similars = await findSimilars(char);
   const phrases = await findPhrases(char);
   const otherUses = await findOtherUses(char);
@@ -33,7 +29,7 @@ async function addSupplements(char) {
     phrases,
     otherUses,
     constituents,
-  };
+  } as FullChar;
 }
 
 export { addSupplements };

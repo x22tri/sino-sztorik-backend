@@ -9,7 +9,8 @@ import {
 } from '../../../util/string-literals.js';
 
 import { ERROR_HANDLING_CONFIGURATION } from '../../../util/config.js';
-const { logGapsInCharacterDatabase } = ERROR_HANDLING_CONFIGURATION;
+const { logGapsInCharacterDatabase, allowGapsInCharacterDatabase } =
+  ERROR_HANDLING_CONFIGURATION;
 
 import { Progress } from '../../../util/interfaces.js';
 import { deepCopy } from '../../../util/functions/deepCopy.js';
@@ -27,6 +28,11 @@ import { throwError } from '../../../util/functions/throwError.js';
 async function findBareCharacter(char: string, progress: Progress) {
   const ids = await _findAllCharIdsByChar(char);
   const characterVersionsInOrder = await _findAllCharVersionsByCharIds(ids);
+
+  if (characterVersionsInOrder?.length === 0) {
+    return null;
+  }
+
   const firstCharVersion = characterVersionsInOrder[0];
 
   if (firstCharVersion.comesLaterThan(progress)) {
@@ -94,6 +100,9 @@ async function _findAllCharIdsByChar(char: string): Promise<string[]> {
  * @returns An array of character objects.
  */
 async function _findAllCharVersionsByCharIds(charIds: string[]) {
+  const NO_ENTRIES_FOUND = `No character entries can be found for the following character order ID's: 
+  ${String(charIds)}`;
+
   try {
     const charVersionsInOrder = await CharacterOrder.findAllAndHoist({
       where: { charId: charIds },
@@ -101,16 +110,16 @@ async function _findAllCharVersionsByCharIds(charIds: string[]) {
       order: ['tier', 'lessonNumber', 'indexInLesson'],
     });
 
-    if (!charVersionsInOrder?.length && logGapsInCharacterDatabase) {
-      throwError({
-        error: new Error(
-          `No character entries can be found for the following character order ID's: ${String(
-            charIds
-          )}`
-        ),
-        message: SEARCH_NO_MATCH,
-        code: 404,
-      });
+    if (!charVersionsInOrder?.length) {
+      if (allowGapsInCharacterDatabase === false) {
+        throwError({
+          error: new Error(NO_ENTRIES_FOUND),
+          message: SEARCH_NO_MATCH,
+          code: 404,
+        });
+      } else if (logGapsInCharacterDatabase) {
+        console.log(NO_ENTRIES_FOUND);
+      }
     }
 
     return charVersionsInOrder;

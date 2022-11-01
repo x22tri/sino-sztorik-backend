@@ -2,13 +2,7 @@ import { Op } from 'sequelize';
 const { like } = Op;
 
 import Phrase from '../../../models/phrases.js';
-import {
-  DATABASE_QUERY_FAILED_ERROR,
-  PHRASES_DATABASE_QUERY_FAILED_ERROR,
-  SEARCH_NO_MATCH,
-} from '../../../util/string-literals.js';
-import { ERROR_HANDLING_CONFIGURATION } from '../../../util/config.js';
-const { allowGapsInCharacterDatabase } = ERROR_HANDLING_CONFIGURATION;
+import { PHRASES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 
 import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
@@ -111,15 +105,7 @@ async function _findLastEligibleVersionOfCharsInPhrase(progress, phrase) {
         return charObjectsInPhrase;
       }
     } catch (error) {
-      if (error.message === SEARCH_NO_MATCH && allowGapsInCharacterDatabase) {
-        break;
-      } else {
-        throwError({
-          error,
-          message: PHRASES_DATABASE_QUERY_FAILED_ERROR,
-          code: 500,
-        });
-      }
+      break;
     }
   }
 

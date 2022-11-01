@@ -1,4 +1,6 @@
 import { Model, FindOptions, ModelStatic } from 'sequelize';
+import { CharacterOrder } from '../models/character-orders.js';
+import Character from '../models/characters.js';
 import { AssembledLesson } from './classes/AssembledLesson.js';
 
 interface Progress {
@@ -13,8 +15,20 @@ interface AssembledLessonAllTiers {
   tiers: AssembledLesson[];
 }
 
+interface FullChar extends Omit<CharacterOrder & Character, 'constituents'> {
+  similars: { similarAppearance: Character[]; similarMeaning: Character[] };
+  phrases: any[];
+  otherUses: any[];
+  constituents: (CharacterOrder & Character)[];
+}
+
 interface FindOptionsSingleInclude<I extends Model> extends FindOptions {
   include: ModelStatic<I>;
 }
 
-export { Progress, AssembledLessonAllTiers, FindOptionsSingleInclude };
+export {
+  Progress,
+  AssembledLessonAllTiers,
+  FullChar,
+  FindOptionsSingleInclude,
+};

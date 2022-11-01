@@ -1,6 +1,6 @@
 import { CharacterOrder } from '../../models/character-orders.js';
 import Character from '../../models/characters.js';
-import { Progress } from '../interfaces.js';
+import { FullChar, Progress } from '../interfaces.js';
 import { HasProgress } from './HasProgress.js';
 
 class AssembledLesson implements Progress {
@@ -8,7 +8,7 @@ class AssembledLesson implements Progress {
   lessonNumber!: number;
   name!: string;
   preface!: string;
-  characters!: (CharacterOrder & Character)[];
+  characters!: Character[] | FullChar[];
   status?: string;
   getProgress: () => Progress;
   comesLaterThan: (secondState: Progress) => boolean;

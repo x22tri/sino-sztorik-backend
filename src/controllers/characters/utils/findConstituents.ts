@@ -12,26 +12,23 @@ import {
 import { InteractiveWordType } from '../../../util/enums.js';
 import { findBareCharacter } from './findBareCharacter.js';
 import { throwError } from '../../../util/functions/throwError.js';
-
-/**
- * @typedef {Object} Character
- *
- * @typedef {Object} Progress
- * @property {number} tier The tier the user is currently at.
- * @property {number} lessonNumber The lesson the user is currently at.
- * @property {number} [indexInLesson] The index of the character the user is currently at.
- * /
+import Character from '../../../models/characters.js';
+import { Progress } from '../../../util/interfaces.js';
+import { CharacterOrder } from '../../../models/character-orders.js';
 
 /**
  * Takes a character object and returns the bare character objects of its constituents.
  * If the input character's "constituents" field is not specified,
  * the function will collect all constituent references from its story.
  *
- * @param {Character} char - The character object whose constituent objects we're querying.
- * @returns {Promise<Character[]>} An array of character objects.
+ * @param char - The character object whose constituent objects we're querying.
+ * @returns An array of character objects.
  */
-async function findConstituents(char) {
-  let constituentStringArray;
+async function findConstituents(
+  char: CharacterOrder & Character
+): Promise<(CharacterOrder & Character)[]> {
+  let constituentStringArray: string[];
+
   const { constituents, story, tier, lessonNumber } = char;
 
   try {
@@ -47,7 +44,7 @@ async function findConstituents(char) {
   }
 
   try {
-    let constituentCharacterObjects = [];
+    let constituentCharacterObjects: (CharacterOrder & Character)[] = [];
     const progress = { tier: tier, lessonNumber: lessonNumber };
 
     for (const constituent of constituentStringArray) {

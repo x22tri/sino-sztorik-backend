@@ -2,27 +2,23 @@ import { findBareCharacter } from './findBareCharacter.js';
 import { addSupplements } from './addSupplements.js';
 import { TIER_OR_LESSON_NOT_NUMBER_ERROR } from '../../../util/string-literals.js';
 import { throwError } from '../../../util/functions/throwError.js';
-
-/**
- * @typedef {Object} Character
- *
- * @typedef {Object} Progress
- * @property {number} tier The tier the user is currently at.
- * @property {number} lessonNumber The lesson the user is currently at.
- * @property {number} [indexInLesson] The index of the character the user is currently at.
- * /
+import Character from '../../../models/characters.js';
+import { FullChar, Progress } from '../../../util/interfaces.js';
 
 /**
  * Takes the user's current progress and character string and finds the character object for the character
  * based on what the user is eligible to see.
  * The supplementsNeeded flag determines if supplemental information such as phrases with the requested character should be queried.
  *
- * @param {string} charString - The character string we're querying.
- * @param {Progress} userProgress - The user's current progress in the course.
+ * @param charString - The character string we're querying.
+ * @param userProgress - The user's current progress in the course.
  *
- * @returns {Promise<Character | void>} The character object.
+ * @returns The character object.
  */
-async function findCharByCharChinese(charString, userProgress) {
+async function findCharByCharChinese(
+  charString: string,
+  userProgress: Progress
+): Promise<FullChar | void> {
   if (isNaN(userProgress.tier) || isNaN(userProgress.lessonNumber)) {
     throwError({ message: TIER_OR_LESSON_NOT_NUMBER_ERROR, code: 400 });
   }

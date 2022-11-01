@@ -27,11 +27,11 @@ const LESSON_NOT_FOUND_ERROR = 'A lecke nem található.';
 
 const LESSON_CHARS_NOT_FOUND_ERROR = 'A lecke karakterei nem találhatók.';
 
-const LESSON_DATABASE_QUERY_FAILED_ERROR = 'Nem sikerült lekérni a leckéket.';
+const LESSON_DATABASE_QUERY_FAILED_ERROR = 'Hiba történt a leckék lekérésekor.';
 
-const LESSON_QUERY_FAILED_ERROR = 'Nem sikerült lekérni a leckét.';
+const LESSON_QUERY_FAILED_ERROR = 'Hiba történt a lecke lekérésekor.';
 
-const DATABASE_QUERY_FAILED_ERROR = 'Nem sikerült lekérni az adatbázist.';
+const DATABASE_QUERY_FAILED_ERROR = 'Hiba történt az adatbázis lekérésekor.';
 
 const LESSON_LOCKED = 'Még nincs feloldva';
 

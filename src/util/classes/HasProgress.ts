@@ -6,15 +6,7 @@ class HasProgress implements Progress {
   lessonNumber: number;
   indexInLesson?: number;
 
-  constructor({
-    tier,
-    lessonNumber,
-    indexInLesson,
-  }: {
-    tier: number;
-    lessonNumber: number;
-    indexInLesson?: number;
-  }) {
+  constructor({ tier, lessonNumber, indexInLesson }: Progress) {
     this.tier = tier;
     this.lessonNumber = lessonNumber;
     this.indexInLesson = indexInLesson;
