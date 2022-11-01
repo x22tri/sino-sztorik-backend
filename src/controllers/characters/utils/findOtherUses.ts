@@ -1,25 +1,17 @@
+import Character from '../../../models/characters.js';
 import OtherUse from '../../../models/other-uses.js';
+import { Progress } from '../../../util/interfaces.js';
 import { OTHER_USES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';
 import { throwError } from '../../../util/functions/throwError.js';
-
-/**
- * @typedef {Object} Character
- * @typedef {Object} OtherUse
- *
- * @typedef {Object} Progress
- * @property {number} tier The tier the user is currently at.
- * @property {number} lessonNumber The lesson the user is currently at.
- * @property {number} [indexInLesson] The index of the character the user is currently at.
- * /
 
 /**
  * Takes a character object and finds all meanings of the character other than its keyword, together with
  * how the character is pronounced when used in that meaning.
  *
- * @param {Character} char - The character object whose phrases we're querying.
- * @returns {Promise<OtherUse[]>} An array of entries in the OtherUses table, with the pinyin removed from certain entries.
+ * @param char - The character object whose phrases we're querying.
+ * @returns An array of entries in the OtherUses table, with the pinyin removed from certain entries.
  */
-async function findOtherUses(char) {
+async function findOtherUses(char: Character): Promise<OtherUse[]> {
   try {
     let foundCharInDB = await OtherUse.findAll({
       where: { charChinese: char.charChinese },
@@ -27,7 +19,7 @@ async function findOtherUses(char) {
       attributes: ['pinyin', 'otherUseHungarian'],
     });
 
-    removeDuplicatePinyins(foundCharInDB);
+    _removeDuplicatePinyins(foundCharInDB);
 
     return foundCharInDB;
   } catch (err) {
@@ -39,11 +31,11 @@ async function findOtherUses(char) {
  * Takes an array of sorted entries in the OtherUses table and removes the pinyins of entries
  * where the same pinyin would be displayed several times consecutively.
  *
- * @param {OtherUse[]} otherUseEntries - An array of entries in the OtherUses table. They must have previously been
- * sorted by pinyin in an accent-sensitive way.
- * @returns {OtherUse[]} An array of entries in the OtherUses table, with the pinyin removed from certain entries.
+ * @param otherUseEntries - An array of entries in the OtherUses table.
+ * They must have previously been sorted by pinyin in an accent-sensitive way.
+ * @returns An array of entries in the OtherUses table, with the pinyin removed from certain entries.
  */
-function removeDuplicatePinyins(otherUseEntries) {
+function _removeDuplicatePinyins(otherUseEntries: OtherUse[]): OtherUse[] {
   if (otherUseEntries?.length < 2) {
     return otherUseEntries;
   }

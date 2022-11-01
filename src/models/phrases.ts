@@ -1,9 +1,23 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import {
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 const { INTEGER, STRING } = DataTypes;
 import sequelize from '../util/database.js';
 
-const Phrase = sequelize.define(
-  'phrase',
+class Phrase extends Model<
+  InferAttributes<Phrase>,
+  InferCreationAttributes<Phrase>
+> {
+  declare phraseId: number;
+  declare phraseChinese: string;
+  declare phraseHungarian: string;
+  declare pinyin?: string | null;
+}
+
+Phrase.init(
   {
     phraseId: {
       // unique ID in this table
@@ -25,6 +39,8 @@ const Phrase = sequelize.define(
     },
   },
   {
+    sequelize,
+    modelName: 'phrase',
     timestamps: false,
   }
 );

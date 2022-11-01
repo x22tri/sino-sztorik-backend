@@ -1,10 +1,26 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import {
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 const { INTEGER, STRING, ENUM, BOOLEAN } = DataTypes;
 
 import sequelize from '../util/database.js';
+import { SimilarTypeValue } from '../util/enums.js';
 
-const Similar = sequelize.define(
-  'similar',
+class Similar extends Model<
+  InferAttributes<Similar>,
+  InferCreationAttributes<Similar>
+> {
+  declare similarId: number;
+  declare similarGroup: number;
+  declare charChinese: string;
+  declare similarType: SimilarTypeValue;
+  declare similarToPrimitiveMeaning?: boolean | null;
+}
+
+Similar.init(
   {
     similarId: {
       // unique ID in this table
@@ -14,7 +30,7 @@ const Similar = sequelize.define(
       primaryKey: true,
     },
     similarGroup: {
-      // checking which characters belong together
+      // characters that belong together
       type: INTEGER,
       allowNull: false,
     },
@@ -32,6 +48,8 @@ const Similar = sequelize.define(
     },
   },
   {
+    sequelize,
+    modelName: 'similar',
     timestamps: false,
   }
 );

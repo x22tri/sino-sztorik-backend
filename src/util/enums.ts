@@ -10,6 +10,8 @@ const SimilarType = Object.freeze({
   MEANING: 'meaning',
 });
 
+type SimilarTypeValue = typeof SimilarType[keyof typeof SimilarType];
+
 const InteractiveWordType = Object.freeze({
   PRIMITIVE: 'p',
   KEYWORD: 'k',
@@ -22,4 +24,4 @@ const LessonStatuses = Object.freeze({
   COMPLETED: LESSON_COMPLETED,
 });
 
-export { SimilarType, InteractiveWordType, LessonStatuses };
+export { SimilarType, SimilarTypeValue, InteractiveWordType, LessonStatuses };

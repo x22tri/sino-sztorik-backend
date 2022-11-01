@@ -1,9 +1,24 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import {
+  Sequelize,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 const { INTEGER, STRING } = DataTypes;
 import sequelize from '../util/database.js';
 
-const OtherUse = sequelize.define(
-  'otheruse',
+class OtherUse extends Model<
+  InferAttributes<OtherUse>,
+  InferCreationAttributes<OtherUse>
+> {
+  declare otherUseId: number;
+  declare charChinese: string;
+  declare otherUseHungarian: string;
+  declare pinyin?: string | null;
+}
+
+OtherUse.init(
   {
     otherUseId: {
       // unique ID in this table
@@ -26,6 +41,8 @@ const OtherUse = sequelize.define(
     },
   },
   {
+    sequelize,
+    modelName: 'otheruse',
     timestamps: false,
     charset: 'utf8mb4',
     collate: 'utf8mb4_0900_as_ci',

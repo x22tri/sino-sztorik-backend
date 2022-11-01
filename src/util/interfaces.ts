@@ -17,7 +17,10 @@ interface AssembledLessonAllTiers {
 
 interface FullCharacter
   extends Omit<CharacterOrder & Character, 'constituents'> {
-  similars: { similarAppearance: Character[]; similarMeaning: Character[] };
+  similars: {
+    similarAppearance: (CharacterOrder & Character)[];
+    similarMeaning: (CharacterOrder & Character)[];
+  };
   phrases: any[];
   otherUses: any[];
   constituents: (CharacterOrder & Character)[];
