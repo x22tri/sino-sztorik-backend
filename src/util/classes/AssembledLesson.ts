@@ -35,9 +35,10 @@ class AssembledLesson implements Progress {
     this.characters = characters;
     this.status = status;
 
-    const { comesLaterThan, getProgress } = new HasProgress(this);
-    this.comesLaterThan = comesLaterThan;
-    this.getProgress = getProgress;
+    const progressMethods = new HasProgress(this);
+
+    this.comesLaterThan = progressMethods.comesLaterThan;
+    this.getProgress = () => progressMethods.getProgress();
   }
 }
 

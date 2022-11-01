@@ -32,9 +32,10 @@ class CharacterOrder extends Model<
   constructor(...args: any[]) {
     super(...args);
 
-    const { comesLaterThan, getProgress } = new HasProgress(this);
-    this.comesLaterThan = comesLaterThan;
-    this.getProgress = getProgress;
+    const progressMethods = new HasProgress(this);
+
+    this.comesLaterThan = progressMethods.comesLaterThan;
+    this.getProgress = () => progressMethods.getProgress();
   }
 
   static async findAllAndHoist<I extends Model>(

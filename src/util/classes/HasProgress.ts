@@ -23,15 +23,6 @@ class HasProgress implements Progress {
   comesLaterThan(secondState: Progress): boolean {
     const firstState = this.getProgress();
 
-    if (
-      (firstState.indexInLesson &&
-        !Number.isInteger(firstState.indexInLesson)) ||
-      (secondState.indexInLesson &&
-        !Number.isInteger(secondState.indexInLesson))
-    ) {
-      throw new Error(INVALID_NUMBERS_PROVIDED);
-    }
-
     if (firstState.tier > secondState.tier) {
       return true;
     }
