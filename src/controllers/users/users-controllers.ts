@@ -1,7 +1,7 @@
 import User from '../../models/users.js';
 import { getUser } from './utils/getUser.js';
 import { updateUserInDatabase } from './utils/updateUserInDatabase.js';
-import { findNextLesson } from './utils/findNextLesson.js';
+import findNextLesson from './utils/findNextLesson.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';

@@ -71,4 +71,4 @@ async function _lookForLessonInNextTier(
   };
 }
 
-export { findNextLesson };
+export default findNextLesson;

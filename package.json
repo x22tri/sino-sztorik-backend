@@ -10,27 +10,6 @@
     "nodemon": "nodemon -r dotenv/config src/app.js",
     "dev": "nodemon -r dotenv/config --watch src/**/*.ts --watch src/**/*.js --exec ts-node --esm src/app.ts"
   },
-  "jest": {
-    "preset": "ts-jest",
-    "transform": {
-      "\\.[jt]sx?$": "ts-jest"
-    },
-    "globals": {
-      "ts-jest": {
-        "useESM": "true"
-      }
-    },
-    "moduleNameMapper": {
-      "(.+)\\.js": "$1"
-    },
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "transformIgnorePatterns": [
-      "/node_modules/",
-      "/out"
-    ]
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {

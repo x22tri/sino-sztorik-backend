@@ -5,10 +5,14 @@ import { NEXT_LESSON_NOT_FOUND_ERROR } from '../util/string-literals.js';
 
 import moquelize from '../util/moquelize.js';
 import CharacterOrder from '../models/character-orders.js';
+import { Progress } from '../util/interfaces.js';
 
-let findNextLesson;
+let findNextLesson: (
+  currentTier: number,
+  currentLesson: number
+) => Promise<Progress>;
 
-async function setupDatabaseWith(testData: [number, number][]) {
+async function mockCharacterOrderDatabase(testData: [number, number][]) {
   const databaseInstances = testData.map(([tier, lessonNumber]) =>
     mockCharacterOrderInstance(tier, lessonNumber)
   );
@@ -18,9 +22,9 @@ async function setupDatabaseWith(testData: [number, number][]) {
     default: moquelize(databaseInstances),
   }));
 
-  const f = await import('../controllers/users/utils/findNextLesson.js');
+  const imported = await import('../controllers/users/utils/findNextLesson.js');
 
-  findNextLesson = f.findNextLesson;
+  findNextLesson = imported.default;
 }
 
 function mockCharacterOrderInstance(tier: number, lessonNumber: number) {
@@ -34,7 +38,7 @@ function mockCharacterOrderInstance(tier: number, lessonNumber: number) {
   });
 }
 
-function mockProgressInstance(tier: number, lessonNumber: number) {
+function mockProgressInstance(tier: number, lessonNumber: number): Progress {
   return { tier, lessonNumber };
 }
 
@@ -44,7 +48,7 @@ describe('findNextLesson()', function () {
   });
 
   it('finds the next lesson in the same tier when exists, even when database entries are in wrong order', async () => {
-    await setupDatabaseWith([
+    await mockCharacterOrderDatabase([
       [1, 1],
       [1, 3],
       [1, 2],
@@ -58,7 +62,7 @@ describe('findNextLesson()', function () {
   });
 
   it(`finds the next lesson in the same tier when exists, even when lesson number is not the number directly after user's lesson`, async () => {
-    await setupDatabaseWith([
+    await mockCharacterOrderDatabase([
       [1, 1],
       [1, 3],
       [3, 2],
@@ -71,7 +75,7 @@ describe('findNextLesson()', function () {
   });
 
   it(`finds the first lesson in the next tier when no more lessons are found in the current tier`, async () => {
-    await setupDatabaseWith([
+    await mockCharacterOrderDatabase([
       [1, 1],
       [3, 2],
       [2, 3],
@@ -85,7 +89,7 @@ describe('findNextLesson()', function () {
   });
 
   it(`returns the "course finished" progress state when user is at last tier and there are no more lessons left`, async () => {
-    await setupDatabaseWith([
+    await mockCharacterOrderDatabase([
       [1, 1],
       [3, 2],
       [LAST_TIER, 1],
@@ -97,7 +101,7 @@ describe('findNextLesson()', function () {
   });
 
   it(`returns error when user is not at last tier but no more lessons are found`, async () => {
-    await setupDatabaseWith([[1, 1]]);
+    await mockCharacterOrderDatabase([[1, 1]]);
 
     await expect(findNextLesson(LAST_TIER - 1, 10)).rejects.toThrow(
       NEXT_LESSON_NOT_FOUND_ERROR
@@ -105,7 +109,7 @@ describe('findNextLesson()', function () {
   });
 
   it(`returns error when no valid lesson objects are found`, async () => {
-    await setupDatabaseWith([]);
+    await mockCharacterOrderDatabase([]);
 
     await expect(findNextLesson(1, 1)).rejects.toThrow(
       NEXT_LESSON_NOT_FOUND_ERROR
