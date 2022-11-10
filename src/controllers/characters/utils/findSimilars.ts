@@ -12,7 +12,7 @@ const { APPEARANCE, MEANING } = SimilarType;
 import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
 import { throwError } from '../../../util/functions/throwError.js';
-import { CharacterOrder } from '../../../models/character-orders.js';
+import CharacterOrder from '../../../models/character-orders.js';
 
 type CharWithOrder = CharacterOrder & Character;
 

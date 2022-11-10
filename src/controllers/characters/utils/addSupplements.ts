@@ -4,7 +4,7 @@ import { findOtherUses } from './findOtherUses.js';
 import { findConstituents } from './findConstituents.js';
 import Character from '../../../models/characters.js';
 import { FullCharacter } from '../../../util/interfaces.js';
-import { CharacterOrder } from '../../../models/character-orders.js';
+import CharacterOrder from '../../../models/character-orders.js';
 
 /**
  * Takes a character object and finds all supplemental information about it:

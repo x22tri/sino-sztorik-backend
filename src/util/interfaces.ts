@@ -1,5 +1,5 @@
 import { Model, FindOptions, ModelStatic } from 'sequelize';
-import { CharacterOrder } from '../models/character-orders.js';
+import CharacterOrder from '../models/character-orders.js';
 import Character from '../models/characters.js';
 import { AssembledLesson } from './classes/AssembledLesson.js';
 

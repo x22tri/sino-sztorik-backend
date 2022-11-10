@@ -10,7 +10,7 @@ import { PHRASES_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-litera
 import { findBareCharacter } from './findBareCharacter.js';
 import { getCharProgress } from './getCharProgress.js';
 import { throwError } from '../../../util/functions/throwError.js';
-import { CharacterOrder } from '../../../models/character-orders.js';
+import CharacterOrder from '../../../models/character-orders.js';
 
 interface PhraseWithChars extends Phrase {
   characters: Character[];

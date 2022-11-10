@@ -1,4 +1,5 @@
-import { throwError } from './functions/throwError.js';
+import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import { HttpError, throwError } from './functions/throwError.js';
 import { UNSUPPORTED_ROUTE_ERROR, UNKNOWN_ERROR } from './string-literals.js';
 
 const unsupportedRouteHandler = () => {
@@ -8,8 +9,13 @@ const unsupportedRouteHandler = () => {
   });
 };
 
-const errorHandler = (error, _, res, next) => {
-  if (res.headerSent) {
+const errorHandler: ErrorRequestHandler = (
+  error: HttpError,
+  _: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (res.headersSent) {
     return next(error);
   }
 

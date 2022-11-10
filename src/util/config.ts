@@ -1,17 +1,17 @@
+import { Progress } from './interfaces.js';
+
+const PW_SALT_ROUNDS = 12;
 const LAST_TIER = 4;
 const COURSE_FINISHED_TIER = LAST_TIER + 1;
 const COURSE_FINISHED_LESSON_NUMBER = 100;
-const COURSE_FINISHED = {
+const COURSE_FINISHED: Progress = {
   tier: COURSE_FINISHED_TIER,
   lessonNumber: COURSE_FINISHED_LESSON_NUMBER,
 };
 
-const PW_SALT_ROUNDS = 12;
-
 const CONSTITUENT_SEPARATOR = ',';
 const INTERACTIVE_WORD_WRAPPER = '{}';
 const INTERACTIVE_WORD_SEPARATOR = '|';
-
 const FORCE_SEARCH_QUERY_PARAM = 'force';
 const LESSON_PREFACE_TIER_PREFIX = 'prefaceTier';
 

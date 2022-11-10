@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 const { gt } = Op;
 
-import { CharacterOrder } from '../../../models/character-orders.js';
+import CharacterOrder from '../../../models/character-orders.js';
 import { LAST_TIER, COURSE_FINISHED } from '../../../util/config.js';
 import { NEXT_LESSON_NOT_FOUND_ERROR } from '../../../util/string-literals.js';
 import { throwError } from '../../../util/functions/throwError.js';

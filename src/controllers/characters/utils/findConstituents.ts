@@ -14,7 +14,7 @@ import { findBareCharacter } from './findBareCharacter.js';
 import { throwError } from '../../../util/functions/throwError.js';
 import Character from '../../../models/characters.js';
 import { Progress } from '../../../util/interfaces.js';
-import { CharacterOrder } from '../../../models/character-orders.js';
+import CharacterOrder from '../../../models/character-orders.js';
 
 /**
  * Takes a character object and returns the bare character objects of its constituents.

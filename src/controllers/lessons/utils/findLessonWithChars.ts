@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 const { eq, lte } = Op;
 
-import { CharacterOrder } from '../../../models/character-orders.js';
+import CharacterOrder from '../../../models/character-orders.js';
 import Character from '../../../models/characters.js';
 import { findAllLessonObjects } from './findAllLessonObjects.js';
 import { LESSON_DATABASE_QUERY_FAILED_ERROR } from '../../../util/string-literals.js';

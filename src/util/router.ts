@@ -28,7 +28,7 @@ const signupValidators = [
   check('password').isLength({ min: 6 }),
 ];
 
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 const router = express.Router();
 
 // Routes start here.
@@ -53,11 +53,11 @@ router.get('/api/search/:searchTerm', handleSearchRequest);
 // router.get('/api/admin/all-similars/:similarType', getAllSimilars);
 // router.put('/api/admin/character/:charId/update', updateCharacter);
 
-router.put('/api/admin*', (req, res, next) => {
+router.put('/api/admin*', (req: Request, res: Response, next: NextFunction) => {
   next(new Error('The admin functionality is currently turned off.'));
 });
 
-router.get('/api/admin*', (req, res, next) => {
+router.get('/api/admin*', (req: Request, res: Response, next: NextFunction) => {
   next(new Error('The admin functionality is currently turned off.'));
 });
 

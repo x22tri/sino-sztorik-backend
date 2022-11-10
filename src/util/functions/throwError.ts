@@ -59,4 +59,4 @@ function passError(
   next(error || new HttpError(fallbackMessage, fallbackCode));
 }
 
-export { throwError, passError };
+export { throwError, passError, HttpError };

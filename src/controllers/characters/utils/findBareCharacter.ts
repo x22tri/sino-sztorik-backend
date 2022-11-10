@@ -1,5 +1,5 @@
 import Character from '../../../models/characters.js';
-import { CharacterOrder } from '../../../models/character-orders.js';
+import CharacterOrder from '../../../models/character-orders.js';
 
 import {
   CHARACTER_NOT_FOUND_ERROR,

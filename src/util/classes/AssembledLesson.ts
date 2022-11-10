@@ -1,4 +1,4 @@
-import { CharacterOrder } from '../../models/character-orders.js';
+import CharacterOrder from '../../models/character-orders.js';
 import Character from '../../models/characters.js';
 import { FullCharacter, Progress } from '../interfaces.js';
 import { HasProgress } from './HasProgress.js';

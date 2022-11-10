@@ -80,4 +80,4 @@ CharacterOrder.init(
   }
 );
 
-export { CharacterOrder };
+export default CharacterOrder;
