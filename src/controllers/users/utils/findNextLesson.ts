@@ -5,6 +5,7 @@ import CharacterOrder from '../../../models/character-orders.js';
 import { LAST_TIER, COURSE_FINISHED } from '../../../util/config.js';
 import { NEXT_LESSON_NOT_FOUND_ERROR } from '../../../util/string-literals.js';
 import { throwError } from '../../../util/functions/throwError.js';
+import { Progress } from '../../../util/interfaces.js';
 
 async function findNextLesson(currentTier: number, currentLesson: number) {
   const nextLessonInTier = await _lookForLessonInSameTier(
@@ -32,11 +33,10 @@ async function findNextLesson(currentTier: number, currentLesson: number) {
 async function _lookForLessonInSameTier(
   currentTier: number,
   currentLesson: number
-) {
+): Promise<Progress | null> {
   const remainingLessonsInTier = await CharacterOrder.findAll({
     where: { tier: currentTier, lessonNumber: { [gt]: currentLesson } },
     order: ['lessonNumber'],
-    raw: true,
   });
 
   const nextLessonInSameTierChar = remainingLessonsInTier?.[0];
@@ -45,19 +45,15 @@ async function _lookForLessonInSameTier(
     return null;
   }
 
-  const nextLessonInSameTier = nextLessonInSameTierChar.getProgress();
-
-  if (!isValidProgress(nextLessonInSameTier)) {
-    return null;
-  }
-
   return {
-    tier: nextLessonInSameTier.tier,
-    lessonNumber: nextLessonInSameTier.lessonNumber,
+    ...nextLessonInSameTierChar.getProgress(),
+    indexInLesson: undefined,
   };
 }
 
-async function _lookForLessonInNextTier(currentTier: number) {
+async function _lookForLessonInNextTier(
+  currentTier: number
+): Promise<Progress | null> {
   const lessonsInNextTier = await CharacterOrder.findAll({
     where: { tier: currentTier + 1 },
     order: ['lessonNumber'],
@@ -69,22 +65,10 @@ async function _lookForLessonInNextTier(currentTier: number) {
     return null;
   }
 
-  const firstLessonInNextTier = firstLessonInNextTierChar.getProgress();
-
-  if (!isValidProgress(firstLessonInNextTier)) {
-    return null;
-  }
-
   return {
-    tier: firstLessonInNextTier.tier,
-    lessonNumber: firstLessonInNextTier.lessonNumber,
+    ...firstLessonInNextTierChar.getProgress(),
+    indexInLesson: undefined,
   };
-}
-
-function isValidProgress(progress) {
-  return (
-    Number.isInteger(progress?.tier) && Number.isInteger(progress?.lessonNumber)
-  );
 }
 
 export { findNextLesson };
