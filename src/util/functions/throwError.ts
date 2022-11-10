@@ -36,8 +36,11 @@ function throwError({
  * A way to throw errors in controller functions / middleware.
  *
  * @param parameters.error - The error received by the middleware, likely from a `throwError` call in a non-controller function.
- * Please note that unlike in `throwError`, this `error` should be friendly and easy to understand.
- * Logging and additional info should not be provided at this point.
+ *
+ * Please note that unlike in `throwError`, this `error` should be friendly and easy to understand
+ * (usually by being a `throwError` call's `message` property).
+ *
+ *  Logging and additional info should not be provided at this point.
  * @param parameters.fallbackMessage - The message to be sent to the frontend, if not provided by `error`.
  * @param parameters.fallbackCode - The HTTP code to be sent to the frontend, if not provided by `error`.
  */
