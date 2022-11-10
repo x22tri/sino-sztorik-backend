@@ -5,23 +5,21 @@ import {
   LESSON_COMPLETED,
 } from './string-literals.js';
 
-const SimilarType = Object.freeze({
-  APPEARANCE: 'appearance',
-  MEANING: 'meaning',
-});
+enum SimilarType {
+  APPEARANCE = 'appearance',
+  MEANING = 'meaning',
+}
 
-type SimilarTypeValue = typeof SimilarType[keyof typeof SimilarType];
+enum InteractiveWordType {
+  PRIMITIVE = 'p',
+  KEYWORD = 'k',
+}
 
-const InteractiveWordType = Object.freeze({
-  PRIMITIVE: 'p',
-  KEYWORD: 'k',
-});
-
-const LessonStatuses = Object.freeze({
+const LessonStatuses = {
   NOT_IN_TIER: LESSON_NOT_IN_TIER,
   LOCKED: LESSON_LOCKED,
   UPCOMING: LESSON_UPCOMING,
   COMPLETED: LESSON_COMPLETED,
-});
+} as const;
 
-export { SimilarType, SimilarTypeValue, InteractiveWordType, LessonStatuses };
+export { SimilarType, InteractiveWordType, LessonStatuses };

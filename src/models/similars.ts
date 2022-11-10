@@ -7,7 +7,7 @@ import {
 const { INTEGER, STRING, ENUM, BOOLEAN } = DataTypes;
 
 import sequelize from '../util/database.js';
-import { SimilarTypeValue } from '../util/enums.js';
+import { SimilarType } from '../util/enums.js';
 
 class Similar extends Model<
   InferAttributes<Similar>,
@@ -16,7 +16,7 @@ class Similar extends Model<
   declare similarId: number;
   declare similarGroup: number;
   declare charChinese: string;
-  declare similarType: SimilarTypeValue;
+  declare similarType: SimilarType;
   declare similarToPrimitiveMeaning?: boolean | null;
 }
 
